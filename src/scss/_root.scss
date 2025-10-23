@@ -1,0 +1,9 @@
+@import "variables";
+
+:root, body {
+
+
+  @each $key, $val in $colors {
+    --color-#{$key}: #{$val};
+  }
+}

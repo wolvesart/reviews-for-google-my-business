@@ -1,11 +1,15 @@
-// ============================================================================
-// GOOGLE MY BUSINESS REVIEWS - VARIABLES
-// ============================================================================
-
 // Breakpoints
 $breakpoints: (
-  mobile: 480px,
-  tablet: 768px,
-  desktop: 1024px,
-  wide: 1440px
+        mobile: 480px,
+        tablet: 768px,
+        desktop: 1024px,
+        wide: 1440px
 );
+
+
+//Colors
+$colors: (
+        green-100: #A6EDDD,
+        green-200: #68DAC0,
+        green-800: #073034
+)

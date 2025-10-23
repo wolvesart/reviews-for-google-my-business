@@ -1,17 +1,25 @@
+@import 'variables';
+@import 'root';
+
 // ============================================================================
 // GOOGLE MY BUSINESS REVIEWS - ADMIN
 // ============================================================================
 
 /* Header avec logo */
 .gmb-admin-wrap {
+  margin: 0 0 0 -20px;
+
   .gmb-header {
+    padding: 30px 54px !important;
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 20px;
-    padding-bottom: 16px;
     border-bottom: 1px solid #dcdcde;
-    background-color: red !important;
+    background-color: var(--color-green-100);
+    background-position:  center center;
+    background-size: contain;
+    background-repeat: no-repeat;
 
     .gmb-logo {
       flex-shrink: 0;

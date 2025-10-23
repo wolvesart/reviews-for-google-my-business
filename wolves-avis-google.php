@@ -60,9 +60,9 @@ class Wolves_Avis_Google {
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/api.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/database.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/categories.php';
+        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/shortcode.php';  // Charger avant helpers.php
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/helpers.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/admin.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/shortcode.php';
     }
 
     /**

@@ -1,4 +1,4 @@
-<div class="gmb-header">
+<div class="gmb-header" style="background-image: url(<?php echo WOLVES_GMB_PLUGIN_URL . '/assets/gmb-pattern.png'; ?>);">
     <div class="gmb-logo">
         <?php
         $logo_path = WOLVES_GMB_PLUGIN_DIR . 'template-parts/svg/gmb-logo.svg';
@@ -7,10 +7,10 @@
         }
         ?>
     </div>
-    <h1>Avis Google</h1>
+    <h1><?php _e('Google reviews', 'wolves-avis-google'); ?></h1>
     <div class="infos">
         <ul>
-            <li class="file"><a href="/wp-admin/admin.php?page=gmb-settings">Documentation</a></li>
+            <li class="file"><a href="<?php echo admin_url('admin.php?page=gmb-settings'); ?>"><?php _e('Documentation', 'wolves-avis-google'); ?></a></li>
         </ul>
     </div>
 </div>

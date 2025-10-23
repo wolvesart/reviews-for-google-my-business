@@ -66,6 +66,10 @@ function gmb_enqueue_admin_styles($hook) {
         array(),
         WOLVES_GMB_VERSION
     );
+
+    // Corriger les chemins absolus générés par webpack pour utiliser le chemin du plugin
+    $custom_css = '.gmb-header { background-image: url("' . WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern.png") !important; }';
+    wp_add_inline_style('gmb-admin-styles', $custom_css);
 }
 add_action('admin_enqueue_scripts', 'gmb_enqueue_admin_styles');
 
