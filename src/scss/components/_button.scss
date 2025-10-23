@@ -1,0 +1,35 @@
+.button {
+  padding: 6px 16px !important;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px !important;
+  border: none !important;
+  font-weight: 500;
+  color: var(--color-green-800) !important;
+  transition: all 200ms ease-out;
+
+  &.button-primary {
+    background: var(--color-green-200) !important;
+
+    &:hover {
+      background-color: var(--color-green-100) !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--color-green-100) !important;
+    }
+  }
+
+
+  &.button-secondary {
+    background: var(--color-grey-200) !important;
+
+    &:hover {
+      background-color: var(--color-grey-100) !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--color-grey-100) !important;
+    }
+  }
+}

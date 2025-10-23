@@ -1,13 +1,23 @@
 @import 'variables';
 @import 'root';
 
-// ============================================================================
-// GOOGLE MY BUSINESS REVIEWS - ADMIN
-// ============================================================================
+@import 'components/button';
 
 /* Header avec logo */
+.wrap {
+  margin: 0;
+}
+
 .gmb-admin-wrap {
-  margin: 0 0 0 -20px;
+
+  h1, h2, h3 {
+    color: var(--color-green-800);
+  }
+
+  p {
+    color: var(--color-grey-800);
+    font-size: 1.1em;
+  }
 
   .gmb-header {
     padding: 30px 54px !important;
@@ -17,7 +27,7 @@
     margin-bottom: 20px;
     border-bottom: 1px solid #dcdcde;
     background-color: var(--color-green-100);
-    background-position:  center center;
+    background-position: center center;
     background-size: contain;
     background-repeat: no-repeat;
 
@@ -26,14 +36,15 @@
 
       svg {
         display: block;
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
       }
     }
 
     h1 {
       margin: 0;
       flex: 1;
+      font-weight: 700;
     }
 
     .infos {
@@ -48,14 +59,19 @@
 
         li {
           margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          color: var(--color-green-800);
 
           a {
             text-decoration: none;
-            color: #2271b1;
-            font-size: 13px;
+            color: var(--color-green-800);
+            font-size: 14px;
+            font-weight: 400;
 
             &:hover {
-              color: #135e96;
+              text-decoration: underline;
             }
           }
         }
@@ -65,10 +81,74 @@
 }
 
 /* Container principal */
-.gmb-admin-wrap .gmb-admin-container {
+.gmb-admin-container {
   display: flex;
+  flex-direction: column;
   gap: 20px;
-  margin-top: 20px;
+  margin: 20px !important;
+
+  &.full-screen {
+    min-height: 600px !important;
+    align-items: center;
+    justify-content: center;
+
+    .card {
+      text-align: center;
+    }
+  }
+
+  .gmb-admin-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  .title {
+    max-width: 520px;
+    text-align: center;
+
+    h2 {
+      font-size: 2.5em;
+      margin: 0;
+    }
+  }
+
+  .card {
+    margin-bottom: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    border: none;
+    max-width: 700px !important;
+
+    .description {
+      font-size: 12px;
+    }
+
+    &:last-child, &:first-child {
+      margin: 0;
+    }
+
+    &.info {
+      background-color: var(--color-green-800);
+      max-width: 400px !important;
+      height: auto !important;
+      overflow: hidden;
+      padding-top: 160px;
+
+      .pattern-info {
+        height: 160px !important;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        object-fit: cover;
+      }
+
+      h2, p {
+        color: #FFF !important;
+      }
+    }
+  }
 }
 
 .gmb-admin-wrap {
@@ -91,60 +171,56 @@
 
 /* Sidebar avec navigation tabs */
 .gmb-admin-sidebar {
-  width: 200px;
+  margin: -20px -20px 30px -20px;
+  padding: 20px 50px 0 50px;
   flex-shrink: 0;
+  background-color: #FFF;
 }
 
 .gmb-tabs-nav {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: row;
+  gap: 24px;
   overflow: hidden;
 }
 
 .gmb-tab-button {
   display: flex;
   align-items: center;
+  padding-bottom: 8px;
   gap: 10px;
-  padding: 12px;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  border-bottom: 1px solid #f0f0f1;
+  border: none;
+  border-bottom: 3px solid transparent;
   text-align: left;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
-  color: #2a2b2e;
+  color: var(--color-grey-800);
   transition: all 0.2s ease;
-
-  &:last-child {
-    border-bottom: none;
-  }
+  background-color: transparent;
 
   &:hover {
-    background: #ffffff;
+    border-bottom: 3px solid var(--color-grey-200);
   }
 
   &.active {
-    background: #e4e4e4;
+    color: var(--color-green-800);
+    border-bottom: 3px solid var(--color-green-800);
+
+    .dashicons {
+      color: var(--color-green-800);
+    }
   }
 
   &:focus {
-    border: 2px solid #3858E9;
+    border-bottom: 3px solid var(--color-green-800);
   }
 
   .dashicons {
     width: 20px;
     height: 20px;
     font-size: 20px;
-    color: #50575e;
   }
-}
-
-/* Contenu principal */
-.gmb-admin-content {
-  flex: 1;
-  min-width: 0;
 }
 
 /* Tabs content */
@@ -189,25 +265,6 @@
         background-color: #FFB400;
         mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M9.2 4.613c.962-1.603 2.996-2.094 4.543-1.096.428.276.79.651 1.057 1.096l6.701 11.16c.963 1.603.49 3.713-1.057 4.711a3.2 3.2 0 0 1-1.743.516H5.298C3.477 21 2 19.47 2 17.58c0-.639.173-1.265.498-1.808L9.2 4.613ZM12 15.95a.82.82 0 1 0 0 1.639.82.82 0 0 0 0-1.639Zm0-6.911a.82.82 0 0 0-.818.818v3.27a.82.82 0 0 0 1.397.58.82.82 0 0 0 .24-.58v-3.27A.82.82 0 0 0 12 9.038Z' clip-rule='evenodd'/%3E%3C/svg%3E%0A");
       }
-    }
-  }
-
-  .card {
-    margin-bottom: 20px;
-    margin-top: 20px;
-    border-radius: 12px;
-    border: none;
-
-    .description {
-      font-size: 12px;
-    }
-
-    &:last-child, &:first-child {
-      margin: 0;
-    }
-
-    .button {
-      padding: 4px 16px;
     }
   }
 }

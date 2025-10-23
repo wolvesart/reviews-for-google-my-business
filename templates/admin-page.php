@@ -43,6 +43,8 @@ if (!defined('ABSPATH')) {
             </nav>
         </div>
 
+        <div class="gmb-admin-section">
+
         <!-- Contenu principal -->
         <div class="gmb-admin-content">
             <?php if (isset($_GET['status'])): ?>
@@ -264,7 +266,7 @@ if (!defined('ABSPATH')) {
                         <button type="button" class="button button-primary" onclick="testGMBConnection()">
                             Tester la récupération des avis
                         </button>
-                        <button type="button" class="button" onclick="clearGMBCache()">
+                        <button type="button" class="button button-secondary" onclick="clearGMBCache()">
                             Vider le cache
                         </button>
                     </p>
@@ -617,6 +619,15 @@ if (!defined('ABSPATH')) {
         </div>
 
     </div><!-- .gmb-admin-content -->
+
+        <div class="card info">
+            <img class="pattern-info" src="<?php echo WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern-info.jpg'; ?>;" alt="pattern-info">
+            <h2><?php _e('Before start', 'wolves-avis-google'); ?></h2>
+            <p><?php _e('Pour fonctionner vous allez avoir besoin de plusieurs éléments. Un compte Google Cloud Console. Un accès a Google Business Profile API (il est nécessaire de faire une demande d’accès)', 'wolves-avis-google'); ?></p>
+
+        </div>
+
+    </div><!-- .gmb-admin-section -->
 </div><!-- .gmb-admin-container -->
 </div><!-- .wrap -->
 

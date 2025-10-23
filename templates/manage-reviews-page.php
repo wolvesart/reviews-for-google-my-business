@@ -48,18 +48,24 @@ $categories = gmb_get_all_categories();
 <div class="wrap gmb-admin-wrap">
     <?php include_once(WOLVES_GMB_PLUGIN_DIR . 'template-parts/header.php'); ?>
 
-    <div class="gmb-admin-container">
+    <div class="gmb-admin-container full-screen">
         <?php if (isset($data['error']) && $data['error']): ?>
-            <div>
-                <p><strong>Erreur :</strong> <?php echo esc_html($data['message']); ?></p>
+        <div class="title">
+            <h2><?php _e('Before start', 'wolves-avis-google'); ?></h2>
+            <p><?php _e('Before start, go to the Configuration page to connect your account Google Cloud Console', 'wolves-avis-google'); ?></p>
+        </div>
+            <div class="card">
+                <p><?php echo esc_html($data['message']); ?></p>
                 <?php if (isset($data['api_response'])): ?>
                     <details>
                         <summary>Détails de l'erreur</summary>
                         <pre><?php echo esc_html(print_r($data['api_response'], true)); ?></pre>
                     </details>
                 <?php endif; ?>
-                <p><a href="<?php echo esc_url(admin_url('admin.php?page=gmb-settings')); ?>" class="button">Configurer
-                        l'authentification</a></p>
+                <p><a href="<?php echo esc_url(admin_url('admin.php?page=gmb-settings')); ?>" class="button button-primary">
+                        <?php _e('Configure authentification', 'wolves-avis-google'); ?>
+                    </a>
+                </p>
             </div>
         <?php elseif (empty($data['reviews'])): ?>
             <div>
