@@ -2,8 +2,11 @@
 
 :root, body {
 
-
   @each $key, $val in $colors {
     --color-#{$key}: #{$val};
+  }
+
+  @each $key, $val in $radius {
+    --radius-#{$key}: #{$val};
   }
 }

@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 /**
  * Enregistre les styles frontend
  */
-function gmb_enqueue_frontend_styles() {
+function wgmbr_enqueue_frontend_styles() {
     wp_enqueue_style(
         'gmb-frontend-styles',
         WOLVES_GMB_PLUGIN_URL . 'assets/css/frontend.css',
@@ -25,7 +25,7 @@ function gmb_enqueue_frontend_styles() {
     );
 
     // Add custom inline styles if options are set
-    $custom_css = gmb_generate_custom_css();
+    $custom_css = wgmbr_generate_custom_css();
     if (!empty($custom_css)) {
         wp_add_inline_style('gmb-frontend-styles', $custom_css);
     }
@@ -35,35 +35,35 @@ function gmb_enqueue_frontend_styles() {
  * Generate custom CSS based on user options
  * Uses CSS Custom Properties (CSS variables) for cleaner overrides
  */
-function gmb_generate_custom_css() {
+function wgmbr_generate_custom_css() {
     $custom_vars = array();
 
     // Card background color
-    $card_bg = get_option('gmb_card_bg_color');
+    $card_bg = get_option('wgmbr_card_bg_color');
     if ($card_bg && $card_bg !== '#17171A') {
         $custom_vars[] = "--gmb-card-bg: {$card_bg}";
     }
 
     // Card border radius
-    $card_radius = get_option('gmb_card_border_radius');
+    $card_radius = get_option('wgmbr_card_border_radius');
     if ($card_radius !== false && $card_radius !== '' && $card_radius !== '32') {
         $custom_vars[] = "--gmb-card-radius: {$card_radius}px";
     }
 
     // Star color
-    $star_color = get_option('gmb_star_color');
+    $star_color = get_option('wgmbr_star_color');
     if ($star_color && $star_color !== '#F85430') {
         $custom_vars[] = "--gmb-star-color: {$star_color}";
     }
 
     // Resume text color
-    $resume_text_color = get_option('gmb_resume_text_color');
+    $resume_text_color = get_option('wgmbr_resume_text_color');
     if ($resume_text_color && $resume_text_color !== '#FFFFFF') {
         $custom_vars[] = "--gmb-resume-text-color: {$resume_text_color}";
     }
 
     // Text color
-    $text_color = get_option('gmb_text_color');
+    $text_color = get_option('wgmbr_text_color');
     if ($text_color && $text_color !== '#AEAEAE') {
         $custom_vars[] = "--gmb-text-color: {$text_color}";
     }
@@ -75,7 +75,7 @@ function gmb_generate_custom_css() {
     }
 
     // Text color name
-    $text_color_name = get_option('gmb_text_color_name');
+    $text_color_name = get_option('wgmbr_text_color_name');
     if ($text_color_name && $text_color_name !== '#FFFFFF') {
         $custom_vars[] = "--gmb-text-color-name: {$text_color_name}";
     }
@@ -96,40 +96,48 @@ function gmb_generate_custom_css() {
  * Shortcode pour afficher les avis GMB
  *
  * Usage:
- * - [gmb_reviews limit="10"] - Affiche tous les avis (limite 10)
- * - [gmb_reviews category="formation"] - Affiche uniquement les avis de la catégorie "formation"
- * - [gmb_reviews category="formation" limit="5"] - Affiche 5 avis de la catégorie "formation"
- * - [gmb_reviews category=""] - Affiche uniquement les avis sans catégorie
+ * - [wgmbr_reviews limit="10"] - Affiche tous les avis (limite 10)
+ * - [wgmbr_reviews category="formation"] - Affiche uniquement les avis de la catégorie "formation"
+ * - [wgmbr_reviews category="formation" limit="5"] - Affiche 5 avis de la catégorie "formation"
+ * - [wgmbr_reviews category=""] - Affiche uniquement les avis sans catégorie
  *
  * @param array $atts Attributs du shortcode
  * @return string HTML des avis
  */
-function gmb_reviews_shortcode($atts) {
+function wgmbr_reviews_shortcode($atts) {
     // Charger les styles uniquement si le shortcode est utilisé
-    gmb_enqueue_frontend_styles();
+    wgmbr_enqueue_frontend_styles();
 
     $atts = shortcode_atts(array(
         'limit' => 50,
         'category' => null  // Slug de la catégorie (null = toutes les catégories)
     ), $atts);
 
-    $data = gmb_fetch_reviews();
-
-    // Gestion des erreurs
-    if (isset($data['error']) && $data['error']) {
-        return '<div class="gmb-error">' . $data['message'] . '</div>';
-    }
-
-    // Filtrer par catégorie si spécifié
+    // Récupérer les avis depuis les CPT
     if ($atts['category'] !== null) {
-        $data['reviews'] = gmb_filter_reviews_by_category($data['reviews'], $atts['category']);
+        // Filtrer par catégorie
+        $reviews = wgmbr_get_reviews_by_category($atts['category'], (int) $atts['limit']);
+    } else {
+        // Tous les avis
+        $reviews = wgmbr_get_all_reviews(array(
+            'posts_per_page' => (int) $atts['limit']
+        ));
     }
+
+    // Préparer les données pour le template (format compatible avec l'ancien système)
+    $data = array(
+        'error' => false,
+        'source' => 'Custom Post Type',
+        'reviews' => $reviews,
+        'total' => wgmbr_get_total_reviews_count(),
+        'average_rating' => wgmbr_get_average_rating(),
+    );
 
     ob_start();
     require WOLVES_GMB_PLUGIN_DIR . 'templates/reviews-display.php';
     return ob_get_clean();
 }
-add_shortcode('gmb_reviews', 'gmb_reviews_shortcode');
+add_shortcode('gmb_reviews', 'wgmbr_reviews_shortcode');
 
 // ============================================================================
 // FONCTIONS UTILITAIRES
@@ -138,7 +146,7 @@ add_shortcode('gmb_reviews', 'gmb_reviews_shortcode');
 /**
  * Génère le HTML des étoiles
  */
-function gmb_render_stars($rating) {
+function wgmbr_render_stars($rating) {
     $full_stars = floor($rating);
     $half_star = ($rating - $full_stars) >= 0.5;
     $empty_stars = 5 - $full_stars - ($half_star ? 1 : 0);
@@ -160,18 +168,4 @@ function gmb_render_stars($rating) {
     return $html;
 }
 
-/**
- * Convertit le format de notation GMB en numérique
- */
-function gmb_convert_star_rating($star_rating) {
-    $ratings = array(
-        'STAR_RATING_UNSPECIFIED' => 0,
-        'ONE' => 1,
-        'TWO' => 2,
-        'THREE' => 3,
-        'FOUR' => 4,
-        'FIVE' => 5
-    );
-
-    return isset($ratings[$star_rating]) ? $ratings[$star_rating] : 0;
-}
+// Note: wgmbr_convert_star_rating() est maintenant définie dans includes/post-types.php

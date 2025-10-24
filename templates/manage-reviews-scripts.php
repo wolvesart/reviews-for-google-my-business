@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryName = categoryNameInput.value.trim();
 
             if (!categoryName) {
-                alert('Veuillez entrer un nom de catégorie');
+                alert('<?php _e('Please enter a category name', 'wolves-avis-google'); ?>');
                 return;
             }
 
             // Désactiver le bouton pendant la requête
             createCategoryBtn.disabled = true;
-            createCategoryBtn.textContent = 'Création...';
+            createCategoryBtn.textContent = '<?php _e('Creating...', 'wolves-avis-google'); ?>';
 
             // Créer la catégorie via AJAX
             fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
@@ -39,9 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
-                    action: 'gmb_create_category',
+                    action: 'wgmbr_create_category',
                     category_name: categoryName,
-                    nonce: '<?php echo wp_create_nonce('gmb_categories'); ?>'
+                    nonce: '<?php echo wp_create_nonce('wgmbr_categories'); ?>'
                 })
             })
             .then(response => response.json())
@@ -50,15 +50,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Recharger la page pour afficher la nouvelle catégorie
                     window.location.reload();
                 } else {
-                    alert('Erreur : ' + (data.data?.message || 'Erreur inconnue'));
+                    alert('<?php _e('Error:', 'wolves-avis-google'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'wolves-avis-google'); ?>'));
                     createCategoryBtn.disabled = false;
-                    createCategoryBtn.textContent = 'Créer une catégorie';
+                    createCategoryBtn.textContent = '<?php _e('Create category', 'wolves-avis-google'); ?>';
                 }
             })
             .catch(error => {
-                alert('Erreur réseau : ' + error.message);
+                alert('<?php _e('Network error:', 'wolves-avis-google'); ?> ' + error.message);
                 createCategoryBtn.disabled = false;
-                createCategoryBtn.textContent = 'Créer une catégorie';
+                createCategoryBtn.textContent = '<?php _e('Create category', 'wolves-avis-google'); ?>';
             });
         });
 
@@ -77,13 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const categoryId = this.dataset.categoryId;
 
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ? Elle sera retirée de tous les avis qui l\'utilisent.')) {
+            if (!confirm('<?php _e('Are you sure you want to delete this category? It will be removed from all reviews that use it.', 'wolves-avis-google'); ?>')) {
                 return;
             }
 
             // Désactiver le bouton pendant la requête
             this.disabled = true;
-            this.textContent = 'Suppression...';
+            this.textContent = '<?php _e('Deleting...', 'wolves-avis-google'); ?>';
 
             // Supprimer la catégorie via AJAX
             fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
@@ -92,9 +92,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
-                    action: 'gmb_delete_category',
+                    action: 'wgmbr_delete_category',
                     category_id: categoryId,
-                    nonce: '<?php echo wp_create_nonce('gmb_categories'); ?>'
+                    nonce: '<?php echo wp_create_nonce('wgmbr_categories'); ?>'
                 })
             })
             .then(response => response.json())
@@ -103,15 +103,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Recharger la page pour mettre à jour la liste
                     window.location.reload();
                 } else {
-                    alert('Erreur : ' + (data.data?.message || 'Erreur inconnue'));
+                    alert('<?php _e('Error:', 'wolves-avis-google'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'wolves-avis-google'); ?>'));
                     this.disabled = false;
-                    this.textContent = 'Supprimer';
+                    this.textContent = '<?php _e('Delete', 'wolves-avis-google'); ?>';
                 }
             })
             .catch(error => {
-                alert('Erreur réseau : ' + error.message);
+                alert('<?php _e('Network error:', 'wolves-avis-google'); ?> ' + error.message);
                 this.disabled = false;
-                this.textContent = 'Supprimer';
+                this.textContent = '<?php _e('Delete', 'wolves-avis-google'); ?>';
             });
         });
     });

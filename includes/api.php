@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 /**
  * Génère l'URL d'autorisation OAuth
  */
-function gmb_get_auth_url() {
+function wgmbr_get_auth_url() {
     $params = array(
         'client_id' => GMB_CLIENT_ID,
         'redirect_uri' => GMB_REDIRECT_URI,
@@ -32,7 +32,7 @@ function gmb_get_auth_url() {
 /**
  * Échange le code d'autorisation contre un access token
  */
-function gmb_exchange_code_for_token($code) {
+function wgmbr_exchange_code_for_token($code) {
     $token_url = 'https://oauth2.googleapis.com/token';
 
     $params = array(
@@ -55,9 +55,9 @@ function gmb_exchange_code_for_token($code) {
 
     if (isset($body['access_token'])) {
         // Sauvegarder les tokens
-        update_option('gmb_access_token', $body['access_token']);
-        update_option('gmb_refresh_token', $body['refresh_token']);
-        update_option('gmb_token_expires', time() + $body['expires_in']);
+        update_option('wgmbr_access_token', $body['access_token']);
+        update_option('wgmbr_refresh_token', $body['refresh_token']);
+        update_option('wgmbr_token_expires', time() + $body['expires_in']);
 
         return true;
     }
@@ -68,8 +68,8 @@ function gmb_exchange_code_for_token($code) {
 /**
  * Rafraîchit l'access token avec le refresh token
  */
-function gmb_refresh_access_token() {
-    $refresh_token = get_option('gmb_refresh_token');
+function wgmbr_refresh_access_token() {
+    $refresh_token = get_option('wgmbr_refresh_token');
 
     if (!$refresh_token) {
         return false;
@@ -95,8 +95,8 @@ function gmb_refresh_access_token() {
     $body = json_decode(wp_remote_retrieve_body($response), true);
 
     if (isset($body['access_token'])) {
-        update_option('gmb_access_token', $body['access_token']);
-        update_option('gmb_token_expires', time() + $body['expires_in']);
+        update_option('wgmbr_access_token', $body['access_token']);
+        update_option('wgmbr_token_expires', time() + $body['expires_in']);
         return true;
     }
 
@@ -106,16 +106,16 @@ function gmb_refresh_access_token() {
 /**
  * Récupère un access token valide (rafraîchit si nécessaire)
  */
-function gmb_get_valid_access_token() {
-    $access_token = get_option('gmb_access_token');
-    $expires = get_option('gmb_token_expires', 0);
+function wgmbr_get_valid_access_token() {
+    $access_token = get_option('wgmbr_access_token');
+    $expires = get_option('wgmbr_token_expires', 0);
 
     // Si le token expire dans moins de 5 minutes, le rafraîchir
     if (time() >= ($expires - 300)) {
-        if (!gmb_refresh_access_token()) {
+        if (!wgmbr_refresh_access_token()) {
             return false;
         }
-        $access_token = get_option('gmb_access_token');
+        $access_token = get_option('wgmbr_access_token');
     }
 
     return $access_token;
@@ -129,8 +129,8 @@ function gmb_get_valid_access_token() {
  * Liste tous les comptes GMB accessibles
  * Documentation: https://developers.google.com/my-business/reference/accountmanagement/rest/v1/accounts/list
  */
-function gmb_list_accounts() {
-    $access_token = gmb_get_valid_access_token();
+function wgmbr_list_accounts() {
+    $access_token = wgmbr_get_valid_access_token();
 
     if (!$access_token) {
         return array('error' => true, 'message' => 'Token non disponible');
@@ -158,8 +158,8 @@ function gmb_list_accounts() {
  * Liste toutes les locations pour un compte donné
  * Documentation: https://developers.google.com/my-business/reference/businessinformation/rest/v1/accounts.locations/list
  */
-function gmb_list_locations($account_id) {
-    $access_token = gmb_get_valid_access_token();
+function wgmbr_list_locations($account_id) {
+    $access_token = wgmbr_get_valid_access_token();
 
     if (!$access_token) {
         return array('error' => true, 'message' => 'Token non disponible');
@@ -206,9 +206,9 @@ function gmb_list_locations($account_id) {
  * Récupère les avis depuis l'API Google My Business v4
  * Documentation: https://developers.google.com/my-business/content/review-data
  */
-function gmb_fetch_reviews() {
+function wgmbr_fetch_reviews() {
     // Vérifier le cache (valide 1 heure)
-    $cache_key = 'gmb_reviews_cache';
+    $cache_key = 'wgmbr_reviews_cache';
     $cached_data = get_transient($cache_key);
 
     if ($cached_data !== false) {
@@ -217,7 +217,7 @@ function gmb_fetch_reviews() {
 
     // My Business API v4 avec OAuth
     // Documentation: https://developers.google.com/my-business/reference/rest/v4/accounts.locations.reviews/list
-    $access_token = gmb_get_valid_access_token();
+    $access_token = wgmbr_get_valid_access_token();
 
     if ($access_token && GMB_ACCOUNT_ID && GMB_LOCATION_ID) {
         // Format exact selon la doc: {parent=accounts/*/locations/*}/reviews
@@ -250,6 +250,9 @@ function gmb_fetch_reviews() {
                     'average_rating' => isset($body['averageRating']) ? $body['averageRating'] : 0,
                     'next_page_token' => isset($body['nextPageToken']) ? $body['nextPageToken'] : null
                 );
+
+                // Synchroniser les avis vers les CPT
+                wgmbr_sync_reviews_to_cpt($reviews_data['reviews']);
 
                 set_transient($cache_key, $reviews_data, HOUR_IN_SECONDS);
                 return $reviews_data;
@@ -285,18 +288,18 @@ function gmb_fetch_reviews() {
 /**
  * Gère le callback OAuth de Google
  */
-function gmb_handle_oauth_callback() {
-    if (!isset($_GET['gmb_auth'])) {
+function wgmbr_handle_oauth_callback() {
+    if (!isset($_GET['wgmbr_auth'])) {
         return;
     }
 
     if (isset($_GET['code'])) {
         $code = sanitize_text_field(wp_unslash($_GET['code']));
-        $success = gmb_exchange_code_for_token($code);
+        $success = wgmbr_exchange_code_for_token($code);
 
         if ($success) {
             // Récupérer automatiquement les comptes et locations après authentification
-            gmb_auto_fetch_accounts_and_locations();
+            wgmbr_auto_fetch_accounts_and_locations();
             wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=success&auto_fetch=1'));
         } else {
             wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=error'));
@@ -304,13 +307,13 @@ function gmb_handle_oauth_callback() {
         exit;
     }
 }
-add_action('init', 'gmb_handle_oauth_callback');
+add_action('init', 'wgmbr_handle_oauth_callback');
 
 /**
  * Récupère automatiquement les comptes et locations après OAuth
  */
-function gmb_auto_fetch_accounts_and_locations() {
-    $accounts_response = gmb_list_accounts();
+function wgmbr_auto_fetch_accounts_and_locations() {
+    $accounts_response = wgmbr_list_accounts();
 
     if (isset($accounts_response['error'])) {
         return;
@@ -324,7 +327,7 @@ function gmb_auto_fetch_accounts_and_locations() {
             $account_name = isset($account['accountName']) ? $account['accountName'] : $account['name'];
 
             // Récupérer les locations pour ce compte
-            $locations_response = gmb_list_locations($account_id);
+            $locations_response = wgmbr_list_locations($account_id);
 
             if (isset($locations_response['locations']) && is_array($locations_response['locations'])) {
                 foreach ($locations_response['locations'] as $location) {
@@ -340,5 +343,44 @@ function gmb_auto_fetch_accounts_and_locations() {
     }
 
     // Sauvegarder les locations disponibles
-    update_option('gmb_available_locations', $locations_data);
+    update_option('wgmbr_available_locations', $locations_data);
+}
+
+// ============================================================================
+// SYNCHRONISATION DES AVIS VERS CPT
+// ============================================================================
+
+/**
+ * Synchronise les avis de l'API vers les Custom Post Types
+ *
+ * @param array $reviews Tableau d'avis depuis l'API Google
+ * @return array Résultats de la synchronisation
+ */
+function wgmbr_sync_reviews_to_cpt($reviews) {
+    if (empty($reviews) || !is_array($reviews)) {
+        return array(
+            'success' => false,
+            'message' => __('No reviews to synchronize', 'wolves-avis-google')
+        );
+    }
+
+    $synced = 0;
+    $errors = 0;
+
+    foreach ($reviews as $review) {
+        $result = wgmbr_save_review_as_post($review);
+
+        if (is_wp_error($result)) {
+            $errors++;
+        } else {
+            $synced++;
+        }
+    }
+
+    return array(
+        'success' => true,
+        'synced' => $synced,
+        'errors' => $errors,
+        'total' => count($reviews)
+    );
 }

@@ -1,0 +1,20 @@
+.gmb-wrap {
+  .input-button {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+
+    input {
+      flex-grow: 1;
+    }
+  }
+
+  input {
+    border-radius: var(--radius-md);
+
+    &:focus {
+      border-color: var(--color-green-200);
+      box-shadow: 0 0 0 1px var(--color-green-200);
+    }
+  }
+}

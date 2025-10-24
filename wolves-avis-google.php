@@ -57,12 +57,15 @@ class Wolves_Avis_Google {
     private function load_dependencies() {
         // Charger les différents modules
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/config.php';
+        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/post-types.php';  // CPT et taxonomies
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/api.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/database.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/categories.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/shortcode.php';  // Charger avant helpers.php
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/helpers.php';
+        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/shortcode.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/admin.php';
+
+        // Legacy files - kept for backward compatibility but not loaded
+        // require_once WOLVES_GMB_PLUGIN_DIR . 'includes/database.php';
+        // require_once WOLVES_GMB_PLUGIN_DIR . 'includes/categories.php';
     }
 
     /**
@@ -86,12 +89,11 @@ class Wolves_Avis_Google {
      * Actions à l'activation du plugin
      */
     public function activate() {
-        // Créer les tables de base de données
-        gmb_create_custom_reviews_table();
-        gmb_create_categories_table();
-        gmb_create_review_category_relation_table();
+        // Enregistrer le CPT et la taxonomie
+        wgmbr_register_review_post_type();
+        wgmbr_register_category_taxonomy();
 
-        // Flush les règles de réécriture
+        // Flush les règles de réécriture pour le CPT
         flush_rewrite_rules();
     }
 
@@ -119,7 +121,7 @@ class Wolves_Avis_Google {
      */
     public function add_action_links($links) {
         $settings_link = '<a href="' . admin_url('admin.php?page=gmb-settings') . '">' . __('Configuration', 'wolves-avis-google') . '</a>';
-        $reviews_link = '<a href="' . admin_url('admin.php?page=gmb-manage-reviews') . '">' . __('Avis', 'wolves-avis-google') . '</a>';
+        $reviews_link = '<a href="' . admin_url('admin.php?page=gmb-manage-reviews') . '">' . __('Reviews', 'wolves-avis-google') . '</a>';
 
         array_unshift($links, $settings_link, $reviews_link);
 

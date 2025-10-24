@@ -1,4 +1,4 @@
-<div class="gmb-header" style="background-image: url(<?php echo WOLVES_GMB_PLUGIN_URL . '/assets/gmb-pattern.png'; ?>);">
+<div class="gmb-header" style="background-image: url(<?php echo WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern.png'; ?>);">
     <div class="gmb-logo">
         <?php
         $logo_path = WOLVES_GMB_PLUGIN_DIR . 'template-parts/svg/gmb-logo.svg';

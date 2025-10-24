@@ -17,14 +17,14 @@ if (!defined('ABSPATH')) {
 
     <?php
     // Vérifier si l'option d'affichage du résumé est activée (par défaut: oui)
-    $show_summary = get_option('gmb_show_summary', '1');
+    $show_summary = get_option('wgmbr_show_summary', '1');
     if ($show_summary === '1' && isset($data['average_rating']) && $data['average_rating'] > 0):
         ?>
         <div class="gmb-reviews-summary">
             <span class="gmb-rating-number"><?php echo number_format($data['average_rating'], 1); ?></span>
             <div class="gmb-overall-rating">
                 <div class="gmb-stars">
-                    <?php echo gmb_render_stars($data['average_rating']); ?>
+                    <?php echo wgmbr_render_stars($data['average_rating']); ?>
                 </div>
                 <span class="gmb-total-reviews">Basé sur <?php echo esc_html($data['total']); ?> avis</span>
             </div>
@@ -36,19 +36,17 @@ if (!defined('ABSPATH')) {
             <div class="swiper-wrapper">
                 <?php
                 $count = 0;
-                foreach ($data['reviews'] as $review):
-                    if ($count >= $atts['limit']) break;
+                foreach ($data['reviews'] as $parsed):
                     $count++;
 
-                    // Parser les données de l'avis
-                    $parsed = gmb_parse_review_data($review);
+                    // $parsed est déjà un objet parsé depuis le CPT
                     ?>
 
                     <div class="swiper-slide">
                         <?php
                         $review_index = $count - 1;
                         $is_modal = false;
-                        include GMB_REVIEWS_PATH . 'templates/review-card.php';
+                        include WOLVES_GMB_PLUGIN_DIR . 'templates/review-card.php';
                         ?>
                     </div>
 
@@ -79,14 +77,12 @@ if (!defined('ABSPATH')) {
     <div id="gmb-modal-templates" style="display: none;">
         <?php
         $count = 0;
-        foreach ($data['reviews'] as $review):
-            if ($count >= $atts['limit']) break;
-            $parsed = gmb_parse_review_data($review);
+        foreach ($data['reviews'] as $parsed):
             $review_index = $count;
             $is_modal = true;
             ?>
             <div class="gmb-modal-template" data-review-index="<?php echo $review_index; ?>">
-                <?php include GMB_REVIEWS_PATH . 'templates/review-card.php'; ?>
+                <?php include WOLVES_GMB_PLUGIN_DIR . 'templates/review-card.php'; ?>
             </div>
             <?php
             $count++;

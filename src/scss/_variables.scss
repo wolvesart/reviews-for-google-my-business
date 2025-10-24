@@ -9,10 +9,15 @@ $breakpoints: (
 
 //Colors
 $colors: (
+        green-50: #CBE6E0,
         green-100: #A6EDDD,
         green-200: #68DAC0,
         green-800: #073034,
         grey-100: #E5EBEA,
         grey-200: #C8D5D2,
         grey-800: #495653
+);
+
+$radius: (
+        md: 12px,
 )

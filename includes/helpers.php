@@ -1,7 +1,7 @@
 <?php
 /**
  * Google My Business Reviews - Helper Functions
- * Fonctions utilitaires pour le traitement des données d'avis
+ * Fonctions utilitaires pour le traitement des données d'avis depuis CPT
  */
 
 // Interdire l'accès direct
@@ -10,89 +10,235 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Parse les données d'un avis Google et retourne un objet standardisé
+ * Parse les données d'un avis CPT et retourne un objet standardisé
  *
- * @param array $review Données brutes de l'avis depuis l'API GMB
- * @return object Objet contenant les données parsées de l'avis
+ * @param WP_Post|int $post Post object ou ID du post
+ * @return object|null Objet contenant les données parsées de l'avis ou null
  */
-function gmb_parse_review_data($review) {
+function wgmbr_parse_review_from_post($post)
+{
+    if (is_numeric($post)) {
+        $post = get_post($post);
+    }
+
+    if (!$post || $post->post_type !== 'gmb_review') {
+        return null;
+    }
+
     $parsed = new stdClass();
 
     // Données du reviewer
-    $reviewer = isset($review['reviewer']) ? $review['reviewer'] : array();
-    $parsed->name = isset($reviewer['displayName']) ? $reviewer['displayName'] : 'Anonyme';
-    $parsed->photo = isset($reviewer['profilePhotoUrl']) ? $reviewer['profilePhotoUrl'] : '';
+    $parsed->name = get_post_meta($post->ID, '_gmb_reviewer_name', true);
+    if (empty($parsed->name)) {
+        $parsed->name = __('Anonymous', 'wolves-avis-google');
+    }
 
-    // Note (convertir le format API en nombre)
-    $parsed->rating = isset($review['starRating']) ? (float) gmb_convert_star_rating($review['starRating']) : 0;
+    $parsed->photo = get_post_meta($post->ID, '_gmb_reviewer_photo', true);
 
-    // Commentaire (nettoyer la traduction Google)
-    $parsed->comment = gmb_clean_review_comment($review);
+    // Note
+    $parsed->rating = (float)get_post_meta($post->ID, '_gmb_rating', true);
+
+    // Commentaire
+    $parsed->comment = $post->post_content;
 
     // Date
-    $parsed->date = isset($review['createTime']) ? strtotime($review['createTime']) : time();
+    $parsed->date = strtotime($post->post_date);
 
-    // ID de l'avis
-    $parsed->review_id = isset($review['reviewId']) ? $review['reviewId'] : (isset($review['name']) ? $review['name'] : '');
+    // ID de l'avis Google
+    $parsed->review_id = get_post_meta($post->ID, '_gmb_review_id', true);
 
     // Données personnalisées (job)
-    $custom_data = gmb_get_custom_review_data($parsed->review_id);
-    $parsed->job = $custom_data ? $custom_data->job : '';
+    $parsed->job = get_post_meta($post->ID, '_gmb_job', true);
 
-    // Catégories (many-to-many)
-    $parsed->categories = gmb_get_review_categories($parsed->review_id);
-    $parsed->category_ids = array_map(function($cat) { return $cat->id; }, $parsed->categories);
-    $parsed->category_names = array_map(function($cat) { return $cat->name; }, $parsed->categories);
+    // Catégories (taxonomie)
+    $terms = wp_get_post_terms($post->ID, 'gmb_category');
+    $parsed->categories = !is_wp_error($terms) ? $terms : array();
+    $parsed->category_ids = array_map(function ($term) {
+        return $term->term_id;
+    }, $parsed->categories);
+    $parsed->category_names = array_map(function ($term) {
+        return $term->name;
+    }, $parsed->categories);
+    $parsed->category_slugs = array_map(function ($term) {
+        return $term->slug;
+    }, $parsed->categories);
+
+    // ID du post WordPress
+    $parsed->post_id = $post->ID;
 
     return $parsed;
 }
 
 /**
- * Nettoie le commentaire d'un avis en retirant la traduction Google
+ * Récupère tous les avis avec filtrage optionnel
  *
- * @param array $review Données de l'avis
- * @return string Commentaire nettoyé
+ * @param array $args Arguments personnalisés
+ * @return array Tableau d'objets parsés
  */
-function gmb_clean_review_comment($review) {
-    $comment = isset($review['comment']) ? $review['comment'] : '';
+function wgmbr_get_all_reviews($args = array())
+{
+    $defaults = array(
+        'post_type' => 'gmb_review',
+        'post_status' => 'publish',
+        'posts_per_page' => 50,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
 
-    // Retirer la partie "(Translated by Google)" ou "(Traduit par Google)"
-    if (strpos($comment, '(Original)') !== false) {
-        // Extraire uniquement la partie après "(Original)"
-        if (preg_match('/\(Original\)\s*(.+)$/s', $comment, $matches)) {
-            $comment = trim($matches[1]);
+    $args = wp_parse_args($args, $defaults);
+
+    $query = new WP_Query($args);
+    $parsed_reviews = array();
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $parsed = wgmbr_parse_review_from_post(get_post());
+            if ($parsed) {
+                $parsed_reviews[] = $parsed;
+            }
         }
+        wp_reset_postdata();
     }
 
-    return $comment;
+    return $parsed_reviews;
 }
 
 /**
- * Filtre les avis par catégorie
+ * Récupère les avis filtrés par catégorie
  *
- * @param array $reviews Liste des avis bruts de l'API
  * @param string $category_slug Slug de la catégorie (vide = avis sans catégorie)
- * @return array Liste filtrée des avis
+ * @param int $limit Nombre d'avis à récupérer
+ * @return array Tableau d'objets parsés
  */
-function gmb_filter_reviews_by_category($reviews, $category_slug) {
-    // Si la catégorie est une chaîne vide, on cherche les avis sans catégorie
+function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
+{
+    $args = array(
+        'post_type' => 'gmb_review',
+        'post_status' => 'publish',
+        'posts_per_page' => $limit,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+
+    // Si la catégorie est une chaîne vide, chercher les avis sans catégorie
     if ($category_slug === '') {
-        return array_filter($reviews, function($review) {
-            $parsed = gmb_parse_review_data($review);
-            return empty($parsed->category_ids);
-        });
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'gmb_category',
+                'operator' => 'NOT EXISTS',
+            ),
+        );
+    } else {
+        // Filtrer par slug de catégorie
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'gmb_category',
+                'field' => 'slug',
+                'terms' => $category_slug,
+            ),
+        );
     }
 
-    // Récupérer la catégorie par son slug
-    $category = gmb_get_category_by_slug($category_slug);
+    return wgmbr_get_all_reviews($args);
+}
 
-    if (!$category) {
-        return array(); // Catégorie introuvable
+/**
+ * Calcule la note moyenne de tous les avis
+ *
+ * @return float Note moyenne
+ */
+function wgmbr_get_average_rating()
+{
+    global $wpdb;
+
+    $average = $wpdb->get_var("
+        SELECT AVG(CAST(meta_value AS DECIMAL(3,2)))
+        FROM {$wpdb->postmeta}
+        INNER JOIN {$wpdb->posts} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID
+        WHERE meta_key = '_gmb_rating'
+        AND {$wpdb->posts}.post_type = 'gmb_review'
+        AND {$wpdb->posts}.post_status = 'publish'
+    ");
+
+    return $average ? (float)$average : 0;
+}
+
+/**
+ * Compte le nombre total d'avis
+ *
+ * @return int Nombre total d'avis
+ */
+function wgmbr_get_total_reviews_count()
+{
+    $count = wp_count_posts('gmb_review');
+    return isset($count->publish) ? (int)$count->publish : 0;
+}
+
+/**
+ * Met à jour le job d'un avis
+ *
+ * @param int $post_id ID du post
+ * @param string $job Poste de la personne
+ * @return bool True si succès
+ */
+function wgmbr_update_review_job($post_id, $job)
+{
+    return update_post_meta($post_id, '_gmb_job', sanitize_text_field($job));
+}
+
+/**
+ * Assigne des catégories à un avis
+ *
+ * @param int $post_id ID du post
+ * @param array $category_ids Tableau des IDs de catégories (term_ids)
+ * @return array|WP_Error Array of term taxonomy IDs ou WP_Error
+ */
+function wgmbr_set_review_categories($post_id, $category_ids = array())
+{
+    if (empty($category_ids)) {
+        // Retirer toutes les catégories
+        return wp_set_post_terms($post_id, array(), 'gmb_category');
     }
 
-    // Filtrer les avis qui ont cette catégorie
-    return array_filter($reviews, function($review) use ($category) {
-        $parsed = gmb_parse_review_data($review);
-        return in_array($category->id, $parsed->category_ids);
-    });
+    // Assigner les catégories
+    return wp_set_post_terms($post_id, $category_ids, 'gmb_category');
+}
+
+/**
+ * Récupère un avis parsé par son review_id Google
+ * Note: utilise wgmbr_get_review_post_by_review_id() de post-types.php
+ *
+ * @param string $review_id ID de l'avis Google
+ * @return object|null Objet parsé de l'avis ou null
+ */
+function wgmbr_get_parsed_review_by_review_id($review_id)
+{
+    // Utiliser la fonction de post-types.php qui retourne le WP_Post
+    $args = array(
+        'post_type' => 'gmb_review',
+        'post_status' => 'any',
+        'posts_per_page' => 1,
+        'meta_query' => array(
+            array(
+                'key' => '_gmb_review_id',
+                'value' => $review_id,
+                'compare' => '='
+            )
+        ),
+    );
+
+    $posts = get_posts($args);
+
+    if (empty($posts)) {
+        return null;
+    }
+
+    return wgmbr_parse_review_from_post($posts[0]);
+}
+
+
+function wgmbr_get_template_parts($path, $params = [])
+{
+    include WOLVES_GMB_PLUGIN_DIR . $path . '.php';
 }

@@ -1,0 +1,53 @@
+.gmb_notice {
+  padding: 12px 16px 12px calc(16px + 26px) !important;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+
+  p {
+    margin: 0;
+  }
+
+  &:before {
+    content: "";
+    mask-size: contain !important;
+    mask-repeat: no-repeat !important;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    margin-left: -26px;
+  }
+
+  &.success {
+    background-color: #DBEAFE;
+
+    &:before {
+      background-color: #3772FF;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2Zm3.53 7.47a.75.75 0 0 0-1.06 0L11 12.94l-1.47-1.47a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4a.75.75 0 0 0 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E%0A");
+    }
+  }
+
+  &.warning {
+    background-color: #FFF3CD;
+
+    &:before {
+      background-color: #FFB400;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M9.2 4.613c.962-1.603 2.996-2.094 4.543-1.096.428.276.79.651 1.057 1.096l6.701 11.16c.963 1.603.49 3.713-1.057 4.711a3.2 3.2 0 0 1-1.743.516H5.298C3.477 21 2 19.47 2 17.58c0-.639.173-1.265.498-1.808L9.2 4.613ZM12 15.95a.82.82 0 1 0 0 1.639.82.82 0 0 0 0-1.639Zm0-6.911a.82.82 0 0 0-.818.818v3.27a.82.82 0 0 0 1.397.58.82.82 0 0 0 .24-.58v-3.27A.82.82 0 0 0 12 9.038Z' clip-rule='evenodd'/%3E%3C/svg%3E%0A");
+    }
+  }
+
+  &.error {
+    background-color: #FEF2F2;
+    border: none;
+    margin: 0 !important;
+
+    p {
+      padding: 0;
+    }
+
+    &:before {
+      background-color: #E3030D;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M18 2a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h12Zm-1.843 5.844a.75.75 0 0 0-1.06 0L12 10.94 8.904 7.844a.75.75 0 1 0-1.06 1.06L10.94 12l-3.096 3.097a.75.75 0 0 0 1.06 1.06L12 13.06l3.097 3.097a.75.75 0 0 0 1.06-1.06L13.06 12l3.097-3.096a.75.75 0 0 0 0-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E%0A");
+    }
+  }
+}

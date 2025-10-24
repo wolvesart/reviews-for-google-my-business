@@ -16,9 +16,9 @@ if (!defined('ABSPATH')) {
 /**
  * Crée la table pour stocker les données personnalisées des avis
  */
-function gmb_create_custom_reviews_table() {
+function wgmbr_create_custom_reviews_table() {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'gmb_reviews_custom';
+    $table_name = $wpdb->prefix . 'wgmbr_reviews_custom';
     $charset_collate = $wpdb->get_charset_collate();
 
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
@@ -37,20 +37,20 @@ function gmb_create_custom_reviews_table() {
 }
 
 // Créer la table lors de l'activation du thème
-add_action('after_switch_theme', 'gmb_create_custom_reviews_table');
+add_action('after_switch_theme', 'wgmbr_create_custom_reviews_table');
 
 // Créer la table lors de l'initialisation de l'admin si elle n'existe pas
-add_action('admin_init', 'gmb_check_custom_reviews_table');
+add_action('admin_init', 'wgmbr_check_custom_reviews_table');
 
 /**
  * Vérifie si la table existe et la crée si nécessaire
  */
-function gmb_check_custom_reviews_table() {
+function wgmbr_check_custom_reviews_table() {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'gmb_reviews_custom';
+    $table_name = $wpdb->prefix . 'wgmbr_reviews_custom';
 
     if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-        gmb_create_custom_reviews_table();
+        wgmbr_create_custom_reviews_table();
     }
 }
 
@@ -64,9 +64,9 @@ function gmb_check_custom_reviews_table() {
  * @param string $review_id ID de l'avis Google
  * @return object|null Données personnalisées ou null
  */
-function gmb_get_custom_review_data($review_id) {
+function wgmbr_get_custom_review_data($review_id) {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'gmb_reviews_custom';
+    $table_name = $wpdb->prefix . 'wgmbr_reviews_custom';
 
     return $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM $table_name WHERE review_id = %s",
@@ -83,16 +83,16 @@ function gmb_get_custom_review_data($review_id) {
  * @param array $category_ids Tableau des IDs de catégories (optionnel)
  * @return array ['success' => bool, 'message' => string, 'error' => string]
  */
-function gmb_save_custom_review_data($review_id, $reviewer_name, $job, $category_ids = array()) {
+function wgmbr_save_custom_review_data($review_id, $reviewer_name, $job, $category_ids = array()) {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'gmb_reviews_custom';
+    $table_name = $wpdb->prefix . 'wgmbr_reviews_custom';
 
     // Vérifier que la table existe
     if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-        gmb_create_custom_reviews_table();
+        wgmbr_create_custom_reviews_table();
     }
 
-    $existing = gmb_get_custom_review_data($review_id);
+    $existing = wgmbr_get_custom_review_data($review_id);
 
     $data = array(
         'reviewer_name' => $reviewer_name,
@@ -112,8 +112,7 @@ function gmb_save_custom_review_data($review_id, $reviewer_name, $job, $category
         );
 
         if ($result !== false) {
-            // Mettre à jour les catégories
-            gmb_set_review_categories($review_id, $category_ids);
+            // Note: Les catégories sont maintenant gérées via taxonomies WordPress (voir helpers.php)
             return array('success' => true, 'message' => 'Données mises à jour avec succès');
         } else {
             return array('success' => false, 'message' => 'Erreur lors de la mise à jour', 'error' => $wpdb->last_error);
@@ -130,8 +129,7 @@ function gmb_save_custom_review_data($review_id, $reviewer_name, $job, $category
         );
 
         if ($result !== false) {
-            // Ajouter les catégories
-            gmb_set_review_categories($review_id, $category_ids);
+            // Note: Les catégories sont maintenant gérées via taxonomies WordPress (voir helpers.php)
             return array('success' => true, 'message' => 'Données enregistrées avec succès');
         } else {
             return array('success' => false, 'message' => 'Erreur lors de l\'insertion', 'error' => $wpdb->last_error);
@@ -145,9 +143,9 @@ function gmb_save_custom_review_data($review_id, $reviewer_name, $job, $category
  * @param string $review_id ID de l'avis Google
  * @return bool True si succès, false sinon
  */
-function gmb_delete_custom_review_data($review_id) {
+function wgmbr_delete_custom_review_data($review_id) {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'gmb_reviews_custom';
+    $table_name = $wpdb->prefix . 'wgmbr_reviews_custom';
 
     return $wpdb->delete(
         $table_name,

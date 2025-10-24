@@ -35,12 +35,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (targetContent) {
             targetContent.classList.add('active');
         }
+
+        // Update URL hash
+        window.location.hash = tabName;
     }
 
-    // Check if there's a tab parameter in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const activeTab = urlParams.get('tab');
+    // Check if there's a hash in the URL
+    let activeTab = window.location.hash.substring(1); // Remove the #
 
+    // Fallback to query parameter for backward compatibility
+    if (!activeTab) {
+        const urlParams = new URLSearchParams(window.location.search);
+        activeTab = urlParams.get('tab');
+    }
+
+    // Activate the tab if found
     if (activeTab) {
         activateTab(activeTab);
     }
@@ -51,6 +60,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetTab = this.dataset.tab;
             activateTab(targetTab);
         });
+    });
+
+    // Handle hash changes (browser back/forward)
+    window.addEventListener('hashchange', function() {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            activateTab(hash);
+        }
     });
 });
 
@@ -65,7 +82,7 @@ function refreshLocations() {
     button.disabled = true;
     button.textContent = 'Chargement...';
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=gmb_refresh_locations')
+    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_refresh_locations')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -87,7 +104,7 @@ function refreshLocations() {
 function clearGMBCache() {
     document.getElementById('gmb-test-result').innerHTML = '<p>Suppression du cache...</p>';
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=gmb_clear_cache')
+    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_clear_cache')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -103,7 +120,7 @@ function clearGMBCache() {
 function testGMBConnection() {
     document.getElementById('gmb-test-result').innerHTML = '<p>Chargement...</p>';
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=gmb_test_connection')
+    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_test_connection')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -134,12 +151,12 @@ function resetGMBCustomization() {
         return;
     }
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=gmb_reset_customization')
+    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_reset_customization')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 // Recharger la page sur l'onglet personnalisation
-                window.location.href = '<?php echo admin_url('admin.php?page=gmb-settings&tab=customization'); ?>';
+                window.location.href = '<?php echo admin_url('admin.php?page=gmb-settings'); ?>#customization';
             } else {
                 alert('Erreur lors de la réinitialisation: ' + (data.data?.message || 'Erreur inconnue'));
             }
@@ -154,8 +171,8 @@ function resetGMBCustomization() {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    const showSummaryToggle = document.getElementById('gmb_show_summary');
-    const resumeTextColorRow = document.getElementById('gmb_resume_text_color_row');
+    const showSummaryToggle = document.getElementById('wgmbr_show_summary');
+    const resumeTextColorRow = document.getElementById('wgmbr_resume_text_color_row');
 
     if (showSummaryToggle && resumeTextColorRow) {
         // Function to toggle visibility
@@ -182,11 +199,11 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     // List of all color fields
     const colorFields = [
-        'gmb_resume_text_color',
-        'gmb_card_bg_color',
-        'gmb_star_color',
-        'gmb_text_color',
-        'gmb_text_color_name',
+        'wgmbr_resume_text_color',
+        'wgmbr_card_bg_color',
+        'wgmbr_star_color',
+        'wgmbr_text_color',
+        'wgmbr_text_color_name',
         'gmb-accent-color'
     ];
 

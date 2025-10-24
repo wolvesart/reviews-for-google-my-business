@@ -21,7 +21,7 @@ $review_index = isset($review_index) ? $review_index : 0;
     <div class="gmb-review-header">
         <div class="gmb-review-meta">
             <div class="gmb-stars">
-                <?php echo gmb_render_stars($parsed->rating); ?>
+                <?php echo wgmbr_render_stars($parsed->rating); ?>
             </div>
         </div>
         <?php if (!$is_modal): ?>
