@@ -1,5 +1,6 @@
 .button {
   padding: 6px 16px !important;
+  display: flex !important;
   justify-content: center;
   align-items: center;
   border-radius: var(--radius-md) !important;
@@ -7,6 +8,7 @@
   font-weight: 500;
   color: var(--color-green-800) !important;
   transition: all 200ms ease-out;
+  gap: 6px;
 
   &.button-primary {
     background: var(--color-green-200) !important;
@@ -47,6 +49,6 @@
 .button-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 16px;
   margin-top: 24px;
 }

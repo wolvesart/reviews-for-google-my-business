@@ -30,7 +30,7 @@ function wgmbr_parse_review_from_post($post)
     // Données du reviewer
     $parsed->name = get_post_meta($post->ID, '_gmb_reviewer_name', true);
     if (empty($parsed->name)) {
-        $parsed->name = __('Anonymous', 'wolves-avis-google');
+        $parsed->name = __('Anonymous', 'google-my-business-reviews');
     }
 
     $parsed->photo = get_post_meta($post->ID, '_gmb_reviewer_photo', true);
@@ -105,9 +105,49 @@ function wgmbr_get_all_reviews($args = array())
 }
 
 /**
+ * Récupère tous les avis avec filtrage optionnel et retourne l'objet WP_Query
+ * Utilisé pour la pagination dans l'admin
+ *
+ * @param array $args Arguments personnalisés
+ * @return array ['query' => WP_Query, 'reviews' => array]
+ */
+function wgmbr_get_all_reviews_with_query($args = array())
+{
+    $defaults = array(
+        'post_type' => 'gmb_review',
+        'post_status' => 'publish',
+        'posts_per_page' => 20, // 20 avis par page par défaut
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'paged' => 1,
+    );
+
+    $args = wp_parse_args($args, $defaults);
+
+    $query = new WP_Query($args);
+    $parsed_reviews = array();
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $parsed = wgmbr_parse_review_from_post(get_post());
+            if ($parsed) {
+                $parsed_reviews[] = $parsed;
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    return array(
+        'query' => $query,
+        'reviews' => $parsed_reviews,
+    );
+}
+
+/**
  * Récupère les avis filtrés par catégorie
  *
- * @param string $category_slug Slug de la catégorie (vide = avis sans catégorie)
+ * @param string|array $category_slug Slug de la catégorie (vide = avis sans catégorie, tableau = plusieurs catégories)
  * @param int $limit Nombre d'avis à récupérer
  * @return array Tableau d'objets parsés
  */
@@ -130,12 +170,13 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
             ),
         );
     } else {
-        // Filtrer par slug de catégorie
+        // Filtrer par slug de catégorie (supporte string ou array)
         $args['tax_query'] = array(
             array(
                 'taxonomy' => 'gmb_category',
                 'field' => 'slug',
-                'terms' => $category_slug,
+                'terms' => $category_slug, // WordPress accepte string ou array
+                'operator' => 'IN', // IN = au moins une des catégories
             ),
         );
     }

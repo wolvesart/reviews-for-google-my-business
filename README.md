@@ -1,10 +1,10 @@
-# Wolves - Avis Google
+# Google My Business Reviews
 
 Plugin WordPress pour afficher et gérer vos avis Google My Business avec OAuth 2.0.
 
 ## Description
 
-**Wolves - Avis Google** est un plugin WordPress complet qui vous permet d'afficher vos avis Google My Business sur votre site web de manière élégante et personnalisable.
+**Google My Business Reviews** est un plugin WordPress complet qui vous permet d'afficher vos avis Google My Business sur votre site web de manière élégante et personnalisable.
 
 ### Fonctionnalités principales
 
@@ -125,8 +125,8 @@ Allez dans **Avis Google → Configuration → Personnalisation** pour modifier 
 ## Structure du plugin
 
 ```
-wolves-avis-google/
-├── wolves-avis-google.php    # Fichier principal
+google-my-business-reviews/
+├── google-my-business-reviews.php    # Fichier principal
 ├── includes/                  # Fonctions PHP
 │   ├── config.php
 │   ├── api.php
@@ -202,4 +202,4 @@ GPL v2 or later
 
 ## Crédits
 
-Développé avec ❤️ par [WolvesArt](https://wolvesart.com)
+Développé avec ❤️ par [Wolvesart](https://wolvesart.com)

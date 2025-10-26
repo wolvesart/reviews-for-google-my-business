@@ -360,7 +360,7 @@ function wgmbr_sync_reviews_to_cpt($reviews) {
     if (empty($reviews) || !is_array($reviews)) {
         return array(
             'success' => false,
-            'message' => __('No reviews to synchronize', 'wolves-avis-google')
+            'message' => __('No reviews to synchronize', 'google-my-business-reviews')
         );
     }
 

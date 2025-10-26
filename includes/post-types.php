@@ -18,19 +18,19 @@ if (!defined('ABSPATH')) {
  */
 function wgmbr_register_review_post_type() {
     $labels = array(
-        'name'                  => __('Google Reviews', 'wolves-avis-google'),
-        'singular_name'         => __('Google Review', 'wolves-avis-google'),
-        'menu_name'             => __('Google Reviews', 'wolves-avis-google'),
-        'name_admin_bar'        => __('Google Review', 'wolves-avis-google'),
-        'add_new'               => __('Add New', 'wolves-avis-google'),
-        'add_new_item'          => __('Add New Review', 'wolves-avis-google'),
-        'new_item'              => __('New Review', 'wolves-avis-google'),
-        'edit_item'             => __('Edit Review', 'wolves-avis-google'),
-        'view_item'             => __('View Review', 'wolves-avis-google'),
-        'all_items'             => __('All Reviews', 'wolves-avis-google'),
-        'search_items'          => __('Search Reviews', 'wolves-avis-google'),
-        'not_found'             => __('No reviews found', 'wolves-avis-google'),
-        'not_found_in_trash'    => __('No reviews found in Trash', 'wolves-avis-google'),
+        'name'                  => __('Google Reviews', 'google-my-business-reviews'),
+        'singular_name'         => __('Google Review', 'google-my-business-reviews'),
+        'menu_name'             => __('Google Reviews', 'google-my-business-reviews'),
+        'name_admin_bar'        => __('Google Review', 'google-my-business-reviews'),
+        'add_new'               => __('Add New', 'google-my-business-reviews'),
+        'add_new_item'          => __('Add New Review', 'google-my-business-reviews'),
+        'new_item'              => __('New Review', 'google-my-business-reviews'),
+        'edit_item'             => __('Edit Review', 'google-my-business-reviews'),
+        'view_item'             => __('View Review', 'google-my-business-reviews'),
+        'all_items'             => __('All Reviews', 'google-my-business-reviews'),
+        'search_items'          => __('Search Reviews', 'google-my-business-reviews'),
+        'not_found'             => __('No reviews found', 'google-my-business-reviews'),
+        'not_found_in_trash'    => __('No reviews found in Trash', 'google-my-business-reviews'),
     );
 
     $args = array(
@@ -63,20 +63,20 @@ add_action('init', 'wgmbr_register_review_post_type');
  */
 function wgmbr_register_category_taxonomy() {
     $labels = array(
-        'name'                       => __('Review Categories', 'wolves-avis-google'),
-        'singular_name'              => __('Review Category', 'wolves-avis-google'),
-        'search_items'               => __('Search Categories', 'wolves-avis-google'),
-        'popular_items'              => __('Popular Categories', 'wolves-avis-google'),
-        'all_items'                  => __('All Categories', 'wolves-avis-google'),
-        'edit_item'                  => __('Edit Category', 'wolves-avis-google'),
-        'update_item'                => __('Update Category', 'wolves-avis-google'),
-        'add_new_item'               => __('Add New Category', 'wolves-avis-google'),
-        'new_item_name'              => __('New Category Name', 'wolves-avis-google'),
-        'separate_items_with_commas' => __('Separate categories with commas', 'wolves-avis-google'),
-        'add_or_remove_items'        => __('Add or remove categories', 'wolves-avis-google'),
-        'choose_from_most_used'      => __('Choose from most used categories', 'wolves-avis-google'),
-        'not_found'                  => __('No categories found', 'wolves-avis-google'),
-        'menu_name'                  => __('Categories', 'wolves-avis-google'),
+        'name'                       => __('Review Categories', 'google-my-business-reviews'),
+        'singular_name'              => __('Review Category', 'google-my-business-reviews'),
+        'search_items'               => __('Search Categories', 'google-my-business-reviews'),
+        'popular_items'              => __('Popular Categories', 'google-my-business-reviews'),
+        'all_items'                  => __('All Categories', 'google-my-business-reviews'),
+        'edit_item'                  => __('Edit Category', 'google-my-business-reviews'),
+        'update_item'                => __('Update Category', 'google-my-business-reviews'),
+        'add_new_item'               => __('Add New Category', 'google-my-business-reviews'),
+        'new_item_name'              => __('New Category Name', 'google-my-business-reviews'),
+        'separate_items_with_commas' => __('Separate categories with commas', 'google-my-business-reviews'),
+        'add_or_remove_items'        => __('Add or remove categories', 'google-my-business-reviews'),
+        'choose_from_most_used'      => __('Choose from most used categories', 'google-my-business-reviews'),
+        'not_found'                  => __('No categories found', 'google-my-business-reviews'),
+        'menu_name'                  => __('Categories', 'google-my-business-reviews'),
     );
 
     $args = array(
@@ -111,7 +111,7 @@ function wgmbr_save_review_as_post($review_data) {
                  (isset($review_data['name']) ? $review_data['name'] : '');
 
     if (empty($review_id)) {
-        return new WP_Error('missing_review_id', __('Review ID is missing', 'wolves-avis-google'));
+        return new WP_Error('missing_review_id', __('Review ID is missing', 'google-my-business-reviews'));
     }
 
     // Vérifier si l'avis existe déjà
@@ -119,7 +119,7 @@ function wgmbr_save_review_as_post($review_data) {
 
     // Données du reviewer
     $reviewer = isset($review_data['reviewer']) ? $review_data['reviewer'] : array();
-    $reviewer_name = isset($reviewer['displayName']) ? $reviewer['displayName'] : __('Anonymous', 'wolves-avis-google');
+    $reviewer_name = isset($reviewer['displayName']) ? $reviewer['displayName'] : __('Anonymous', 'google-my-business-reviews');
     $reviewer_photo = isset($reviewer['profilePhotoUrl']) ? $reviewer['profilePhotoUrl'] : '';
 
     // Note
@@ -141,11 +141,11 @@ function wgmbr_save_review_as_post($review_data) {
 
     // Préparer les données du post
     $post_data = array(
-        'post_title'    => sprintf(__('Review by %s', 'wolves-avis-google'), $reviewer_name),
+        'post_title'    => sprintf(__('Review by %s', 'google-my-business-reviews'), $reviewer_name),
         'post_content'  => $comment,
         'post_status'   => 'publish',
         'post_type'     => 'gmb_review',
-        'post_date'     => date('Y-m-d H:i:s', strtotime($review_date)),
+        'post_date'     => wp_date('Y-m-d H:i:s', strtotime($review_date)),
     );
 
     // Si le post existe, mettre à jour

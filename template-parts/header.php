@@ -7,10 +7,10 @@
         }
         ?>
     </div>
-    <h1><?php _e('Google reviews', 'wolves-avis-google'); ?></h1>
+    <h1><?php _e('Google reviews', 'google-my-business-reviews'); ?></h1>
     <div class="infos">
         <ul>
-            <li><span class="dashicons dashicons-admin-page"></span><a href="<?php echo admin_url('admin.php?page=gmb-settings'); ?>"><?php _e('Documentation', 'wolves-avis-google'); ?></a></li>
+            <li><span class="dashicons dashicons-admin-page"></span><a href="<?php echo admin_url('admin.php?page=gmb-settings#help'); ?>"><?php _e('Documentation', 'google-my-business-reviews'); ?></a></li>
         </ul>
     </div>
 </div>

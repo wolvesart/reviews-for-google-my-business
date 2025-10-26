@@ -1,15 +1,3 @@
-<?php
-/**
- * Google My Business Reviews - Scripts admin
- */
-
-// Interdire l'accès direct
-if (!defined('ABSPATH')) {
-    exit;
-}
-?>
-
-<script>
 // ============================================================================
 // GESTION DES TABS
 // ============================================================================
@@ -75,60 +63,58 @@ document.addEventListener('DOMContentLoaded', function() {
 // FONCTIONS AJAX
 // ============================================================================
 
-function refreshLocations() {
-    // Afficher un loader
+window.refreshLocations = function() {
     const button = event.target;
     const originalText = button.textContent;
     button.disabled = true;
-    button.textContent = 'Chargement...';
+    button.textContent = wgmbrAdmin.i18n.loading;
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_refresh_locations')
+    fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_refresh_locations')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Recharger la page pour afficher les nouvelles locations
-                window.location.href = '<?php echo admin_url('admin.php?page=gmb-settings&status=success&auto_fetch=1'); ?>';
+                window.location.href = wgmbrAdmin.settingsUrl + '&status=success&auto_fetch=1';
             } else {
-                alert('Erreur lors de la récupération des locations: ' + (data.data?.message || 'Erreur inconnue'));
+                alert(wgmbrAdmin.i18n.errorFetchingLocations + ' ' + (data.data?.message || wgmbrAdmin.i18n.unknownError));
                 button.disabled = false;
                 button.textContent = originalText;
             }
         })
         .catch(error => {
-            alert('Erreur réseau: ' + error.message);
+            alert(wgmbrAdmin.i18n.networkError + ' ' + error.message);
             button.disabled = false;
             button.textContent = originalText;
         });
 }
 
-function clearGMBCache() {
-    document.getElementById('gmb-test-result').innerHTML = '<p>Suppression du cache...</p>';
+window.clearGMBCache = function() {
+    document.getElementById('gmb-test-result').innerHTML = '<p>' + wgmbrAdmin.i18n.clearingCache + '</p>';
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_clear_cache')
+    fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_clear_cache')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 document.getElementById('gmb-test-result').innerHTML =
-                    '<div class="notice notice-success"><p>✓ Cache vidé avec succès !</p></div>';
+                    '<div class="gmb-notice success"><p>' + wgmbrAdmin.i18n.cacheCleared + '</p></div>';
             } else {
                 document.getElementById('gmb-test-result').innerHTML =
-                    '<div class="notice notice-error"><p>✗ Erreur lors de la suppression du cache</p></div>';
+                    '<div class="gmb-notice error"><p>' + wgmbrAdmin.i18n.errorClearingCache + '</p></div>';
             }
         });
 }
 
-function testGMBConnection() {
-    document.getElementById('gmb-test-result').innerHTML = '<p>Chargement...</p>';
+window.testGMBConnection = function() {
+    document.getElementById('gmb-test-result').innerHTML = '<p>' + wgmbrAdmin.i18n.loading + '</p>';
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_test_connection')
+    fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_test_connection')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 document.getElementById('gmb-test-result').innerHTML =
-                    '<div class="notice notice-success"><p>✓ Connexion réussie ! ' +
-                    data.data.count + ' avis récupérés.</p></div>';
+                    '<div class="gmb-notice success"><p>' + wgmbrAdmin.i18n.connectionSuccessful + ' ' +
+                    data.data.count + ' ' + wgmbrAdmin.i18n.reviewsFetched + '</p></div>';
             } else {
-                let errorMsg = data.data && data.data.message ? data.data.message : 'Erreur inconnue';
+                let errorMsg = data.data && data.data.message ? data.data.message : wgmbrAdmin.i18n.unknownError;
                 let debugInfo = '';
 
                 if (data.data && data.data.response) {
@@ -137,60 +123,33 @@ function testGMBConnection() {
                 }
 
                 document.getElementById('gmb-test-result').innerHTML =
-                    '<div class="notice notice-error"><p>✗ Erreur: ' + errorMsg + '</p>' + debugInfo + '</div>';
+                    '<div class="gmb-notice error"><p>' + wgmbrAdmin.i18n.error + ' ' + errorMsg + '</p>' + debugInfo + '</div>';
             }
         })
         .catch(error => {
             document.getElementById('gmb-test-result').innerHTML =
-                '<div class="notice notice-error"><p>✗ Erreur réseau: ' + error.message + '</p></div>';
+                '<div class="gmb-notice error"><p>' + wgmbrAdmin.i18n.networkError + ' ' + error.message + '</p></div>';
         });
 }
 
-function resetGMBCustomization() {
-    if (!confirm('Êtes-vous sûr de vouloir réinitialiser la personnalisation aux valeurs par défaut ?')) {
+window.resetGMBCustomization = function() {
+    if (!confirm(wgmbrAdmin.i18n.confirmReset)) {
         return;
     }
 
-    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_reset_customization')
+    fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_reset_customization')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Recharger la page sur l'onglet personnalisation
-                window.location.href = '<?php echo admin_url('admin.php?page=gmb-settings'); ?>#customization';
+                window.location.href = wgmbrAdmin.settingsUrl + '#customization';
             } else {
-                alert('Erreur lors de la réinitialisation: ' + (data.data?.message || 'Erreur inconnue'));
+                alert(wgmbrAdmin.i18n.errorResetting + ' ' + (data.data?.message || wgmbrAdmin.i18n.unknownError));
             }
         })
         .catch(error => {
-            alert('Erreur réseau: ' + error.message);
+            alert(wgmbrAdmin.i18n.networkError + ' ' + error.message);
         });
 }
-
-// ============================================================================
-// TOGGLE SUMMARY VISIBILITY - SHOW/HIDE COLOR FIELD
-// ============================================================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    const showSummaryToggle = document.getElementById('wgmbr_show_summary');
-    const resumeTextColorRow = document.getElementById('wgmbr_resume_text_color_row');
-
-    if (showSummaryToggle && resumeTextColorRow) {
-        // Function to toggle visibility
-        function toggleResumeColorField() {
-            if (showSummaryToggle.checked) {
-                resumeTextColorRow.style.display = '';
-            } else {
-                resumeTextColorRow.style.display = 'none';
-            }
-        }
-
-        // Set initial state
-        toggleResumeColorField();
-
-        // Listen for changes
-        showSummaryToggle.addEventListener('change', toggleResumeColorField);
-    }
-});
 
 // ============================================================================
 // COLOR PICKER WITH HEX INPUT SYNC (All fields)
@@ -199,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     // List of all color fields
     const colorFields = [
-        'wgmbr_resume_text_color',
         'wgmbr_card_bg_color',
         'wgmbr_star_color',
         'wgmbr_text_color',
@@ -251,4 +209,105 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-</script>
+
+// ============================================================================
+// OTHERS
+// ============================================================================
+
+window.wgmbrCopyShortcode = function(btn) {
+    // Récupérer le texte du shortcode
+    const shortcode = document.getElementById("gmb-shortcode");
+
+    if (!shortcode) {
+        console.error('Shortcode element not found');
+        return;
+    }
+
+    // Copier dans le presse-papier
+    navigator.clipboard.writeText(shortcode.textContent)
+        .then(() => {
+            // Feedback visuel dans le bouton
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (wgmbrAdmin.i18n?.copied || 'Copied!');
+            btn.style.color = '#46b450';
+
+            // Restaurer le bouton après 2 secondes
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.color = '';
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy shortcode:', err);
+            alert('Failed to copy shortcode');
+        });
+}
+
+// ============================================================================
+// SHORTCODE GENERATOR
+// ============================================================================
+
+window.wgmbrGenerateShortcode = function() {
+    const limit = document.getElementById('gmb-gen-limit').value;
+    const categoriesSelect = document.getElementById('gmb-gen-categories');
+    const showSummary = document.getElementById('gmb-gen-summary').checked;
+    const outputElement = document.getElementById('gmb-generated-shortcode');
+
+    if (!outputElement) return;
+
+    // Récupérer les catégories sélectionnées
+    const selectedCategories = Array.from(categoriesSelect.selectedOptions)
+        .map(option => option.value)
+        .filter(value => value !== ''); // Exclure l'option "All categories"
+
+    // Construire le shortcode
+    let shortcode = '[gmb_reviews';
+
+    // Ajouter le paramètre limit seulement s'il est différent de la valeur par défaut
+    if (limit && limit !== '50') {
+        shortcode += ' limit="' + limit + '"';
+    }
+
+    // Ajouter les catégories
+    if (selectedCategories.length > 0) {
+        shortcode += ' category="' + selectedCategories.join(',') + '"';
+    }
+
+    // Ajouter show_summary seulement si false
+    if (!showSummary) {
+        shortcode += ' show_summary="false"';
+    }
+
+    shortcode += ']';
+
+    // Mettre à jour l'affichage
+    outputElement.textContent = shortcode;
+}
+
+window.wgmbrCopyGeneratedShortcode = function(btn) {
+    const shortcode = document.getElementById("gmb-generated-shortcode");
+
+    if (!shortcode) {
+        console.error('Generated shortcode element not found');
+        return;
+    }
+
+    // Copier dans le presse-papier
+    navigator.clipboard.writeText(shortcode.textContent)
+        .then(() => {
+            // Feedback visuel dans le bouton
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (wgmbrAdmin.i18n?.copied || 'Copied!');
+            btn.classList.add('is-success');
+
+            // Restaurer le bouton après 2 secondes
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('is-success');
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy shortcode:', err);
+            alert('Failed to copy shortcode');
+        });
+}

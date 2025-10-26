@@ -56,12 +56,6 @@ function wgmbr_generate_custom_css() {
         $custom_vars[] = "--gmb-star-color: {$star_color}";
     }
 
-    // Resume text color
-    $resume_text_color = get_option('wgmbr_resume_text_color');
-    if ($resume_text_color && $resume_text_color !== '#FFFFFF') {
-        $custom_vars[] = "--gmb-resume-text-color: {$resume_text_color}";
-    }
-
     // Text color
     $text_color = get_option('wgmbr_text_color');
     if ($text_color && $text_color !== '#AEAEAE') {
@@ -96,10 +90,12 @@ function wgmbr_generate_custom_css() {
  * Shortcode pour afficher les avis GMB
  *
  * Usage:
- * - [wgmbr_reviews limit="10"] - Affiche tous les avis (limite 10)
- * - [wgmbr_reviews category="formation"] - Affiche uniquement les avis de la catégorie "formation"
- * - [wgmbr_reviews category="formation" limit="5"] - Affiche 5 avis de la catégorie "formation"
- * - [wgmbr_reviews category=""] - Affiche uniquement les avis sans catégorie
+ * - [gmb_reviews limit="10"] - Affiche tous les avis (limite 10)
+ * - [gmb_reviews category="formation"] - Affiche uniquement les avis de la catégorie "formation"
+ * - [gmb_reviews category="formation,coaching"] - Affiche les avis des catégories "formation" ET "coaching"
+ * - [gmb_reviews category="formation,coaching,dev" limit="5"] - Affiche 5 avis de plusieurs catégories
+ * - [gmb_reviews category=""] - Affiche uniquement les avis sans catégorie
+ * - [gmb_reviews show_summary="false"] - Masque le résumé (note moyenne et nombre d'avis)
  *
  * @param array $atts Attributs du shortcode
  * @return string HTML des avis
@@ -110,19 +106,33 @@ function wgmbr_reviews_shortcode($atts) {
 
     $atts = shortcode_atts(array(
         'limit' => 50,
-        'category' => null  // Slug de la catégorie (null = toutes les catégories)
+        'category' => null,  // Slug de la catégorie (null = toutes, string = une ou plusieurs séparées par virgule)
+        'show_summary' => 'true'  // Afficher le résumé (true/false)
     ), $atts);
 
     // Récupérer les avis depuis les CPT
     if ($atts['category'] !== null) {
-        // Filtrer par catégorie
-        $reviews = wgmbr_get_reviews_by_category($atts['category'], (int) $atts['limit']);
+        // Parser les catégories multiples (séparées par des virgules)
+        $category_param = $atts['category'];
+
+        // Si ce n'est pas une chaîne vide, vérifier s'il y a plusieurs catégories
+        if ($category_param !== '') {
+            $categories = array_map('trim', explode(',', $category_param));
+            // Si une seule catégorie, utiliser la string, sinon utiliser le tableau
+            $category_param = (count($categories) === 1) ? $categories[0] : $categories;
+        }
+
+        // Filtrer par catégorie(s)
+        $reviews = wgmbr_get_reviews_by_category($category_param, (int) $atts['limit']);
     } else {
         // Tous les avis
         $reviews = wgmbr_get_all_reviews(array(
             'posts_per_page' => (int) $atts['limit']
         ));
     }
+
+    // Convertir show_summary en boolean
+    $show_summary = filter_var($atts['show_summary'], FILTER_VALIDATE_BOOLEAN);
 
     // Préparer les données pour le template (format compatible avec l'ancien système)
     $data = array(
@@ -131,6 +141,7 @@ function wgmbr_reviews_shortcode($atts) {
         'reviews' => $reviews,
         'total' => wgmbr_get_total_reviews_count(),
         'average_rating' => wgmbr_get_average_rating(),
+        'show_summary' => $show_summary,  // Contrôle de l'affichage du résumé
     );
 
     ob_start();

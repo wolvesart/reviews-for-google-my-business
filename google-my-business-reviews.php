@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Wolves - Avis Google
+ * Plugin Name: Google My Business Reviews
  * Plugin URI: https://wolvesart.com
  * Description: Affiche et gère vos avis Google My Business avec OAuth 2.0. Système de catégories, personnalisation avancée et shortcode flexible.
  * Version: 1.0.0
@@ -8,7 +8,7 @@
  * Author URI: https://wolvesart.com
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wolves-avis-google
+ * Text Domain: google-my-business-reviews
  * Domain Path: /languages
  */
 
@@ -110,7 +110,7 @@ class Wolves_Avis_Google {
      */
     public function load_textdomain() {
         load_plugin_textdomain(
-            'wolves-avis-google',
+            'google-my-business-reviews',
             false,
             dirname(WOLVES_GMB_PLUGIN_BASENAME) . '/languages'
         );
@@ -120,8 +120,8 @@ class Wolves_Avis_Google {
      * Ajoute des liens dans la liste des plugins
      */
     public function add_action_links($links) {
-        $settings_link = '<a href="' . admin_url('admin.php?page=gmb-settings') . '">' . __('Configuration', 'wolves-avis-google') . '</a>';
-        $reviews_link = '<a href="' . admin_url('admin.php?page=gmb-manage-reviews') . '">' . __('Reviews', 'wolves-avis-google') . '</a>';
+        $settings_link = '<a href="' . admin_url('admin.php?page=gmb-settings') . '">' . __('Configuration', 'google-my-business-reviews') . '</a>';
+        $reviews_link = '<a href="' . admin_url('admin.php?page=gmb-manage-reviews') . '">' . __('Reviews', 'google-my-business-reviews') . '</a>';
 
         array_unshift($links, $settings_link, $reviews_link);
 

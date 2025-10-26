@@ -29,42 +29,42 @@ if (is_wp_error($categories)) {
         <div class="section row">
             <div class="card-list">
                 <div class="card">
-                    <h2><?php _e('Create a new category', 'wolves-avis-google'); ?></h2>
-                    <p><?php _e('Categories allow you to organize your Google My Business reviews and filter them on your website.', 'wolves-avis-google'); ?></p>
+                    <h2><?php _e('Create a new category', 'google-my-business-reviews'); ?></h2>
+                    <p><?php _e('Categories allow you to organize your Google My Business reviews and filter them on your website.', 'google-my-business-reviews'); ?></p>
 
                     <div class="input-button">
                         <input type="text"
                                id="gmb-new-category-name"
-                               placeholder="<?php esc_attr_e('New category name (e.g: Training, Coaching, Design...)', 'wolves-avis-google'); ?>"
+                               placeholder="<?php esc_attr_e('New category name (e.g: Training, Coaching, Design...)', 'google-my-business-reviews'); ?>"
                         >
                         <button type="button"
                                 id="gmb-create-category-btn"
                                 class="button button-primary">
-                            <?php _e('Create category', 'wolves-avis-google'); ?>
+                            <?php _e('Create category', 'google-my-business-reviews'); ?>
                         </button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2><?php printf(__('Existing categories (%d)', 'wolves-avis-google'), count($categories)); ?></h2>
+                    <h2><?php printf(__('Existing categories (%d)', 'google-my-business-reviews'), count($categories)); ?></h2>
 
                     <?php if (!empty($categories)): ?>
                         <table class="wp-list-table widefat fixed striped">
                             <thead>
                             <tr>
-                                <th><?php _e('Name', 'wolves-avis-google'); ?></th>
-                                <th><?php _e('Slug', 'wolves-avis-google'); ?></th>
-                                <th><?php _e('Action', 'wolves-avis-google'); ?></th>
+                                <th><?php _e('Name', 'google-my-business-reviews'); ?></th>
+                                <th><?php _e('Slug', 'google-my-business-reviews'); ?></th>
+                                <th><?php _e('Action', 'google-my-business-reviews'); ?></th>
                             </tr>
                             </thead>
                             <tbody>
                             <?php foreach ($categories as $cat): ?>
                                 <tr>
                                     <td>
-                                        <strong style="font-size: 14px;"><?php echo esc_html($cat->name); ?></strong>
+                                        <strong><?php echo esc_html($cat->name); ?></strong>
                                     </td>
                                     <td>
-                                        <code style="background: #f0f0f1; padding: 4px 8px; border-radius: 3px; font-size: 13px;">
+                                        <code>
                                             <?php echo esc_html($cat->slug); ?>
                                         </code>
                                     </td>
@@ -72,8 +72,8 @@ if (is_wp_error($categories)) {
                                         <button type="button"
                                                 class="button button-secondary button-small gmb-delete-category-btn"
                                                 data-category-id="<?php echo esc_attr($cat->term_id); ?>"
-                                                style="color: #d63638;">
-                                            <?php _e('Delete', 'wolves-avis-google'); ?>
+                                                >
+                                            <?php _e('Delete', 'google-my-business-reviews'); ?>
                                         </button>
                                     </td>
                                 </tr>
@@ -84,8 +84,8 @@ if (is_wp_error($categories)) {
                         <div>
                             <span class="dashicons dashicons-category"></span>
                             <p>
-                                <?php _e('No categories created yet.', 'wolves-avis-google'); ?><br>
-                                <?php _e('Create your first category above to start organizing your reviews.', 'wolves-avis-google'); ?>
+                                <?php _e('No categories created yet.', 'google-my-business-reviews'); ?><br>
+                                <?php _e('Create your first category above to start organizing your reviews.', 'google-my-business-reviews'); ?>
                             </p>
                         </div>
                     <?php endif; ?>

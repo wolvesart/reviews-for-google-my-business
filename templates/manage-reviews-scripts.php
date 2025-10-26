@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryName = categoryNameInput.value.trim();
 
             if (!categoryName) {
-                alert('<?php _e('Please enter a category name', 'wolves-avis-google'); ?>');
+                alert('<?php _e('Please enter a category name', 'google-my-business-reviews'); ?>');
                 return;
             }
 
             // Désactiver le bouton pendant la requête
             createCategoryBtn.disabled = true;
-            createCategoryBtn.textContent = '<?php _e('Creating...', 'wolves-avis-google'); ?>';
+            createCategoryBtn.textContent = '<?php _e('Creating...', 'google-my-business-reviews'); ?>';
 
             // Créer la catégorie via AJAX
             fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
@@ -50,15 +50,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Recharger la page pour afficher la nouvelle catégorie
                     window.location.reload();
                 } else {
-                    alert('<?php _e('Error:', 'wolves-avis-google'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'wolves-avis-google'); ?>'));
+                    alert('<?php _e('Error:', 'google-my-business-reviews'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'google-my-business-reviews'); ?>'));
                     createCategoryBtn.disabled = false;
-                    createCategoryBtn.textContent = '<?php _e('Create category', 'wolves-avis-google'); ?>';
+                    createCategoryBtn.textContent = '<?php _e('Create category', 'google-my-business-reviews'); ?>';
                 }
             })
             .catch(error => {
-                alert('<?php _e('Network error:', 'wolves-avis-google'); ?> ' + error.message);
+                alert('<?php _e('Network error:', 'google-my-business-reviews'); ?> ' + error.message);
                 createCategoryBtn.disabled = false;
-                createCategoryBtn.textContent = '<?php _e('Create category', 'wolves-avis-google'); ?>';
+                createCategoryBtn.textContent = '<?php _e('Create category', 'google-my-business-reviews'); ?>';
             });
         });
 
@@ -77,13 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const categoryId = this.dataset.categoryId;
 
-            if (!confirm('<?php _e('Are you sure you want to delete this category? It will be removed from all reviews that use it.', 'wolves-avis-google'); ?>')) {
+            if (!confirm('<?php _e('Are you sure you want to delete this category? It will be removed from all reviews that use it.', 'google-my-business-reviews'); ?>')) {
                 return;
             }
 
             // Désactiver le bouton pendant la requête
             this.disabled = true;
-            this.textContent = '<?php _e('Deleting...', 'wolves-avis-google'); ?>';
+            this.textContent = '<?php _e('Deleting...', 'google-my-business-reviews'); ?>';
 
             // Supprimer la catégorie via AJAX
             fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
@@ -103,15 +103,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Recharger la page pour mettre à jour la liste
                     window.location.reload();
                 } else {
-                    alert('<?php _e('Error:', 'wolves-avis-google'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'wolves-avis-google'); ?>'));
+                    alert('<?php _e('Error:', 'google-my-business-reviews'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'google-my-business-reviews'); ?>'));
                     this.disabled = false;
-                    this.textContent = '<?php _e('Delete', 'wolves-avis-google'); ?>';
+                    this.textContent = '<?php _e('Delete', 'google-my-business-reviews'); ?>';
                 }
             })
             .catch(error => {
-                alert('<?php _e('Network error:', 'wolves-avis-google'); ?> ' + error.message);
+                alert('<?php _e('Network error:', 'google-my-business-reviews'); ?> ' + error.message);
                 this.disabled = false;
-                this.textContent = '<?php _e('Delete', 'wolves-avis-google'); ?>';
+                this.textContent = '<?php _e('Delete', 'google-my-business-reviews'); ?>';
             });
         });
     });

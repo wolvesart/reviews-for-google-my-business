@@ -9,12 +9,46 @@
     }
   }
 
-  input {
+  input:not([type='color']) {
     border-radius: var(--radius-md);
 
     &:focus {
       border-color: var(--color-green-200);
       box-shadow: 0 0 0 1px var(--color-green-200);
+    }
+  }
+
+  input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    position: relative;
+
+    &:checked {
+      background-color: var(--color-green-800);
+
+      &:before {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 18px;
+        width: 18px;
+        margin: 0;
+        filter: brightness(1.5) saturate(0%) contrast(200%);
+      }
+    }
+
+    &:focus {
+      border: 1px solid #8c8f94;
+      box-shadow: none !important;
+    }
+
+    &:checked + .gmb-category-label {
+      color: var(--color-green-800);
     }
   }
 }

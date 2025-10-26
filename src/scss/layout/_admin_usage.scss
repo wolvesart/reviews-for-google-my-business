@@ -1,0 +1,50 @@
+.gmb-shortcode-generator {
+  border: 1.5px dashed #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0 30px 0;
+
+  .form-table {
+    margin-bottom: 20px;
+
+    th {
+      padding-top: 15px;
+    }
+  }
+
+  .gmb-main-shortcode {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    code {
+      border-radius: var(--radius-md);
+      background: var(--color-grey-100);
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      color: var(--color-green-800);
+      flex: 1;
+    }
+  }
+}
+
+.gmb-shortcode-examples {
+  li {
+    margin: 0;
+
+    &:last-child p {
+      margin: 4px 0 0 0;
+    }
+
+    p {
+      margin: 4px 0 24px 0;
+    }
+
+    code {
+      font-size: 14px;
+    }
+  }
+}

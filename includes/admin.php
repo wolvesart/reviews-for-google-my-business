@@ -1,10 +1,8 @@
 <?php
 /**
  * Google My Business Reviews - Interface Admin
- * Page de configuration et actions administrateur
  */
 
-// Interdire l'accès direct
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -13,14 +11,12 @@ if (!defined('ABSPATH')) {
 // MENU ADMIN
 // ============================================================================
 
-/**
- * Ajoute une page d'admin pour gérer l'authentification
- */
-function wgmbr_add_admin_menu() {
-    // Page principale : Les avis
+function wgmbr_add_admin_menu()
+{
+
     add_menu_page(
-        __('Google Reviews', 'wolves-avis-google'),
-        __('Google Reviews', 'wolves-avis-google'),
+        __('Google Reviews', 'google-my-business-reviews'),
+        __('Google Reviews', 'google-my-business-reviews'),
         'manage_options',
         'gmb-manage-reviews',
         'wgmbr_manage_reviews_page',
@@ -28,38 +24,36 @@ function wgmbr_add_admin_menu() {
         30
     );
 
-    // Sous-page : Catégories
     add_submenu_page(
         'gmb-manage-reviews',
-        __('Categories', 'wolves-avis-google'),
-        __('Categories', 'wolves-avis-google'),
+        __('Categories', 'google-my-business-reviews'),
+        __('Categories', 'google-my-business-reviews'),
         'manage_options',
         'gmb-categories',
         'wgmbr_categories_page'
     );
 
-    // Sous-page : Configuration
     add_submenu_page(
         'gmb-manage-reviews',
-        __('Configuration', 'wolves-avis-google'),
-        __('Configuration', 'wolves-avis-google'),
+        __('Configuration', 'google-my-business-reviews'),
+        __('Configuration', 'google-my-business-reviews'),
         'manage_options',
         'gmb-settings',
         'wgmbr_settings_page'
     );
 }
+
 add_action('admin_menu', 'wgmbr_add_admin_menu');
 
 /**
- * Enregistre les styles admin
+ * Save styles and admin scripts
  */
-function wgmbr_enqueue_admin_styles($hook) {
-    // Charger les styles pour toutes les pages GMB
+function wgmbr_enqueue_admin_assets($hook)
+{
     if ('toplevel_page_gmb-manage-reviews' !== $hook && 'google-reviews_page_gmb-settings' !== $hook && 'google-reviews_page_gmb-categories' !== $hook) {
         return;
     }
 
-    // Enqueue custom admin styles
     wp_enqueue_style(
         'gmb-admin-styles',
         WOLVES_GMB_PLUGIN_URL . 'assets/css/admin.css',
@@ -67,22 +61,48 @@ function wgmbr_enqueue_admin_styles($hook) {
         WOLVES_GMB_VERSION
     );
 
-    // Corriger les chemins absolus générés par webpack pour utiliser le chemin du plugin
     $custom_css = '.gmb-header { background-image: url("' . WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern.png") !important; }';
     wp_add_inline_style('gmb-admin-styles', $custom_css);
+
+    wp_enqueue_script(
+        'gmb-admin-scripts',
+        WOLVES_GMB_PLUGIN_URL . 'assets/js/admin.js',
+        array(),
+        WOLVES_GMB_VERSION,
+        true
+    );
+
+    wp_localize_script('gmb-admin-scripts', 'wgmbrAdmin', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'settingsUrl' => admin_url('admin.php?page=gmb-settings'),
+        'i18n' => array(
+            'loading' => __('Loading...', 'google-my-business-reviews'),
+            'errorFetchingLocations' => __('Error fetching locations:', 'google-my-business-reviews'),
+            'unknownError' => __('Unknown error', 'google-my-business-reviews'),
+            'networkError' => __('Network error:', 'google-my-business-reviews'),
+            'clearingCache' => __('Clearing cache...', 'google-my-business-reviews'),
+            'cacheCleared' => __('Cache cleared successfully!', 'google-my-business-reviews'),
+            'errorClearingCache' => __('Error clearing cache', 'google-my-business-reviews'),
+            'connectionSuccessful' => __('Connection successful!', 'google-my-business-reviews'),
+            'reviewsFetched' => __('reviews fetched.', 'google-my-business-reviews'),
+            'error' => __('Error:', 'google-my-business-reviews'),
+            'confirmReset' => __('Are you sure you want to reset customization to default values?', 'google-my-business-reviews'),
+            'errorResetting' => __('Error resetting customization:', 'google-my-business-reviews'),
+            'copied' => __('Copied!', 'google-my-business-reviews'),
+        )
+    ));
 }
-add_action('admin_enqueue_scripts', 'wgmbr_enqueue_admin_styles');
+
+add_action('admin_enqueue_scripts', 'wgmbr_enqueue_admin_assets');
 
 // ============================================================================
-// PAGE DE CONFIGURATION
+// CONFIGURATION PAGE
 // ============================================================================
 
-/**
- * Page de paramètres admin
- */
-function wgmbr_settings_page() {
+function wgmbr_settings_page()
+{
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have sufficient permissions to access this page.', 'wolves-avis-google'));
+        wp_die(__('You do not have sufficient permissions to access this page.', 'google-my-business-reviews'));
     }
 
     $has_token = get_option('wgmbr_access_token') ? true : false;
@@ -91,58 +111,61 @@ function wgmbr_settings_page() {
     $current_location_id = get_option('wgmbr_location_id');
     $has_credentials = GMB_CLIENT_ID && GMB_CLIENT_SECRET;
 
-    // Charger le template
     require_once WOLVES_GMB_PLUGIN_DIR . 'templates/admin-page.php';
 }
 
-/**
- * Page de gestion des avis
- */
-function wgmbr_manage_reviews_page() {
+function wgmbr_manage_reviews_page()
+{
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have sufficient permissions to access this page.', 'wolves-avis-google'));
+        wp_die(__('You do not have sufficient permissions to access this page.', 'google-my-business-reviews'));
     }
 
-    // Récupérer les avis depuis les CPT
-    $reviews = wgmbr_get_all_reviews(array(
-        'posts_per_page' => -1, // Tous les avis
+    $posts_per_page = 20;
+
+    $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+
+    $result = wgmbr_get_all_reviews_with_query(array(
+        'posts_per_page' => $posts_per_page,
+        'paged' => $paged,
     ));
 
-    // Récupérer toutes les catégories (taxonomie)
+    $reviews = $result['reviews'];
+    $query = $result['query'];
+
     $categories = get_terms(array(
-        'taxonomy'   => 'gmb_category',
+        'taxonomy' => 'gmb_category',
         'hide_empty' => false,
     ));
 
-    // Préparer les données pour le template
     $data = array(
         'error' => false,
         'reviews' => $reviews,
-        'total' => count($reviews),
+        'total' => $query->found_posts,
+        'query' => $query,
+        'paged' => $paged,
+        'posts_per_page' => $posts_per_page,
     );
 
-    // Si aucun avis, vérifier si c'est une erreur de configuration
     if (empty($reviews)) {
         $has_token = get_option('wgmbr_access_token');
         if (!$has_token) {
             $data['error'] = true;
-            $data['message'] = __('API not authenticated. Please configure OAuth from the Configuration page.', 'wolves-avis-google');
+            $data['message'] = __('API not authenticated. Please configure OAuth from the Configuration page.', 'google-my-business-reviews');
         }
     }
 
-    // Charger le template
     require_once WOLVES_GMB_PLUGIN_DIR . 'templates/manage-reviews-page.php';
 }
 
 /**
- * Page de gestion des catégories
+ * Categories page
  */
-function wgmbr_categories_page() {
+function wgmbr_categories_page()
+{
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have sufficient permissions to access this page.', 'wolves-avis-google'));
+        wp_die(__('You do not have sufficient permissions to access this page.', 'google-my-business-reviews'));
     }
 
-    // Charger le template
     require_once WOLVES_GMB_PLUGIN_DIR . 'templates/categories-page.php';
 }
 
@@ -151,41 +174,44 @@ function wgmbr_categories_page() {
 // ============================================================================
 
 /**
- * Action AJAX pour rafraîchir les locations
+ * Refresh locations
  */
-function wgmbr_refresh_locations_ajax() {
+function wgmbr_refresh_locations_ajax()
+{
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Insufficient permissions', 'google-my-business-reviews')));
         return;
     }
 
     wgmbr_auto_fetch_accounts_and_locations();
     wp_send_json_success();
 }
+
 add_action('wp_ajax_wgmbr_refresh_locations', 'wgmbr_refresh_locations_ajax');
 
 /**
- * Action AJAX pour vider le cache
+ * Clear cache
  */
-function wgmbr_clear_cache_ajax() {
+function wgmbr_clear_cache_ajax()
+{
     delete_transient('wgmbr_reviews_cache');
     wp_send_json_success();
 }
+
 add_action('wp_ajax_wgmbr_clear_cache', 'wgmbr_clear_cache_ajax');
 
 /**
- * Action AJAX pour tester la connexion
+ * Test connection
  */
-function wgmbr_test_connection_ajax() {
+function wgmbr_test_connection_ajax()
+{
     $data = wgmbr_fetch_reviews();
 
     if (isset($data['error']) && $data['error']) {
-        // Retourner plus de détails pour le debug
         $error_data = array(
             'message' => $data['message']
         );
 
-        // Ajouter les détails de la réponse API si disponibles
         if (isset($data['api_response'])) {
             $error_data['response'] = $data['api_response'];
         }
@@ -195,6 +221,7 @@ function wgmbr_test_connection_ajax() {
         wp_send_json_success(array('count' => count($data['reviews'])));
     }
 }
+
 add_action('wp_ajax_wgmbr_test_connection', 'wgmbr_test_connection_ajax');
 
 // ============================================================================
@@ -202,11 +229,12 @@ add_action('wp_ajax_wgmbr_test_connection', 'wgmbr_test_connection_ajax');
 // ============================================================================
 
 /**
- * Action pour sauvegarder les identifiants API
+ * Save credentials
  */
-function wgmbr_save_credentials() {
+function wgmbr_save_credentials()
+{
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have sufficient permissions.', 'wolves-avis-google'));
+        wp_die(__('You do not have sufficient permissions.', 'google-my-business-reviews'));
     }
 
     check_admin_referer('wgmbr_save_credentials', 'wgmbr_credentials_nonce');
@@ -220,7 +248,6 @@ function wgmbr_save_credentials() {
     $client_secret = sanitize_text_field(wp_unslash($_POST['wgmbr_client_secret']));
     $redirect_uri = esc_url_raw(wp_unslash($_POST['wgmbr_redirect_uri']));
 
-    // Sauvegarder en base de données de manière sécurisée
     update_option('wgmbr_client_id', $client_id);
     update_option('wgmbr_client_secret', $client_secret);
     update_option('wgmbr_redirect_uri', $redirect_uri);
@@ -228,14 +255,16 @@ function wgmbr_save_credentials() {
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=credentials_saved'));
     exit;
 }
+
 add_action('admin_post_wgmbr_save_credentials', 'wgmbr_save_credentials');
 
 /**
- * Action pour sauvegarder la location sélectionnée
+ * Save location
  */
-function wgmbr_save_location() {
+function wgmbr_save_location()
+{
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have sufficient permissions.', 'wolves-avis-google'));
+        wp_die(__('You do not have sufficient permissions.', 'google-my-business-reviews'));
     }
 
     check_admin_referer('wgmbr_save_location', 'wgmbr_location_nonce');
@@ -256,24 +285,24 @@ function wgmbr_save_location() {
     $account_id = $parts[0];
     $location_id = $parts[1];
 
-    // Sauvegarder en base de données
     update_option('wgmbr_account_id', $account_id);
     update_option('wgmbr_location_id', $location_id);
 
-    // Vider le cache des avis pour forcer le rafraîchissement
     delete_transient('wgmbr_reviews_cache');
 
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=location_saved'));
     exit;
 }
+
 add_action('admin_post_wgmbr_save_location', 'wgmbr_save_location');
 
 /**
- * Révoque l'accès OAuth
+ * Revoke OAuth access
  */
-function wgmbr_revoke_access() {
+function wgmbr_revoke_access()
+{
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have sufficient permissions.', 'wolves-avis-google'));
+        wp_die(__('You do not have sufficient permissions.', 'google-my-business-reviews'));
     }
 
     check_admin_referer('wgmbr_revoke_action');
@@ -286,26 +315,21 @@ function wgmbr_revoke_access() {
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=revoked'));
     exit;
 }
+
 add_action('admin_post_wgmbr_revoke', 'wgmbr_revoke_access');
 
 /**
- * Action pour sauvegarder la personnalisation
+ * Save customization
  */
-function wgmbr_save_customization() {
+function wgmbr_save_customization()
+{
     if (!current_user_can('manage_options')) {
-        wp_die(__('You do not have sufficient permissions.', 'wolves-avis-google'));
+        wp_die(__('You do not have sufficient permissions.', 'google-my-business-reviews'));
     }
 
     check_admin_referer('wgmbr_save_customization', 'wgmbr_customization_nonce');
 
-    // Sauvegarder l'affichage du résumé (checkbox)
-    $show_summary = isset($_POST['wgmbr_show_summary']) ? '1' : '0';
-    update_option('wgmbr_show_summary', $show_summary);
 
-    // Sauvegarder la personnalisation
-    if (isset($_POST['wgmbr_resume_text_color'])) {
-        update_option('wgmbr_resume_text_color', sanitize_hex_color($_POST['wgmbr_resume_text_color']));
-    }
     if (isset($_POST['wgmbr_card_bg_color'])) {
         update_option('wgmbr_card_bg_color', sanitize_hex_color($_POST['wgmbr_card_bg_color']));
     }
@@ -328,20 +352,19 @@ function wgmbr_save_customization() {
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=customization_saved') . '#customization');
     exit;
 }
+
 add_action('admin_post_wgmbr_save_customization', 'wgmbr_save_customization');
 
 /**
- * Action AJAX pour réinitialiser la personnalisation
+ * Reset customisation
  */
-function wgmbr_reset_customization_ajax() {
+function wgmbr_reset_customization_ajax()
+{
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Insufficient permissions', 'google-my-business-reviews')));
         return;
     }
 
-    // Supprimer toutes les options de personnalisation
-    delete_option('wgmbr_show_summary');
-    delete_option('wgmbr_resume_text_color');
     delete_option('wgmbr_card_bg_color');
     delete_option('wgmbr_card_border_radius');
     delete_option('wgmbr_star_color');
@@ -352,21 +375,23 @@ function wgmbr_reset_customization_ajax() {
 
     wp_send_json_success();
 }
+
 add_action('wp_ajax_wgmbr_reset_customization', 'wgmbr_reset_customization_ajax');
 
 /**
- * Action AJAX pour synchroniser les avis depuis l'API vers les CPT
+ * Synchronized reviews from API to CPT
  */
-function wgmbr_sync_reviews_ajax() {
+function wgmbr_sync_reviews_ajax()
+{
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Insufficient permissions', 'google-my-business-reviews')));
         return;
     }
 
-    // Vider le cache pour forcer la récupération depuis l'API
+    // Delete cache
     delete_transient('wgmbr_reviews_cache');
 
-    // Récupérer les avis depuis l'API
+    // Retrieve reviews from the API
     $data = wgmbr_fetch_reviews();
 
     if (isset($data['error']) && $data['error']) {
@@ -377,44 +402,47 @@ function wgmbr_sync_reviews_ajax() {
         return;
     }
 
-    // Compter les avis synchronisés
+    // Count synchronized reviews
     $synced_count = count($data['reviews']);
 
     wp_send_json_success(array(
         'message' => sprintf(
-            __('%d reviews successfully synchronized', 'wolves-avis-google'),
+        /* translators: 1: Display numbers of reviews successfully synchronized */
+            __('%d reviews successfully synchronized', 'google-my-business-reviews'),
             $synced_count
         ),
         'count' => $synced_count
     ));
 }
+
 add_action('wp_ajax_wgmbr_sync_reviews', 'wgmbr_sync_reviews_ajax');
 
 /**
- * Action AJAX pour créer une nouvelle catégorie
+ * Create new category
  */
-function wgmbr_create_category_ajax() {
-    // Vérifier les permissions
+function wgmbr_create_category_ajax()
+{
+    // Check permissions
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Insufficient permissions', 'google-my-business-reviews')));
         return;
     }
 
-    // Vérifier le nonce
+    // Check nonce
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wgmbr_categories')) {
-        wp_send_json_error(array('message' => __('Security check failed', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Security check failed', 'google-my-business-reviews')));
         return;
     }
 
-    // Vérifier le nom de catégorie
+    // Check category name
     if (!isset($_POST['category_name']) || empty(trim($_POST['category_name']))) {
-        wp_send_json_error(array('message' => __('Category name is required', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Category name is required', 'google-my-business-reviews')));
         return;
     }
 
     $category_name = sanitize_text_field(wp_unslash($_POST['category_name']));
 
-    // Créer la catégorie avec wp_insert_term
+    // Create category with wp_insert_term
     $result = wp_insert_term(
         $category_name,
         'gmb_category',
@@ -429,37 +457,39 @@ function wgmbr_create_category_ajax() {
     }
 
     wp_send_json_success(array(
-        'message' => sprintf(__('Category "%s" created successfully', 'wolves-avis-google'), $category_name),
+        'message' => sprintf(__('Category "%s" created successfully', 'google-my-business-reviews'), $category_name),
         'term_id' => $result['term_id']
     ));
 }
+
 add_action('wp_ajax_wgmbr_create_category', 'wgmbr_create_category_ajax');
 
 /**
- * Action AJAX pour supprimer une catégorie
+ * Delete category
  */
-function wgmbr_delete_category_ajax() {
-    // Vérifier les permissions
+function wgmbr_delete_category_ajax()
+{
+    // Check permissions
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Insufficient permissions', 'google-my-business-reviews')));
         return;
     }
 
-    // Vérifier le nonce
+    // Check nonce
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wgmbr_categories')) {
-        wp_send_json_error(array('message' => __('Security check failed', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Security check failed', 'google-my-business-reviews')));
         return;
     }
 
-    // Vérifier l'ID de catégorie
+    // Check category ID
     if (!isset($_POST['category_id']) || empty($_POST['category_id'])) {
-        wp_send_json_error(array('message' => __('Category ID is required', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Category ID is required', 'google-my-business-reviews')));
         return;
     }
 
     $category_id = absint($_POST['category_id']);
 
-    // Supprimer la catégorie avec wp_delete_term
+    // Delete category with wp_delete_term
     $result = wp_delete_term($category_id, 'gmb_category');
 
     if (is_wp_error($result)) {
@@ -468,60 +498,63 @@ function wgmbr_delete_category_ajax() {
     }
 
     if ($result === false) {
-        wp_send_json_error(array('message' => __('Category not found', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Category not found', 'google-my-business-reviews')));
         return;
     }
 
     wp_send_json_success(array(
-        'message' => __('Category deleted successfully', 'wolves-avis-google')
+        'message' => __('Category deleted successfully', 'google-my-business-reviews')
     ));
 }
+
 add_action('wp_ajax_wgmbr_delete_category', 'wgmbr_delete_category_ajax');
 
 /**
- * Action AJAX pour sauvegarder un avis
+ * Save review
  */
-function wgmbr_save_review_ajax() {
-    // Vérifier les permissions
+function wgmbr_save_review_ajax()
+{
+    // Check permissions
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Insufficient permissions', 'google-my-business-reviews')));
         return;
     }
 
-    // Vérifier le nonce
+    // Check nonce
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wgmbr_save_review_job')) {
-        wp_send_json_error(array('message' => __('Security check failed', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Security check failed', 'google-my-business-reviews')));
         return;
     }
 
-    // Vérifier les données requises
+    // Check the required data
     if (!isset($_POST['post_id'])) {
-        wp_send_json_error(array('message' => __('Post ID is required', 'wolves-avis-google')));
+        wp_send_json_error(array('message' => __('Post ID is required', 'google-my-business-reviews')));
         return;
     }
 
     $post_id = absint($_POST['post_id']);
     $job = isset($_POST['job']) ? sanitize_text_field(wp_unslash($_POST['job'])) : '';
 
-    // Récupérer les catégories sélectionnées (tableau)
+    // Retrieve selected categories (table)
     $category_ids = isset($_POST['category_ids']) && is_array($_POST['category_ids'])
         ? array_map('absint', $_POST['category_ids'])
         : array();
 
-    // Mettre à jour le job
+    // Update job
     $job_updated = wgmbr_update_review_job($post_id, $job);
 
-    // Mettre à jour les catégories
+    // Update categories
     $cats_updated = wgmbr_set_review_categories($post_id, $category_ids);
 
-    // Vérifier si les mises à jour ont réussi
+    // Check if the updates were successful
     if (is_wp_error($cats_updated)) {
         wp_send_json_error(array('message' => $cats_updated->get_error_message()));
         return;
     }
 
     wp_send_json_success(array(
-        'message' => __('Review updated successfully', 'wolves-avis-google')
+        'message' => __('Review updated successfully', 'google-my-business-reviews')
     ));
 }
+
 add_action('wp_ajax_wgmbr_save_review', 'wgmbr_save_review_ajax');

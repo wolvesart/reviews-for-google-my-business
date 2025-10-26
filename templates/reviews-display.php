@@ -16,9 +16,9 @@ if (!defined('ABSPATH')) {
 <div class="gmb-reviews-container">
 
     <?php
-    // Vérifier si l'option d'affichage du résumé est activée (par défaut: oui)
-    $show_summary = get_option('wgmbr_show_summary', '1');
-    if ($show_summary === '1' && isset($data['average_rating']) && $data['average_rating'] > 0):
+    // Vérifier si l'affichage du résumé est demandé (contrôlé par le shortcode)
+    $show_summary = isset($data['show_summary']) ? $data['show_summary'] : true;
+    if ($show_summary && isset($data['average_rating']) && $data['average_rating'] > 0):
         ?>
         <div class="gmb-reviews-summary">
             <span class="gmb-rating-number"><?php echo number_format($data['average_rating'], 1); ?></span>
