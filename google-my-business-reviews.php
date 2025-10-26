@@ -1,18 +1,17 @@
 <?php
 /**
  * Plugin Name: Google My Business Reviews
- * Plugin URI: https://wolvesart.com
- * Description: Affiche et gère vos avis Google My Business avec OAuth 2.0. Système de catégories, personnalisation avancée et shortcode flexible.
+ * Plugin URI: https://wolvesart.fr
+ * Description: Display your Google My Business reviews on your website for free. Improve your credibility and gain trust. Category system, full customization, and flexible shortcode.
  * Version: 1.0.0
- * Author: WolvesArt
- * Author URI: https://wolvesart.com
+ * Author: Wolvesart
+ * Author URI: https://wolvesart.fr
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: google-my-business-reviews
  * Domain Path: /languages
  */
 
-// Interdire l'accès direct
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -23,19 +22,13 @@ define('WOLVES_GMB_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WOLVES_GMB_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WOLVES_GMB_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-/**
- * Classe principale du plugin
- */
-class Wolves_Avis_Google {
 
-    /**
-     * Instance unique du plugin (Singleton)
-     */
+class google_my_business_reviews {
+
+    // Single instance of the plugin (Singleton)
     private static $instance = null;
 
-    /**
-     * Récupère l'instance unique du plugin
-     */
+    // Retrieves the single instance of the plugin
     public static function get_instance() {
         if (null === self::$instance) {
             self::$instance = new self();
@@ -43,98 +36,61 @@ class Wolves_Avis_Google {
         return self::$instance;
     }
 
-    /**
-     * Constructeur privé (Singleton)
-     */
+    // Private Builder (Singleton)
     private function __construct() {
         $this->load_dependencies();
         $this->init_hooks();
     }
 
-    /**
-     * Charge les dépendances du plugin
-     */
+    // Loads plugin dependencies
     private function load_dependencies() {
-        // Charger les différents modules
+        // Load the different modules
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/config.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/post-types.php';  // CPT et taxonomies
+        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/post-types.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/api.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/helpers.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/shortcode.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/admin.php';
-
-        // Legacy files - kept for backward compatibility but not loaded
-        // require_once WOLVES_GMB_PLUGIN_DIR . 'includes/database.php';
-        // require_once WOLVES_GMB_PLUGIN_DIR . 'includes/categories.php';
     }
 
-    /**
-     * Initialise les hooks WordPress
-     */
+    // Initializes WordPress hooks
     private function init_hooks() {
-        // Activation du plugin
+        // Plugin activation
         register_activation_hook(__FILE__, array($this, 'activate'));
 
-        // Désactivation du plugin
+        // Plugin deactivation
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
-        // Charger les traductions
-        add_action('plugins_loaded', array($this, 'load_textdomain'));
-
-        // Ajouter le lien de configuration dans la liste des plugins
+        // Add the configuration link to the plugins list
         add_filter('plugin_action_links_' . WOLVES_GMB_PLUGIN_BASENAME, array($this, 'add_action_links'));
     }
 
-    /**
-     * Actions à l'activation du plugin
-     */
+    // Actions when activating the plugin
     public function activate() {
-        // Enregistrer le CPT et la taxonomie
+        // Register CPT and taxonomy
         wgmbr_register_review_post_type();
         wgmbr_register_category_taxonomy();
 
-        // Flush les règles de réécriture pour le CPT
         flush_rewrite_rules();
     }
 
-    /**
-     * Actions à la désactivation du plugin
-     */
+    // Actions when deactivating the plugin
     public function deactivate() {
-        // Flush les règles de réécriture
         flush_rewrite_rules();
     }
 
-    /**
-     * Charge les traductions du plugin
-     */
-    public function load_textdomain() {
-        load_plugin_textdomain(
-            'google-my-business-reviews',
-            false,
-            dirname(WOLVES_GMB_PLUGIN_BASENAME) . '/languages'
-        );
-    }
-
-    /**
-     * Ajoute des liens dans la liste des plugins
-     */
+    // Add links to the plugins list
     public function add_action_links($links) {
         $settings_link = '<a href="' . admin_url('admin.php?page=gmb-settings') . '">' . __('Configuration', 'google-my-business-reviews') . '</a>';
-        $reviews_link = '<a href="' . admin_url('admin.php?page=gmb-manage-reviews') . '">' . __('Reviews', 'google-my-business-reviews') . '</a>';
-
-        array_unshift($links, $settings_link, $reviews_link);
+        array_unshift($links, $settings_link);
 
         return $links;
     }
 }
 
-/**
- * Fonction d'accès global au plugin
- */
-function wolves_avis_google() {
-    return Wolves_Avis_Google::get_instance();
+// Global plugin access function
+function wgmbr_google_reviews_init() {
+    return google_my_business_reviews::get_instance();
 }
 
-// Initialiser le plugin
-wolves_avis_google();
+wgmbr_google_reviews_init();

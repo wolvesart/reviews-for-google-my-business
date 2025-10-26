@@ -356,6 +356,42 @@ function wgmbr_save_customization()
 add_action('admin_post_wgmbr_save_customization', 'wgmbr_save_customization');
 
 /**
+ * Save customization (AJAX version)
+ */
+function wgmbr_save_customization_ajax()
+{
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => __('Insufficient permissions', 'google-my-business-reviews')));
+        return;
+    }
+
+    check_ajax_referer('wgmbr_save_customization', 'wgmbr_customization_nonce');
+
+    if (isset($_POST['wgmbr_card_bg_color'])) {
+        update_option('wgmbr_card_bg_color', sanitize_hex_color($_POST['wgmbr_card_bg_color']));
+    }
+    if (isset($_POST['wgmbr_card_border_radius'])) {
+        update_option('wgmbr_card_border_radius', absint($_POST['wgmbr_card_border_radius']));
+    }
+    if (isset($_POST['wgmbr_star_color'])) {
+        update_option('wgmbr_star_color', sanitize_hex_color($_POST['wgmbr_star_color']));
+    }
+    if (isset($_POST['wgmbr_text_color'])) {
+        update_option('wgmbr_text_color', sanitize_hex_color($_POST['wgmbr_text_color']));
+    }
+    if (isset($_POST['gmb-accent-color'])) {
+        update_option('gmb-accent-color', sanitize_hex_color($_POST['gmb-accent-color']));
+    }
+    if (isset($_POST['wgmbr_text_color_name'])) {
+        update_option('wgmbr_text_color_name', sanitize_hex_color($_POST['wgmbr_text_color_name']));
+    }
+
+    wp_send_json_success(array('message' => __('Customization saved successfully', 'google-my-business-reviews')));
+}
+
+add_action('wp_ajax_wgmbr_save_customization', 'wgmbr_save_customization_ajax');
+
+/**
  * Reset customisation
  */
 function wgmbr_reset_customization_ajax()

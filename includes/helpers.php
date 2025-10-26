@@ -1,10 +1,8 @@
 <?php
 /**
  * Google My Business Reviews - Helper Functions
- * Fonctions utilitaires pour le traitement des données d'avis depuis CPT
  */
 
-// Interdire l'accès direct
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -116,7 +114,7 @@ function wgmbr_get_all_reviews_with_query($args = array())
     $defaults = array(
         'post_type' => 'gmb_review',
         'post_status' => 'publish',
-        'posts_per_page' => 20, // 20 avis par page par défaut
+        'posts_per_page' => 20,
         'orderby' => 'date',
         'order' => 'DESC',
         'paged' => 1,
@@ -278,7 +276,7 @@ function wgmbr_get_parsed_review_by_review_id($review_id)
     return wgmbr_parse_review_from_post($posts[0]);
 }
 
-
+//Create php component
 function wgmbr_get_template_parts($path, $params = [])
 {
     include WOLVES_GMB_PLUGIN_DIR . $path . '.php';

@@ -16,8 +16,12 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
     gap: 12px;
+
+    button {
+      min-width: 110px;
+    }
 
     code {
       border-radius: var(--radius-md);
@@ -29,22 +33,22 @@
       flex: 1;
     }
   }
-}
 
-.gmb-shortcode-examples {
-  li {
-    margin: 0;
+  .gmb-shortcode-examples {
+    li {
+      margin: 0;
 
-    &:last-child p {
-      margin: 4px 0 0 0;
-    }
+      &:last-child p {
+        margin: 4px 0 0 0;
+      }
 
-    p {
-      margin: 4px 0 24px 0;
-    }
+      p {
+        margin: 4px 0 24px 0;
+      }
 
-    code {
-      font-size: 14px;
+      code {
+        font-size: 14px;
+      }
     }
   }
 }

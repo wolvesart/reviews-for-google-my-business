@@ -132,24 +132,97 @@ window.testGMBConnection = function() {
         });
 }
 
-window.resetGMBCustomization = function() {
+window.resetGMBCustomization = function(btn) {
     if (!confirm(wgmbrAdmin.i18n.confirmReset)) {
         return;
     }
+
+    const originalText = btn.textContent;
+
+    btn.disabled = true;
+    btn.textContent = wgmbrAdmin.i18n.loading;
 
     fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_reset_customization')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Reload page to update the form with default values
                 window.location.href = wgmbrAdmin.settingsUrl + '#customization';
             } else {
                 alert(wgmbrAdmin.i18n.errorResetting + ' ' + (data.data?.message || wgmbrAdmin.i18n.unknownError));
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         })
         .catch(error => {
             alert(wgmbrAdmin.i18n.networkError + ' ' + error.message);
+            btn.disabled = false;
+            btn.textContent = originalText;
         });
 }
+
+// ============================================================================
+// AJAX CUSTOMIZATION FORM
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const customizationForm = document.getElementById('gmb-customization-form');
+
+    if (customizationForm) {
+        customizationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const submitBtn = customizationForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = wgmbrAdmin.i18n.loading || 'Saving...';
+
+            // Prepare form data
+            const formData = new FormData(customizationForm);
+
+            // Send AJAX request
+            fetch(wgmbrAdmin.ajaxUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    submitBtn.textContent = wgmbrAdmin.i18n?.saved || '✓ Saved';
+                    submitBtn.classList.add('is-success');
+
+                    // Reset button state after 2 seconds
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.classList.remove('is-success');
+                        submitBtn.disabled = false;
+                    }, 2000);
+                } else {
+                    submitBtn.textContent = wgmbrAdmin.i18n?.errorSaving || 'Error';
+                    submitBtn.classList.add('is-error');
+
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.classList.remove('is-error');
+                        submitBtn.disabled = false;
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                submitBtn.textContent = wgmbrAdmin.i18n?.errorSaving || 'Error';
+                submitBtn.classList.add('is-error');
+
+                setTimeout(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.classList.remove('is-error');
+                    submitBtn.disabled = false;
+                }, 3000);
+            });
+        });
+    }
+});
 
 // ============================================================================
 // COLOR PICKER WITH HEX INPUT SYNC (All fields)
@@ -249,16 +322,15 @@ window.wgmbrCopyShortcode = function(btn) {
 
 window.wgmbrGenerateShortcode = function() {
     const limit = document.getElementById('gmb-gen-limit').value;
-    const categoriesSelect = document.getElementById('gmb-gen-categories');
+    const categoriesContainer = document.getElementById('gmb-gen-categories');
     const showSummary = document.getElementById('gmb-gen-summary').checked;
     const outputElement = document.getElementById('gmb-generated-shortcode');
 
     if (!outputElement) return;
 
-    // Récupérer les catégories sélectionnées
-    const selectedCategories = Array.from(categoriesSelect.selectedOptions)
-        .map(option => option.value)
-        .filter(value => value !== ''); // Exclure l'option "All categories"
+    // Récupérer les catégories sélectionnées depuis les checkboxes
+    const selectedCategories = Array.from(categoriesContainer.querySelectorAll('input[name="gen_category_slugs[]"]:checked'))
+        .map(checkbox => checkbox.value);
 
     // Construire le shortcode
     let shortcode = '[gmb_reviews';

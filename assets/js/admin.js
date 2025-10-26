@@ -124,23 +124,92 @@ window.testGMBConnection = function () {
     document.getElementById('gmb-test-result').innerHTML = '<div class="gmb-notice error"><p>' + wgmbrAdmin.i18n.networkError + ' ' + error.message + '</p></div>';
   });
 };
-window.resetGMBCustomization = function () {
+window.resetGMBCustomization = function (btn) {
   if (!confirm(wgmbrAdmin.i18n.confirmReset)) {
     return;
   }
+  var originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = wgmbrAdmin.i18n.loading;
   fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_reset_customization').then(function (response) {
     return response.json();
   }).then(function (data) {
     if (data.success) {
+      // Reload page to update the form with default values
       window.location.href = wgmbrAdmin.settingsUrl + '#customization';
     } else {
       var _data$data2;
       alert(wgmbrAdmin.i18n.errorResetting + ' ' + (((_data$data2 = data.data) === null || _data$data2 === void 0 ? void 0 : _data$data2.message) || wgmbrAdmin.i18n.unknownError));
+      btn.disabled = false;
+      btn.textContent = originalText;
     }
   })["catch"](function (error) {
     alert(wgmbrAdmin.i18n.networkError + ' ' + error.message);
+    btn.disabled = false;
+    btn.textContent = originalText;
   });
 };
+
+// ============================================================================
+// AJAX CUSTOMIZATION FORM
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+  var customizationForm = document.getElementById('gmb-customization-form');
+  if (customizationForm) {
+    customizationForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var submitBtn = customizationForm.querySelector('button[type="submit"]');
+      var originalText = submitBtn.textContent;
+
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.textContent = wgmbrAdmin.i18n.loading || 'Saving...';
+
+      // Prepare form data
+      var formData = new FormData(customizationForm);
+
+      // Send AJAX request
+      fetch(wgmbrAdmin.ajaxUrl, {
+        method: 'POST',
+        body: formData
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        if (data.success) {
+          var _wgmbrAdmin$i18n;
+          submitBtn.textContent = ((_wgmbrAdmin$i18n = wgmbrAdmin.i18n) === null || _wgmbrAdmin$i18n === void 0 ? void 0 : _wgmbrAdmin$i18n.saved) || '✓ Saved';
+          submitBtn.classList.add('is-success');
+
+          // Reset button state after 2 seconds
+          setTimeout(function () {
+            submitBtn.textContent = originalText;
+            submitBtn.classList.remove('is-success');
+            submitBtn.disabled = false;
+          }, 2000);
+        } else {
+          var _wgmbrAdmin$i18n2;
+          submitBtn.textContent = ((_wgmbrAdmin$i18n2 = wgmbrAdmin.i18n) === null || _wgmbrAdmin$i18n2 === void 0 ? void 0 : _wgmbrAdmin$i18n2.errorSaving) || 'Error';
+          submitBtn.classList.add('is-error');
+          setTimeout(function () {
+            submitBtn.textContent = originalText;
+            submitBtn.classList.remove('is-error');
+            submitBtn.disabled = false;
+          }, 3000);
+        }
+      })["catch"](function (error) {
+        var _wgmbrAdmin$i18n3;
+        submitBtn.textContent = ((_wgmbrAdmin$i18n3 = wgmbrAdmin.i18n) === null || _wgmbrAdmin$i18n3 === void 0 ? void 0 : _wgmbrAdmin$i18n3.errorSaving) || 'Error';
+        submitBtn.classList.add('is-error');
+        setTimeout(function () {
+          submitBtn.textContent = originalText;
+          submitBtn.classList.remove('is-error');
+          submitBtn.disabled = false;
+        }, 3000);
+      });
+    });
+  }
+});
 
 // ============================================================================
 // COLOR PICKER WITH HEX INPUT SYNC (All fields)
@@ -208,10 +277,10 @@ window.wgmbrCopyShortcode = function (btn) {
 
   // Copier dans le presse-papier
   navigator.clipboard.writeText(shortcode.textContent).then(function () {
-    var _wgmbrAdmin$i18n;
+    var _wgmbrAdmin$i18n4;
     // Feedback visuel dans le bouton
     var originalHTML = btn.innerHTML;
-    btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (((_wgmbrAdmin$i18n = wgmbrAdmin.i18n) === null || _wgmbrAdmin$i18n === void 0 ? void 0 : _wgmbrAdmin$i18n.copied) || 'Copied!');
+    btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (((_wgmbrAdmin$i18n4 = wgmbrAdmin.i18n) === null || _wgmbrAdmin$i18n4 === void 0 ? void 0 : _wgmbrAdmin$i18n4.copied) || 'Copied!');
     btn.style.color = '#46b450';
 
     // Restaurer le bouton après 2 secondes
@@ -231,17 +300,15 @@ window.wgmbrCopyShortcode = function (btn) {
 
 window.wgmbrGenerateShortcode = function () {
   var limit = document.getElementById('gmb-gen-limit').value;
-  var categoriesSelect = document.getElementById('gmb-gen-categories');
+  var categoriesContainer = document.getElementById('gmb-gen-categories');
   var showSummary = document.getElementById('gmb-gen-summary').checked;
   var outputElement = document.getElementById('gmb-generated-shortcode');
   if (!outputElement) return;
 
-  // Récupérer les catégories sélectionnées
-  var selectedCategories = Array.from(categoriesSelect.selectedOptions).map(function (option) {
-    return option.value;
-  }).filter(function (value) {
-    return value !== '';
-  }); // Exclure l'option "All categories"
+  // Récupérer les catégories sélectionnées depuis les checkboxes
+  var selectedCategories = Array.from(categoriesContainer.querySelectorAll('input[name="gen_category_slugs[]"]:checked')).map(function (checkbox) {
+    return checkbox.value;
+  });
 
   // Construire le shortcode
   var shortcode = '[gmb_reviews';
@@ -274,10 +341,10 @@ window.wgmbrCopyGeneratedShortcode = function (btn) {
 
   // Copier dans le presse-papier
   navigator.clipboard.writeText(shortcode.textContent).then(function () {
-    var _wgmbrAdmin$i18n2;
+    var _wgmbrAdmin$i18n5;
     // Feedback visuel dans le bouton
     var originalHTML = btn.innerHTML;
-    btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (((_wgmbrAdmin$i18n2 = wgmbrAdmin.i18n) === null || _wgmbrAdmin$i18n2 === void 0 ? void 0 : _wgmbrAdmin$i18n2.copied) || 'Copied!');
+    btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (((_wgmbrAdmin$i18n5 = wgmbrAdmin.i18n) === null || _wgmbrAdmin$i18n5 === void 0 ? void 0 : _wgmbrAdmin$i18n5.copied) || 'Copied!');
     btn.classList.add('is-success');
 
     // Restaurer le bouton après 2 secondes

@@ -10520,6 +10520,12 @@ var _require = __webpack_require__(/*! swiper/modules */ "./node_modules/swiper/
 document.addEventListener('DOMContentLoaded', function () {
   var reviewsSwiper = document.querySelector('.gmb-reviews-swiper');
   if (reviewsSwiper) {
+    // Count number of slides
+    var slides = reviewsSwiper.querySelectorAll('.swiper-slide');
+    var slideCount = slides.length;
+
+    // Only enable loop if there are enough slides
+    var shouldLoop = slideCount > 3;
     new Swiper('.gmb-reviews-swiper', {
       modules: [Navigation, Pagination, Autoplay],
       // Slides per view
@@ -10554,7 +10560,8 @@ document.addEventListener('DOMContentLoaded', function () {
       pagination: {
         el: '.gmb-swiper-pagination',
         clickable: true,
-        dynamicBullets: false
+        dynamicBullets: false,
+        type: 'bullets'
       },
       // Autoplay (optional)
       autoplay: {
@@ -10562,8 +10569,10 @@ document.addEventListener('DOMContentLoaded', function () {
         disableOnInteraction: false,
         pauseOnMouseEnter: true
       },
-      // Loop
-      loop: true
+      // Loop (only if enough slides)
+      loop: shouldLoop,
+      // Prevent issues with pagination in loop mode
+      loopAdditionalSlides: shouldLoop ? 1 : 0
     });
   }
 

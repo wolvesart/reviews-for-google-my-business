@@ -10,6 +10,7 @@
 @import 'components/admin_form';
 @import 'components/admin_pagination';
 @import 'components/admin_header';
+@import 'components/admin_categories_checkboxes';
 
 
 .gmb-wrap, .wrap {
@@ -19,7 +20,7 @@
     color: var(--color-green-800);
   }
 
-  p {
+  p, li {
     color: var(--color-grey-800);
     font-size: 1.1em;
   }

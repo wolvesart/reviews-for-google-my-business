@@ -261,7 +261,7 @@ if (!defined('ABSPATH')) {
                             <div class="gmb-shortcode-generator">
 
                                     <div class="gmb-main-shortcode">
-                                        <code id="gmb-generated-shortcode">[gmb_reviews limit="10"]</code>
+                                        <code id="gmb-generated-shortcode">[gmb_reviews]</code>
                                         <button type="button" class="button button-primary" onclick="wgmbrCopyGeneratedShortcode(this)">
                                             <span class="dashicons dashicons-admin-page"></span>
                                             <?php _e('Copy', 'google-my-business-reviews'); ?>
@@ -279,9 +279,10 @@ if (!defined('ABSPATH')) {
                                                    class="small-text"
                                                    min="1"
                                                    max="100"
-                                                   value="10"
+                                                   value=""
+                                                   placeholder="10"
                                                    onchange="wgmbrGenerateShortcode()">
-                                            <p class="description"><?php _e('Number of reviews to display (1-100)', 'google-my-business-reviews'); ?></p>
+                                            <p class="description"><?php _e('Number of reviews to display. Leave blank if you want to display the maximum number of reviews', 'google-my-business-reviews'); ?></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -289,11 +290,7 @@ if (!defined('ABSPATH')) {
                                             <label for="gmb-gen-categories"><?php _e('Categories', 'google-my-business-reviews'); ?></label>
                                         </th>
                                         <td>
-                                            <select id="gmb-gen-categories"
-                                                    multiple
-                                                    style="min-height: 120px; width: 300px;"
-                                                    onchange="wgmbrGenerateShortcode()">
-                                                <option value=""><?php _e('-- All categories --', 'google-my-business-reviews'); ?></option>
+                                            <div class="gmb-categories-checkboxes" id="gmb-gen-categories">
                                                 <?php
                                                 $categories = get_terms(array(
                                                     'taxonomy' => 'gmb_category',
@@ -301,14 +298,19 @@ if (!defined('ABSPATH')) {
                                                 ));
                                                 if (!empty($categories) && !is_wp_error($categories)):
                                                     foreach ($categories as $cat): ?>
-                                                        <option value="<?php echo esc_attr($cat->slug); ?>">
-                                                            <?php echo esc_html($cat->name); ?> (<?php echo esc_html($cat->slug); ?>)
-                                                        </option>
+                                                        <label class="gmb-category-checkbox">
+                                                            <input type="checkbox"
+                                                                   name="gen_category_slugs[]"
+                                                                   value="<?php echo esc_attr($cat->slug); ?>"
+                                                                   onchange="wgmbrGenerateShortcode()">
+                                                            <span class="gmb-category-label"><?php echo esc_html($cat->name); ?></span>
+                                                        </label>
                                                     <?php endforeach;
-                                                endif;
-                                                ?>
-                                            </select>
-                                            <p class="description"><?php _e('Hold Ctrl/Cmd to select multiple categories', 'google-my-business-reviews'); ?></p>
+                                                else: ?>
+                                                    <span class="gmb-categories-empty"><?php _e('No categories', 'google-my-business-reviews'); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <p class="description"><?php _e('Select one or multiple categories to filter reviews', 'google-my-business-reviews'); ?></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -316,13 +318,14 @@ if (!defined('ABSPATH')) {
                                             <label for="gmb-gen-summary"><?php _e('Show summary', 'google-my-business-reviews'); ?></label>
                                         </th>
                                         <td>
-                                            <label>
+                                            <label class="switch">
                                                 <input type="checkbox"
                                                        id="gmb-gen-summary"
                                                        checked
                                                        onchange="wgmbrGenerateShortcode()">
-                                                <?php _e('Display average rating and total reviews', 'google-my-business-reviews'); ?>
+                                                <span class="slider"></span>
                                             </label>
+                                            <p class="description"><?php _e('Display average rating and total reviews', 'google-my-business-reviews'); ?></p>
                                         </td>
                                     </tr>
                                 </table>
@@ -341,10 +344,6 @@ if (!defined('ABSPATH')) {
                                 <tr>
                                     <th><code>show_summary</code></th>
                                     <td><?php _e('Display the average rating summary (default: true). Set to "false" to hide it.', 'google-my-business-reviews'); ?></td>
-                                </tr>
-                                <tr>
-                                    <th><code>type (<?php _e('coming soon', 'google-my-business-reviews'); ?>)</code></th>
-                                    <td><?php _e('Slider or Masonry grid', 'google-my-business-reviews'); ?></td>
                                 </tr>
                             </table>
 
@@ -376,7 +375,7 @@ if (!defined('ABSPATH')) {
 
             <!-- Tab: Personnalisation -->
             <div class="gmb-tab-content" data-tab-content="customization">
-                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <form method="post" id="gmb-customization-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <?php wp_nonce_field('wgmbr_save_customization', 'wgmbr_customization_nonce'); ?>
                     <input type="hidden" name="action" value="wgmbr_save_customization">
                     <div class="section row">
@@ -524,7 +523,7 @@ if (!defined('ABSPATH')) {
                                     <button type="submit" class="button button-primary">
                                         <?php _e('Save customization', 'google-my-business-reviews'); ?>
                                     </button>
-                                    <button type="button" class="button" onclick="resetGMBCustomization()">
+                                    <button type="button" class="button" onclick="resetGMBCustomization(this)">
                                         <?php _e('Reset to default values', 'google-my-business-reviews'); ?>
                                     </button>
                                 </div>

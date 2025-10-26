@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const reviewsSwiper = document.querySelector('.gmb-reviews-swiper');
 
     if (reviewsSwiper) {
+        // Count number of slides
+        const slides = reviewsSwiper.querySelectorAll('.swiper-slide');
+        const slideCount = slides.length;
+
+        // Only enable loop if there are enough slides
+        const shouldLoop = slideCount > 3;
+
         new Swiper('.gmb-reviews-swiper', {
             modules: [Navigation, Pagination, Autoplay],
 
@@ -46,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 el: '.gmb-swiper-pagination',
                 clickable: true,
                 dynamicBullets: false,
+                type: 'bullets',
             },
 
             // Autoplay (optional)
@@ -55,8 +63,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 pauseOnMouseEnter: true,
             },
 
-            // Loop
-            loop: true,
+            // Loop (only if enough slides)
+            loop: shouldLoop,
+
+            // Prevent issues with pagination in loop mode
+            loopAdditionalSlides: shouldLoop ? 1 : 0,
         });
     }
 

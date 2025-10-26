@@ -10,6 +10,6 @@
         <h2><?php echo esc_html($params['title']); ?></h2>
     <?php endif; ?>
     <?php if (isset($params['body'])): ?>
-        <?php echo wp_kses($params['body'], ['p' => [], 'br' => [], 'ul' => [], 'li' => [], 'a' => [], 'h3' => []]); ?>
+        <?php echo wp_kses($params['body'], ['p' => [], 'br' => [], 'ul' => [], 'ol' => [], 'li' => [], 'a' => ['href' => [], 'title' => [], 'target' => []], 'h3' => [], 'h4' => []]); ?>
     <?php endif; ?>
 </div>
