@@ -1,6 +1,6 @@
 <?php
 /**
- * Google My Business Reviews - Template de gestion des avis
+ * Reviews for Google My Business - Template de gestion des avis
  *
  * Variables disponibles :
  * - $data (array) : Données des avis depuis l'API GMB
@@ -18,35 +18,35 @@ if (!defined('ABSPATH')) {
     <div class="gmb-container full-screen">
         <?php if (isset($data['error']) && $data['error']): ?>
             <div class="title">
-                <h2><?php _e('Before start', 'google-my-business-reviews'); ?></h2>
-                <p><?php _e('Before start, go to the Configuration page to connect your account Google Cloud Console', 'google-my-business-reviews'); ?></p>
+                <h2><?php esc_html_e('Before start', 'reviews-for-google-my-business'); ?></h2>
+                <p><?php esc_html_e('Before start, go to the Configuration page to connect your account Google Cloud Console', 'reviews-for-google-my-business'); ?></p>
             </div>
             <div class="card">
                 <p><?php echo esc_html($data['message']); ?></p>
                 <?php if (isset($data['api_response'])): ?>
                     <details>
-                        <summary><?php _e('Error details', 'google-my-business-reviews'); ?></summary>
-                        <pre><?php echo esc_html(print_r($data['api_response'], true)); ?></pre>
+                        <summary><?php esc_html_e('Error details', 'reviews-for-google-my-business'); ?></summary>
+                        <pre><?php echo esc_html($data['api_response']); ?></pre>
                     </details>
                 <?php endif; ?>
                 <p>
                     <a href="<?php echo esc_url(admin_url('admin.php?page=gmb-settings')); ?>"
                        class="button button-primary">
-                        <?php _e('Configure authentication', 'google-my-business-reviews'); ?>
+                        <?php esc_html_e('Configure authentification', 'reviews-for-google-my-business'); ?>
                     </a>
                 </p>
             </div>
         <?php elseif (empty($data['reviews'])): ?>
             <div class="card">
-                <h2><?php _e('No reviews found', 'google-my-business-reviews'); ?></h2>
-                <p><?php _e('No reviews have been synchronized yet. Click the button below to fetch and sync reviews from Google My Business API.', 'google-my-business-reviews'); ?></p>
+                <h2><?php esc_html_e('No reviews found', 'reviews-for-google-my-business'); ?></h2>
+                <p><?php esc_html_e('No reviews have been synchronized yet. Click the button below to fetch and sync reviews from Google My Business API.', 'reviews-for-google-my-business'); ?></p>
                 <div class="button-wrapper">
                     <button type="button" class="button button-primary" onclick="wgmbr_syncReviewsFromAPI()">
-                        <?php _e('Sync Reviews from API', 'google-my-business-reviews'); ?>
+                        <?php esc_html_e('Sync Reviews from API', 'reviews-for-google-my-business'); ?>
                     </button>
                     <a href="<?php echo esc_url(admin_url('admin.php?page=gmb-settings')); ?>"
                        class="button button-secondary">
-                        <?php _e('Check configuration', 'google-my-business-reviews'); ?>
+                        <?php esc_html_e('Check configuration', 'reviews-for-google-my-business'); ?>
                     </a>
                 </div>
                 <div id="sync-result"></div>
@@ -55,25 +55,31 @@ if (!defined('ABSPATH')) {
             <div class="top-bar">
                 <div>
                     <h2>
-                        <?php printf(_n('Review found (%s)','Reviews found (%s)',$data['total'],'google-my-business-reviews'),number_format_i18n($data['total']));?>
+                        <?php
+                        printf(
+                            /* translators: %s: Number of reviews */
+                            esc_html(_n('Review found (%s)', 'Reviews found (%s)', $data['total'], 'reviews-for-google-my-business')),
+                            esc_html(number_format_i18n($data['total']))
+                        );
+                        ?>
                     </h2>
                 </div>
                 <div id="sync-result"></div>
                 <button type="button" class="button button-primary" onclick="wgmbr_syncReviewsFromAPI()">
-                    <?php _e('Sync Reviews from API', 'google-my-business-reviews'); ?>
+                    <?php esc_html_e('Sync Reviews from API', 'reviews-for-google-my-business'); ?>
                 </button>
             </div>
 
             <table class="wp-list-table widefat fixed striped">
                 <thead>
                 <tr>
-                    <th style="width: 5%;"><?php _e('Photo', 'google-my-business-reviews'); ?></th>
-                    <th style="width: 10%;"><?php _e('Name', 'google-my-business-reviews'); ?></th>
-                    <th style="width: auto;"><?php _e('Rating', 'google-my-business-reviews'); ?></th>
-                    <th style="width: auto;"><?php _e('Date', 'google-my-business-reviews'); ?></th>
-                    <th style="width: 25%;"><?php _e('Job Title', 'google-my-business-reviews'); ?></th>
-                    <th style="width: 20%;"><?php _e('Category', 'google-my-business-reviews'); ?></th>
-                    <th style="width: auto;"><?php _e('Action', 'google-my-business-reviews'); ?></th>
+                    <th style="width: 5%;"><?php esc_html_e('Photo', 'reviews-for-google-my-business'); ?></th>
+                    <th style="width: 10%;"><?php esc_html_e('Name', 'reviews-for-google-my-business'); ?></th>
+                    <th style="width: auto;"><?php esc_html_e('Rating', 'reviews-for-google-my-business'); ?></th>
+                    <th style="width: auto;"><?php esc_html_e('Date', 'reviews-for-google-my-business'); ?></th>
+                    <th style="width: 25%;"><?php esc_html_e('Job Title', 'reviews-for-google-my-business'); ?></th>
+                    <th style="width: 20%;"><?php esc_html_e('Category', 'reviews-for-google-my-business'); ?></th>
+                    <th style="width: auto;"><?php esc_html_e('Action', 'reviews-for-google-my-business'); ?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -96,7 +102,7 @@ if (!defined('ABSPATH')) {
                         </td>
                         <td><strong><?php echo esc_html($parsed->name); ?></strong></td>
                         <td>
-                            <?php echo str_repeat('⭐', $parsed->rating); ?>
+                            <?php echo esc_html(str_repeat('⭐', $parsed->rating)); ?>
                         </td>
                         <td>
                             <?php echo esc_html(date_i18n('d/m/Y', $parsed->date)); ?>
@@ -124,7 +130,7 @@ if (!defined('ABSPATH')) {
                                         </label>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <span class="gmb-categories-empty"><?php _e('No categories', 'google-my-business-reviews'); ?></span>
+                                    <span class="gmb-categories-empty"><?php esc_html_e('No categories', 'reviews-for-google-my-business'); ?></span>
                                 <?php endif; ?>
                             </div>
                         </td>
@@ -132,7 +138,7 @@ if (!defined('ABSPATH')) {
                             <button type="button"
                                     class="button button-small button-primary gmb-save-review-btn"
                                     data-post-id="<?php echo esc_attr($parsed->post_id); ?>">
-                                <?php _e('Save', 'google-my-business-reviews'); ?>
+                                <?php esc_html_e('Save', 'reviews-for-google-my-business'); ?>
                             </button>
                         </td>
                     </tr>
@@ -148,15 +154,15 @@ if (!defined('ABSPATH')) {
                         'format' => '',
                         'current' => max(1, $data['paged']),
                         'total' => $data['query']->max_num_pages,
-                        'prev_text' => '&laquo; ' . __('Previous', 'google-my-business-reviews'),
-                        'next_text' => __('Next', 'google-my-business-reviews') . ' &raquo;',
+                        'prev_text' => '&laquo; ' . esc_html__('Previous', 'reviews-for-google-my-business'),
+                        'next_text' => esc_html__('Next', 'reviews-for-google-my-business') . ' &raquo;',
                         'type' => 'list',
                         'end_size' => 3,
                         'mid_size' => 2,
                 );
                 ?>
                 <div class="gmb-pagination">
-                    <?php echo paginate_links($pagination_args); ?>
+                    <?php wp_kses_post(paginate_links($pagination_args)); ?>
                 </div>
             <?php endif; ?>
 
@@ -171,25 +177,25 @@ if (!defined('ABSPATH')) {
         const originalText = button.textContent;
 
         button.disabled = true;
-        button.textContent = '<?php _e('Syncing...', 'google-my-business-reviews'); ?>';
+        button.textContent = '<?php esc_html_e('Syncing...', 'reviews-for-google-my-business'); ?>';
 
-        fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=wgmbr_sync_reviews')
+        fetch('<?php echo esc_url(admin_url('admin-ajax.php')); ?>?action=wgmbr_sync_reviews')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    button.textContent = '<?php _e('✓ Synchronization complete', 'google-my-business-reviews'); ?>';
+                    button.textContent = '<?php esc_html_e('✓ Synchronization complete', 'reviews-for-google-my-business'); ?>';
                     // Recharger la page après 2 secondes
                     setTimeout(() => {
                         window.location.reload();
                     }, 2000);
                 } else {
-                    resultDiv.innerHTML = '<div class="gmb-notice error"><p> ' + (data.data?.message || '<?php _e('Error syncing reviews', 'google-my-business-reviews'); ?>') + '</p></div>';
+                    resultDiv.innerHTML = '<div class="gmb-notice error"><p> ' + (data.data?.message || '<?php esc_html_e('Error syncing reviews', 'reviews-for-google-my-business'); ?>') + '</p></div>';
                     button.disabled = false;
                     button.textContent = originalText;
                 }
             })
             .catch(error => {
-                resultDiv.innerHTML = '<div class="gmb-notice error"><p><?php _e('Network error:', 'google-my-business-reviews'); ?> ' + error.message + '</p></div>';
+                resultDiv.innerHTML = '<div class="gmb-notice error"><p><?php esc_html_e('Network error:', 'reviews-for-google-my-business'); ?> ' + error.message + '</p></div>';
                 button.disabled = false;
                 button.textContent = originalText;
             });
@@ -212,16 +218,16 @@ if (!defined('ABSPATH')) {
         formData.append('action', 'wgmbr_save_review');
         formData.append('post_id', postId);
         formData.append('job', job);
-        formData.append('nonce', '<?php echo wp_create_nonce('wgmbr_save_review_job'); ?>');
+        formData.append('nonce', '<?php echo esc_attr(wp_create_nonce('wgmbr_save_review_job')); ?>');
         categories.forEach(id => formData.append('category_ids[]', id));
 
-        fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+        fetch('<?php echo esc_url(admin_url('admin-ajax.php')); ?>', {
             method: 'POST',
             body: formData
         })
             .then(r => r.json())
             .then(d => {
-                btn.textContent = d.success ? '<?php _e('Updated', 'google-my-business-reviews'); ?>' : '<?php _e('Error', 'google-my-business-reviews'); ?>';
+                btn.textContent = d.success ? '<?php esc_html_e('Updated', 'reviews-for-google-my-business'); ?>' : '<?php esc_html_e('Error', 'reviews-for-google-my-business'); ?>';
                 btn.className = d.success ? 'button button-small is-success' : 'button button-small is-error';
                 setTimeout(() => {
                     btn.textContent = original;
@@ -231,7 +237,7 @@ if (!defined('ABSPATH')) {
             })
             .catch(err => {
                 console.error('Erreur:', err);
-                btn.textContent = '<?php _e('Error', 'google-my-business-reviews'); ?>';
+                btn.textContent = '<?php esc_html_e('Error', 'reviews-for-google-my-business'); ?>';
                 btn.className = 'button button-small is-error';
                 setTimeout(() => {
                     btn.textContent = original;

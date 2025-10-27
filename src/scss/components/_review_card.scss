@@ -1,12 +1,11 @@
 // CSS Custom Properties (variables) for customization
 :root {
-  --gmb-card-bg: #17171A;
-  --gmb-card-radius: 32px;
-  --gmb-star-color: #F85430;
-  --gmb-text-color: #AEAEAE;
-  --gmb-text-color-name: #FFFFFF;
-  --gmb-resume-text-color: #FFFFFF;
-  --gmb-accent-color: #FFFFFF;
+  --gmb-color-card-bg: #F3F5F7;
+  --gmb-radius-card: 16px;
+  --gmb-color-star: #FFC83E;
+  --gmb-color-text-primary: #222222;
+  --gmb-color-text-resume: #222222;
+  --gmb-color-accent: #0F68DD;
 }
 
 // Mixin pour les styles d'étoiles (réutilisable)
@@ -21,7 +20,7 @@
       mask-repeat: no-repeat !important;
       width: 18px;
       height: 18px;
-      background-color: var(--gmb-star-color);
+      background-color: var(--gmb-color-star);
 
       &-full {
         mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='19' height='19' fill='currentColor' viewBox='0 0 19 19'%3E%3Cpath d='M9.202 1.593a.515.515 0 0 1 .93 0l2.328 4.88a.515.515 0 0 0 .397.29l5.361.706c.43.057.602.586.288.884l-3.922 3.723a.515.515 0 0 0-.152.467l.985 5.317a.515.515 0 0 1-.752.546l-4.753-2.58a.515.515 0 0 0-.491 0l-4.752 2.58a.515.515 0 0 1-.752-.546l.984-5.317a.515.515 0 0 0-.152-.467L.828 8.353a.515.515 0 0 1 .287-.884l5.36-.707a.515.515 0 0 0 .398-.288l2.329-4.88Z'/%3E%3C/svg%3E%0A");
@@ -51,7 +50,7 @@
   flex-direction: row;
   align-items: center;
   gap: 16px;
-  color: var(--gmb-resume-text-color);
+  color: var(--gmb-color-text-resume);
 
   .gmb-rating-number {
     font-size: 2.25rem;
@@ -80,8 +79,8 @@
   align-items: flex-start;
   gap: 2.3rem;
   flex: 1 0 0;
-  border-radius: var(--gmb-card-radius);
-  background: var(--gmb-card-bg);
+  border-radius: var(--gmb-radius-card);
+  background: var(--gmb-color-card-bg);
 }
 
 .gmb-review-header {
@@ -123,14 +122,14 @@
 
     .gmb-author-name {
       font-weight: 500;
-      color: var(--gmb-text-color-name);
+      color: var(--gmb-color-text-primary);
     }
 
     .gmb-author-job {
       font-size: 1.1rem;
       line-height: 104%;
       margin: 0;
-      color: var(--gmb-text-color);
+      color: var(--gmb-color-text-primary);
     }
   }
 }
@@ -143,7 +142,7 @@
   p {
     margin: 0;
     line-height: 1.6;
-    color: var(--gmb-text-color);
+    color: var(--gmb-color-text-primary);
   }
 
   // Limitation à 7 lignes uniquement dans le slider (pas dans la modale)
@@ -157,7 +156,7 @@
 
 .gmb-read-more-btn {
   margin-top: 1rem;
-  color: var(--gmb-text-color) !important;
+  color: var(--gmb-color-text-primary) !important;
   cursor: pointer;
   display: none;
   font-size: 1rem;
@@ -176,7 +175,7 @@
     display: inline-block;
     width: 22px;
     height: 22px;
-    background-color: var(--gmb-text-color);
+    background-color: var(--gmb-color-text-primary);
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24'%3E%3Cpath d='M17.417 11.25v1.5H6.584v-1.5h10.833Z'/%3E%3Cpath d='M12.75 17.416h-1.5V6.584h1.5v10.832Z'/%3E%3Cpath d='M23 12c0-6.075-4.925-11-11-11S1 5.925 1 12s4.925 11 11 11v1C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12v-1c6.075 0 11-4.925 11-11Z'/%3E%3C/svg%3E%0A");
     mask-repeat: no-repeat;
     mask-position: center;
@@ -185,10 +184,10 @@
   }
 
   &:hover {
-    color: var(--gmb-accent-color) !important;
+    color: var(--gmb-color-accent) !important;
 
     &:before {
-      background-color: var(--gmb-accent-color);
+      background-color: var(--gmb-color-accent);
     }
   }
 

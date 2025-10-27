@@ -1,6 +1,6 @@
 <?php
 /**
- * Google My Business Reviews - Helper Functions
+ * Reviews for Google My Business - Helper Functions
  */
 
 if (!defined('ABSPATH')) {
@@ -28,7 +28,7 @@ function wgmbr_parse_review_from_post($post)
     // Données du reviewer
     $parsed->name = get_post_meta($post->ID, '_gmb_reviewer_name', true);
     if (empty($parsed->name)) {
-        $parsed->name = __('Anonymous', 'google-my-business-reviews');
+        $parsed->name = esc_html__('Anonymous', 'reviews-for-google-my-business');
     }
 
     $parsed->photo = get_post_meta($post->ID, '_gmb_reviewer_photo', true);
@@ -161,6 +161,7 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
 
     // Si la catégorie est une chaîne vide, chercher les avis sans catégorie
     if ($category_slug === '') {
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by taxonomy, standard WordPress method
         $args['tax_query'] = array(
             array(
                 'taxonomy' => 'gmb_category',
@@ -169,6 +170,7 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
         );
     } else {
         // Filtrer par slug de catégorie (supporte string ou array)
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by category, standard WordPress method
         $args['tax_query'] = array(
             array(
                 'taxonomy' => 'gmb_category',
@@ -189,18 +191,31 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
  */
 function wgmbr_get_average_rating()
 {
-    global $wpdb;
+    $args = array(
+        'post_type' => 'gmb_review',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+    );
 
-    $average = $wpdb->get_var("
-        SELECT AVG(CAST(meta_value AS DECIMAL(3,2)))
-        FROM {$wpdb->postmeta}
-        INNER JOIN {$wpdb->posts} ON {$wpdb->postmeta}.post_id = {$wpdb->posts}.ID
-        WHERE meta_key = '_gmb_rating'
-        AND {$wpdb->posts}.post_type = 'gmb_review'
-        AND {$wpdb->posts}.post_status = 'publish'
-    ");
+    $posts = get_posts($args);
 
-    return $average ? (float)$average : 0;
+    if (empty($posts)) {
+        return 0;
+    }
+
+    $total = 0;
+    $count = 0;
+
+    foreach ($posts as $post_id) {
+        $rating = get_post_meta($post_id, '_gmb_rating', true);
+        if ($rating) {
+            $total += (float)$rating;
+            $count++;
+        }
+    }
+
+    return $count > 0 ? ($total / $count) : 0;
 }
 
 /**
@@ -258,6 +273,7 @@ function wgmbr_get_parsed_review_by_review_id($review_id)
         'post_type' => 'gmb_review',
         'post_status' => 'any',
         'posts_per_page' => 1,
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary to find existing review by unique Google review ID to prevent duplicates
         'meta_query' => array(
             array(
                 'key' => '_gmb_review_id',

@@ -131,12 +131,21 @@ window.resetGMBCustomization = function (btn) {
   var originalText = btn.textContent;
   btn.disabled = true;
   btn.textContent = wgmbrAdmin.i18n.loading;
-  fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_reset_customization').then(function (response) {
+  fetch(wgmbrAdmin.ajaxUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'action=wgmbr_reset_customization'
+  }).then(function (response) {
+    if (!response.ok) {
+      throw new Error('HTTP error ' + response.status);
+    }
     return response.json();
   }).then(function (data) {
     if (data.success) {
-      // Reload page to update the form with default values
-      window.location.href = wgmbrAdmin.settingsUrl + '#customization';
+      // Force page reload to update the form with default values
+      window.location.reload();
     } else {
       var _data$data2;
       alert(wgmbrAdmin.i18n.errorResetting + ' ' + (((_data$data2 = data.data) === null || _data$data2 === void 0 ? void 0 : _data$data2.message) || wgmbrAdmin.i18n.unknownError));
@@ -217,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
   // List of all color fields
-  var colorFields = ['wgmbr_card_bg_color', 'wgmbr_star_color', 'wgmbr_text_color', 'wgmbr_text_color_name', 'gmb-accent-color'];
+  var colorFields = ['wgmbr_color_card_bg', 'wgmbr_color_star', 'wgmbr_color_text_primary', 'wgmbr_color_accent', 'wgmbr_color_text_resume'];
 
   // Initialize sync for each color field
   colorFields.forEach(function (fieldName) {

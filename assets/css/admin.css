@@ -5,6 +5,7 @@
   --color-green-800: #073034;
   --color-grey-100: #E5EBEA;
   --color-grey-200: #C8D5D2;
+  --color-grey-500: #687571;
   --color-grey-800: #495653;
   --radius-md: 12px;
 }
@@ -113,9 +114,6 @@
   max-width: 100% !important;
   padding: 0.7em 2em 2em;
 }
-.card .description {
-  font-size: 12px;
-}
 .card:last-child, .card:first-child {
   margin: 0;
 }
@@ -151,6 +149,7 @@
   border-radius: 12px;
   display: flex;
   align-items: center;
+  margin-top: 12px;
 }
 .gmb-notice p {
   margin: 0;
@@ -240,12 +239,30 @@
 .gmb-wrap .input-button input {
   flex-grow: 1;
 }
-.gmb-wrap input:not([type=color]) {
+.gmb-wrap .input-color {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.gmb-wrap input, .gmb-wrap select {
+  height: 40px;
   border-radius: var(--radius-md);
 }
-.gmb-wrap input:not([type=color]):focus {
+.gmb-wrap input:focus, .gmb-wrap select:focus {
   border-color: var(--color-green-200);
   box-shadow: 0 0 0 1px var(--color-green-200);
+}
+.gmb-wrap label {
+  color: var(--color-green-800);
+}
+.gmb-wrap input::-moz-placeholder {
+  color: var(--color-grey-500);
+}
+.gmb-wrap input::placeholder {
+  color: var(--color-grey-500);
+}
+.gmb-wrap input[type=color] {
+  border-radius: inherit;
 }
 .gmb-wrap input[type=checkbox] {
   margin: 0;
@@ -490,6 +507,10 @@
 .gmb-wrap p, .gmb-wrap li, .wrap p, .wrap li {
   color: var(--color-grey-800);
   font-size: 1.1em;
+}
+.gmb-wrap .description, .wrap .description {
+  font-size: 12px;
+  font-weight: 400;
 }
 
 /* Container principal */

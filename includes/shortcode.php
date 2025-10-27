@@ -1,6 +1,6 @@
 <?php
 /**
- * Google My Business Reviews - Shortcode et affichage HTML
+ * Reviews for Google My Business - Shortcode et affichage HTML
  * Shortcode [gmb_reviews] et fonctions de rendu
  */
 
@@ -39,39 +39,39 @@ function wgmbr_generate_custom_css() {
     $custom_vars = array();
 
     // Card background color
-    $card_bg = get_option('wgmbr_card_bg_color');
-    if ($card_bg && $card_bg !== '#17171A') {
-        $custom_vars[] = "--gmb-card-bg: {$card_bg}";
+    $card_bg = get_option('wgmbr_color_card_bg');
+    if ($card_bg && $card_bg !== '#F3F5F7') {
+        $custom_vars[] = "--gmb-color-card-bg: {$card_bg}";
     }
 
     // Card border radius
-    $card_radius = get_option('wgmbr_card_border_radius');
-    if ($card_radius !== false && $card_radius !== '' && $card_radius !== '32') {
-        $custom_vars[] = "--gmb-card-radius: {$card_radius}px";
+    $card_radius = get_option('wgmbr_radius_card');
+    if ($card_radius !== false && $card_radius !== '' && $card_radius !== '16') {
+        $custom_vars[] = "--gmb-radius-card: {$card_radius}px";
     }
 
     // Star color
-    $star_color = get_option('wgmbr_star_color');
-    if ($star_color && $star_color !== '#F85430') {
-        $custom_vars[] = "--gmb-star-color: {$star_color}";
+    $color_star = get_option('wgmbr_color_star');
+    if ($color_star && $color_star !== '#FFC83E') {
+        $custom_vars[] = "--gmb-color-star: {$color_star}";
     }
 
     // Text color
-    $text_color = get_option('wgmbr_text_color');
-    if ($text_color && $text_color !== '#AEAEAE') {
-        $custom_vars[] = "--gmb-text-color: {$text_color}";
+    $color_text_primary = get_option('wgmbr_color_text_primary');
+    if ($color_text_primary && $color_text_primary !== '#222222') {
+        $custom_vars[] = "--gmb-color-text-primary: {$color_text_primary}";
     }
 
-    // Read more color hover
-    $read_more_color_hover = get_option('gmb-accent-color');
-    if ($read_more_color_hover && $read_more_color_hover !== '#FFFFFF') {
-        $custom_vars[] = "--gmb-accent-color: {$read_more_color_hover}";
+    // Text color resume
+    $color_test_resume = get_option('wgmbr_color_text_resume');
+    if ($color_test_resume && $color_test_resume !== '#222222') {
+        $custom_vars[] = "--gmb-color-text-resume: {$color_test_resume}";
     }
 
-    // Text color name
-    $text_color_name = get_option('wgmbr_text_color_name');
-    if ($text_color_name && $text_color_name !== '#FFFFFF') {
-        $custom_vars[] = "--gmb-text-color-name: {$text_color_name}";
+    // Accent color
+    $color_accent = get_option('wgmbr_color_accent');
+    if ($color_accent && $color_accent !== '#0F68DD') {
+        $custom_vars[] = "--gmb-color-accent: {$color_accent}";
     }
 
     // Generate CSS only if there are custom values

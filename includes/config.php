@@ -1,6 +1,6 @@
 <?php
 /**
- * Google My Business Reviews - Configuration
+ * Reviews for Google My Business - Configuration
  */
 
 if (!defined('ABSPATH')) {

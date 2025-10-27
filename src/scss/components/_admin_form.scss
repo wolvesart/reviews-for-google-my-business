@@ -1,4 +1,6 @@
 .gmb-wrap {
+
+  //Input + button
   .input-button {
     display: flex;
     flex-direction: row;
@@ -9,13 +11,35 @@
     }
   }
 
-  input:not([type='color']) {
+  //Input + color
+  .input-color {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  //Globals changes
+  input, select {
+    height: 40px;
     border-radius: var(--radius-md);
 
     &:focus {
       border-color: var(--color-green-200);
       box-shadow: 0 0 0 1px var(--color-green-200);
     }
+  }
+
+  label {
+    color: var(--color-green-800);
+  }
+
+  input::placeholder {
+    color: var(--color-grey-500);
+  }
+
+  //Type of input
+  input[type="color"] {
+    border-radius: inherit;
   }
 
   input[type="checkbox"] {
@@ -52,7 +76,7 @@
     }
   }
 
-
+  //Transform input type checkbox to toogle
   .switch {
     position: relative;
     display: inline-block;

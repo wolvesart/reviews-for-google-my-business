@@ -1,6 +1,6 @@
 <?php
 /**
- * Google My Business Reviews - Custom Post Types & Taxonomies
+ * Reviews for Google My Business - Custom Post Types & Taxonomies
  * Enregistrement du CPT pour les avis et de la taxonomie pour les catégories
  */
 
@@ -18,19 +18,19 @@ if (!defined('ABSPATH')) {
  */
 function wgmbr_register_review_post_type() {
     $labels = array(
-        'name'                  => __('Google Reviews', 'google-my-business-reviews'),
-        'singular_name'         => __('Google Review', 'google-my-business-reviews'),
-        'menu_name'             => __('Google Reviews', 'google-my-business-reviews'),
-        'name_admin_bar'        => __('Google Review', 'google-my-business-reviews'),
-        'add_new'               => __('Add New', 'google-my-business-reviews'),
-        'add_new_item'          => __('Add New Review', 'google-my-business-reviews'),
-        'new_item'              => __('New Review', 'google-my-business-reviews'),
-        'edit_item'             => __('Edit Review', 'google-my-business-reviews'),
-        'view_item'             => __('View Review', 'google-my-business-reviews'),
-        'all_items'             => __('All Reviews', 'google-my-business-reviews'),
-        'search_items'          => __('Search Reviews', 'google-my-business-reviews'),
-        'not_found'             => __('No reviews found', 'google-my-business-reviews'),
-        'not_found_in_trash'    => __('No reviews found in Trash', 'google-my-business-reviews'),
+        'name'                  => esc_html__('Google Reviews', 'reviews-for-google-my-business'),
+        'singular_name'         => esc_html__('Google Review', 'reviews-for-google-my-business'),
+        'menu_name'             => esc_html__('Google Reviews', 'reviews-for-google-my-business'),
+        'name_admin_bar'        => esc_html__('Google Review', 'reviews-for-google-my-business'),
+        'add_new'               => esc_html__('Add New', 'reviews-for-google-my-business'),
+        'add_new_item'          => esc_html__('Add New Review', 'reviews-for-google-my-business'),
+        'new_item'              => esc_html__('New Review', 'reviews-for-google-my-business'),
+        'edit_item'             => esc_html__('Edit Review', 'reviews-for-google-my-business'),
+        'view_item'             => esc_html__('View Review', 'reviews-for-google-my-business'),
+        'all_items'             => esc_html__('All Reviews', 'reviews-for-google-my-business'),
+        'search_items'          => esc_html__('Search Reviews', 'reviews-for-google-my-business'),
+        'not_found'             => esc_html__('No reviews found', 'reviews-for-google-my-business'),
+        'not_found_in_trash'    => esc_html__('No reviews found in Trash', 'reviews-for-google-my-business'),
     );
 
     $args = array(
@@ -63,20 +63,20 @@ add_action('init', 'wgmbr_register_review_post_type');
  */
 function wgmbr_register_category_taxonomy() {
     $labels = array(
-        'name'                       => __('Review Categories', 'google-my-business-reviews'),
-        'singular_name'              => __('Review Category', 'google-my-business-reviews'),
-        'search_items'               => __('Search Categories', 'google-my-business-reviews'),
-        'popular_items'              => __('Popular Categories', 'google-my-business-reviews'),
-        'all_items'                  => __('All Categories', 'google-my-business-reviews'),
-        'edit_item'                  => __('Edit Category', 'google-my-business-reviews'),
-        'update_item'                => __('Update Category', 'google-my-business-reviews'),
-        'add_new_item'               => __('Add New Category', 'google-my-business-reviews'),
-        'new_item_name'              => __('New Category Name', 'google-my-business-reviews'),
-        'separate_items_with_commas' => __('Separate categories with commas', 'google-my-business-reviews'),
-        'add_or_remove_items'        => __('Add or remove categories', 'google-my-business-reviews'),
-        'choose_from_most_used'      => __('Choose from most used categories', 'google-my-business-reviews'),
-        'not_found'                  => __('No categories found', 'google-my-business-reviews'),
-        'menu_name'                  => __('Categories', 'google-my-business-reviews'),
+        'name'                       => esc_html__('Review Categories', 'reviews-for-google-my-business'),
+        'singular_name'              => esc_html__('Review Category', 'reviews-for-google-my-business'),
+        'search_items'               => esc_html__('Search Categories', 'reviews-for-google-my-business'),
+        'popular_items'              => esc_html__('Popular Categories', 'reviews-for-google-my-business'),
+        'all_items'                  => esc_html__('All Categories', 'reviews-for-google-my-business'),
+        'edit_item'                  => esc_html__('Edit Category', 'reviews-for-google-my-business'),
+        'update_item'                => esc_html__('Update Category', 'reviews-for-google-my-business'),
+        'add_new_item'               => esc_html__('Add New Category', 'reviews-for-google-my-business'),
+        'new_item_name'              => esc_html__('New Category Name', 'reviews-for-google-my-business'),
+        'separate_items_with_commas' => esc_html__('Separate categories with commas', 'reviews-for-google-my-business'),
+        'add_or_remove_items'        => esc_html__('Add or remove categories', 'reviews-for-google-my-business'),
+        'choose_from_most_used'      => esc_html__('Choose from most used categories', 'reviews-for-google-my-business'),
+        'not_found'                  => esc_html__('No categories found', 'reviews-for-google-my-business'),
+        'menu_name'                  => esc_html__('Categories', 'reviews-for-google-my-business'),
     );
 
     $args = array(
@@ -111,7 +111,7 @@ function wgmbr_save_review_as_post($review_data) {
                  (isset($review_data['name']) ? $review_data['name'] : '');
 
     if (empty($review_id)) {
-        return new WP_Error('missing_review_id', __('Review ID is missing', 'google-my-business-reviews'));
+        return new WP_Error('missing_review_id', esc_html__('Review ID is missing', 'reviews-for-google-my-business'));
     }
 
     // Vérifier si l'avis existe déjà
@@ -119,7 +119,7 @@ function wgmbr_save_review_as_post($review_data) {
 
     // Données du reviewer
     $reviewer = isset($review_data['reviewer']) ? $review_data['reviewer'] : array();
-    $reviewer_name = isset($reviewer['displayName']) ? $reviewer['displayName'] : __('Anonymous', 'google-my-business-reviews');
+    $reviewer_name = isset($reviewer['displayName']) ? $reviewer['displayName'] : esc_html__('Anonymous', 'reviews-for-google-my-business');
     $reviewer_photo = isset($reviewer['profilePhotoUrl']) ? $reviewer['profilePhotoUrl'] : '';
 
     // Note
@@ -141,7 +141,8 @@ function wgmbr_save_review_as_post($review_data) {
 
     // Préparer les données du post
     $post_data = array(
-        'post_title'    => sprintf(__('Review by %s', 'google-my-business-reviews'), $reviewer_name),
+        /* translators: %s: Reviewer name */
+        'post_title'    => sprintf(esc_html__('Review by %s', 'reviews-for-google-my-business'), $reviewer_name),
         'post_content'  => $comment,
         'post_status'   => 'publish',
         'post_type'     => 'gmb_review',
@@ -181,6 +182,7 @@ function wgmbr_get_review_by_review_id($review_id) {
         'post_type'      => 'gmb_review',
         'post_status'    => 'any',
         'posts_per_page' => 1,
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary to find existing review by unique Google review ID to prevent duplicates during sync
         'meta_query'     => array(
             array(
                 'key'     => '_gmb_review_id',

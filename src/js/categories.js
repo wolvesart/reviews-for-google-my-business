@@ -1,20 +1,13 @@
-<?php
-/**
- * Google My Business Reviews - Scripts de gestion des avis
- */
-
-// Interdire l'accès direct
-if (!defined('ABSPATH')) {
-    exit;
-}
-?>
-
-<script>
 // ============================================================================
 // GESTION DES CATÉGORIES
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier que l'objet wgmbrManage existe
+    if (typeof wgmbrManage === 'undefined') {
+        return;
+    }
+
     // Bouton de création de catégorie
     const createCategoryBtn = document.getElementById('gmb-create-category-btn');
     const categoryNameInput = document.getElementById('gmb-new-category-name');
@@ -24,16 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const categoryName = categoryNameInput.value.trim();
 
             if (!categoryName) {
-                alert('<?php _e('Please enter a category name', 'google-my-business-reviews'); ?>');
+                alert(wgmbrManage.i18n.enterCategoryName);
                 return;
             }
 
             // Désactiver le bouton pendant la requête
             createCategoryBtn.disabled = true;
-            createCategoryBtn.textContent = '<?php _e('Creating...', 'google-my-business-reviews'); ?>';
+            createCategoryBtn.textContent = wgmbrManage.i18n.creating;
 
             // Créer la catégorie via AJAX
-            fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+            fetch(wgmbrManage.ajaxUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -41,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: new URLSearchParams({
                     action: 'wgmbr_create_category',
                     category_name: categoryName,
-                    nonce: '<?php echo wp_create_nonce('wgmbr_categories'); ?>'
+                    nonce: wgmbrManage.nonce
                 })
             })
             .then(response => response.json())
@@ -50,15 +43,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Recharger la page pour afficher la nouvelle catégorie
                     window.location.reload();
                 } else {
-                    alert('<?php _e('Error:', 'google-my-business-reviews'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'google-my-business-reviews'); ?>'));
+                    alert(wgmbrManage.i18n.error + ' ' + (data.data?.message || wgmbrManage.i18n.unknownError));
                     createCategoryBtn.disabled = false;
-                    createCategoryBtn.textContent = '<?php _e('Create category', 'google-my-business-reviews'); ?>';
+                    createCategoryBtn.textContent = wgmbrManage.i18n.createCategory;
                 }
             })
             .catch(error => {
-                alert('<?php _e('Network error:', 'google-my-business-reviews'); ?> ' + error.message);
+                alert(wgmbrManage.i18n.networkError + ' ' + error.message);
                 createCategoryBtn.disabled = false;
-                createCategoryBtn.textContent = '<?php _e('Create category', 'google-my-business-reviews'); ?>';
+                createCategoryBtn.textContent = wgmbrManage.i18n.createCategory;
             });
         });
 
@@ -77,16 +70,16 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const categoryId = this.dataset.categoryId;
 
-            if (!confirm('<?php _e('Are you sure you want to delete this category? It will be removed from all reviews that use it.', 'google-my-business-reviews'); ?>')) {
+            if (!confirm(wgmbrManage.i18n.confirmDeleteCategory)) {
                 return;
             }
 
             // Désactiver le bouton pendant la requête
             this.disabled = true;
-            this.textContent = '<?php _e('Deleting...', 'google-my-business-reviews'); ?>';
+            this.textContent = wgmbrManage.i18n.deleting;
 
             // Supprimer la catégorie via AJAX
-            fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+            fetch(wgmbrManage.ajaxUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -94,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: new URLSearchParams({
                     action: 'wgmbr_delete_category',
                     category_id: categoryId,
-                    nonce: '<?php echo wp_create_nonce('wgmbr_categories'); ?>'
+                    nonce: wgmbrManage.nonce
                 })
             })
             .then(response => response.json())
@@ -103,17 +96,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Recharger la page pour mettre à jour la liste
                     window.location.reload();
                 } else {
-                    alert('<?php _e('Error:', 'google-my-business-reviews'); ?> ' + (data.data?.message || '<?php _e('Unknown error', 'google-my-business-reviews'); ?>'));
+                    alert(wgmbrManage.i18n.error + ' ' + (data.data?.message || wgmbrManage.i18n.unknownError));
                     this.disabled = false;
-                    this.textContent = '<?php _e('Delete', 'google-my-business-reviews'); ?>';
+                    this.textContent = wgmbrManage.i18n.delete;
                 }
             })
             .catch(error => {
-                alert('<?php _e('Network error:', 'google-my-business-reviews'); ?> ' + error.message);
+                alert(wgmbrManage.i18n.networkError + ' ' + error.message);
                 this.disabled = false;
-                this.textContent = '<?php _e('Delete', 'google-my-business-reviews'); ?>';
+                this.textContent = wgmbrManage.i18n.delete;
             });
         });
     });
 });
-</script>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Google My Business Reviews
+ * Plugin Name: Reviews for Google My Business
  * Plugin URI: https://wolvesart.fr
  * Description: Display your Google My Business reviews on your website for free. Improve your credibility and gain trust. Category system, full customization, and flexible shortcode.
  * Version: 1.0.0
@@ -8,7 +8,7 @@
  * Author URI: https://wolvesart.fr
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: google-my-business-reviews
+ * Text Domain: reviews-for-google-my-business
  * Domain Path: /languages
  */
 
@@ -23,7 +23,7 @@ define('WOLVES_GMB_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WOLVES_GMB_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
 
-class google_my_business_reviews {
+class reviews_for_google_my_business {
 
     // Single instance of the plugin (Singleton)
     private static $instance = null;
@@ -81,7 +81,7 @@ class google_my_business_reviews {
 
     // Add links to the plugins list
     public function add_action_links($links) {
-        $settings_link = '<a href="' . admin_url('admin.php?page=gmb-settings') . '">' . __('Configuration', 'google-my-business-reviews') . '</a>';
+        $settings_link = '<a href="' . admin_url('admin.php?page=gmb-settings') . '">' . esc_html__('Configuration', 'reviews-for-google-my-business') . '</a>';
         array_unshift($links, $settings_link);
 
         return $links;
@@ -90,7 +90,7 @@ class google_my_business_reviews {
 
 // Global plugin access function
 function wgmbr_google_reviews_init() {
-    return google_my_business_reviews::get_instance();
+    return reviews_for_google_my_business::get_instance();
 }
 
 wgmbr_google_reviews_init();

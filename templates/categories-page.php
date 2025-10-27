@@ -1,6 +1,6 @@
 <?php
 /**
- * Google My Business Reviews - Page de gestion des catégories
+ * Reviews for Google My Business - Page de gestion des catégories
  */
 
 // Interdire l'accès direct
@@ -29,32 +29,34 @@ if (is_wp_error($categories)) {
         <div class="section row">
             <div class="card-list">
                 <div class="card">
-                    <h2><?php _e('Create a new category', 'google-my-business-reviews'); ?></h2>
-                    <p><?php _e('Categories allow you to organize your Google My Business reviews and filter them on your website.', 'google-my-business-reviews'); ?></p>
+                    <h2><?php esc_html_e('Create a new category', 'reviews-for-google-my-business'); ?></h2>
+                    <p><?php esc_html_e('Categories allow you to organize your Google My Business reviews and filter them on your website.', 'reviews-for-google-my-business'); ?></p>
 
                     <div class="input-button">
                         <input type="text"
                                id="gmb-new-category-name"
-                               placeholder="<?php esc_attr_e('New category name (e.g: Training, Coaching, Design...)', 'google-my-business-reviews'); ?>"
+                               placeholder="<?php esc_attr_e('New category name (e.g: Training, Coaching, Design...)', 'reviews-for-google-my-business'); ?>"
                         >
                         <button type="button"
                                 id="gmb-create-category-btn"
                                 class="button button-primary">
-                            <?php _e('Create category', 'google-my-business-reviews'); ?>
+                            <?php esc_html_e('Create category', 'reviews-for-google-my-business'); ?>
                         </button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2><?php printf(__('Existing categories (%d)', 'google-my-business-reviews'), count($categories)); ?></h2>
+                    <h2><?php
+                    /* translators: %d: Number of categories */
+                    printf(esc_html__('Existing categories (%d)', 'reviews-for-google-my-business'), count($categories)); ?></h2>
 
                     <?php if (!empty($categories)): ?>
                         <table class="wp-list-table widefat fixed striped">
                             <thead>
                             <tr>
-                                <th><?php _e('Name', 'google-my-business-reviews'); ?></th>
-                                <th><?php _e('Slug', 'google-my-business-reviews'); ?></th>
-                                <th><?php _e('Action', 'google-my-business-reviews'); ?></th>
+                                <th><?php esc_html_e('Name', 'reviews-for-google-my-business'); ?></th>
+                                <th><?php esc_html_e('Slug', 'reviews-for-google-my-business'); ?></th>
+                                <th><?php esc_html_e('Action', 'reviews-for-google-my-business'); ?></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -73,7 +75,7 @@ if (is_wp_error($categories)) {
                                                 class="button button-secondary button-small gmb-delete-category-btn"
                                                 data-category-id="<?php echo esc_attr($cat->term_id); ?>"
                                                 >
-                                            <?php _e('Delete', 'google-my-business-reviews'); ?>
+                                            <?php esc_html_e('Delete', 'reviews-for-google-my-business'); ?>
                                         </button>
                                     </td>
                                 </tr>
@@ -84,8 +86,8 @@ if (is_wp_error($categories)) {
                         <div>
                             <span class="dashicons dashicons-category"></span>
                             <p>
-                                <?php _e('No categories created yet.', 'google-my-business-reviews'); ?><br>
-                                <?php _e('Create your first category above to start organizing your reviews.', 'google-my-business-reviews'); ?>
+                                <?php esc_html_e('No categories created yet.', 'reviews-for-google-my-business'); ?><br>
+                                <?php esc_html_e('Create your first category above to start organizing your reviews.', 'reviews-for-google-my-business'); ?>
                             </p>
                         </div>
                     <?php endif; ?>
@@ -96,8 +98,3 @@ if (is_wp_error($categories)) {
 
         </div>
     </div>
-
-    <?php
-    // Charger les scripts JavaScript
-    require_once WOLVES_GMB_PLUGIN_DIR . 'templates/manage-reviews-scripts.php';
-    ?>

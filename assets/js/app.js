@@ -10825,7 +10825,7 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 			return __webpack_require__.O(result);
 /******/ 		}
 /******/ 		
-/******/ 		var chunkLoadingGlobal = self["webpackChunkgoogle_my_business_reviews"] = self["webpackChunkgoogle_my_business_reviews"] || [];
+/******/ 		var chunkLoadingGlobal = self["webpackChunkreviews_for_google_my_business"] = self["webpackChunkreviews_for_google_my_business"] || [];
 /******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
 /******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
 /******/ 	})();

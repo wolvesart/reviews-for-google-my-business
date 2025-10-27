@@ -1,6 +1,6 @@
 <?php
 /**
- * Google My Business Reviews - API Functions
+ * Reviews for Google My Business - API Functions
  * Fonctions OAuth 2.0 et appels API
  */
 
@@ -289,11 +289,20 @@ function wgmbr_fetch_reviews() {
  * Gère le callback OAuth de Google
  */
 function wgmbr_handle_oauth_callback() {
+    // Vérifier le paramètre d'authentification
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback from Google, nonce not applicable
     if (!isset($_GET['wgmbr_auth'])) {
         return;
     }
 
+    // Vérifier les permissions
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('You do not have sufficient permissions.', 'reviews-for-google-my-business'));
+    }
+
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback from Google, nonce not applicable
     if (isset($_GET['code'])) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback from Google, nonce not applicable
         $code = sanitize_text_field(wp_unslash($_GET['code']));
         $success = wgmbr_exchange_code_for_token($code);
 
@@ -360,7 +369,7 @@ function wgmbr_sync_reviews_to_cpt($reviews) {
     if (empty($reviews) || !is_array($reviews)) {
         return array(
             'success' => false,
-            'message' => __('No reviews to synchronize', 'google-my-business-reviews')
+            'message' => esc_html__('No reviews to synchronize', 'reviews-for-google-my-business')
         );
     }
 

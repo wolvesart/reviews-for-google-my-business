@@ -8,7 +8,6 @@
  * - $review_index (int) : Index de l'avis (pour le bouton "Lire la suite")
  */
 
-// Interdire l'accès direct
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -21,7 +20,7 @@ $review_index = isset($review_index) ? $review_index : 0;
     <div class="gmb-review-header">
         <div class="gmb-review-meta">
             <div class="gmb-stars">
-                <?php echo wgmbr_render_stars($parsed->rating); ?>
+                <?php echo wp_kses_post(wgmbr_render_stars($parsed->rating)); ?>
             </div>
         </div>
         <?php if (!$is_modal): ?>
@@ -31,11 +30,11 @@ $review_index = isset($review_index) ? $review_index : 0;
 
     <?php if ($parsed->comment): ?>
         <div class="gmb-review-content"
-             <?php if (!$is_modal): ?>data-review-index="<?php echo $review_index; ?>"<?php endif; ?>>
+             <?php if (!$is_modal): ?>data-review-index="<?php echo absint($review_index); ?>"<?php endif; ?>>
             <p><?php echo esc_html($parsed->comment); ?></p>
             <?php if (!$is_modal): ?>
-                <button class="gmb-read-more-btn" data-review-index="<?php echo $review_index; ?>">
-                    Lire la suite
+                <button class="gmb-read-more-btn" data-review-index="<?php echo absint($review_index); ?>">
+                    <?php esc_html_e('Read more', 'reviews-for-google-my-business'); ?>
                 </button>
             <?php endif; ?>
         </div>

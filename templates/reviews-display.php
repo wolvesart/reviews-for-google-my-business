@@ -1,13 +1,12 @@
 <?php
 /**
- * Google My Business Reviews - Template d'affichage des avis
+ * Reviews for Google My Business - Template d'affichage des avis
  *
  * Variables disponibles :
  * - $data (array) : Données des avis
  * - $atts (array) : Attributs du shortcode
  */
 
-// Interdire l'accès direct
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -24,7 +23,7 @@ if (!defined('ABSPATH')) {
             <span class="gmb-rating-number"><?php echo number_format($data['average_rating'], 1); ?></span>
             <div class="gmb-overall-rating">
                 <div class="gmb-stars">
-                    <?php echo wgmbr_render_stars($data['average_rating']); ?>
+                    <?php echo wp_kses_post(wgmbr_render_stars($data['average_rating'])); ?>
                 </div>
                 <span class="gmb-total-reviews">Basé sur <?php echo esc_html($data['total']); ?> avis</span>
             </div>
@@ -81,7 +80,7 @@ if (!defined('ABSPATH')) {
             $review_index = $count;
             $is_modal = true;
             ?>
-            <div class="gmb-modal-template" data-review-index="<?php echo $review_index; ?>">
+            <div class="gmb-modal-template" data-review-index="<?php echo absint($review_index); ?>">
                 <?php include WOLVES_GMB_PLUGIN_DIR . 'templates/review-card.php'; ?>
             </div>
             <?php
