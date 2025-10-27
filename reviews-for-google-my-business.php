@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Définir les constantes du plugin
+// Define plugin constants
 define('WOLVES_GMB_VERSION', '1.0.0');
 define('WOLVES_GMB_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WOLVES_GMB_PLUGIN_URL', plugin_dir_url(__FILE__));
