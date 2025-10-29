@@ -1,12 +1,12 @@
 <?php
 /**
- * Reviews for Google My Business - Template de gestion des avis
+ * Reviews for Google My Business - Review management template
  *
  * Variables disponibles :
- * - $data (array) : Données des avis depuis l'API GMB
+ * - $data (array) : Review data from the GMB API
  */
 
-// Interdire l'accès direct
+// Block direct access
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -86,9 +86,9 @@ if (!defined('ABSPATH')) {
                 </thead>
                 <tbody>
                 <?php foreach ($data['reviews'] as $parsed):
-                    // $parsed est déjà un objet parsé depuis le CPT
+                    // $parsed is already a parsed object from the CPT
 
-                    // ID unique pour le formulaire
+                    // Unique ID for the form
                     $form_id = 'review-form-' . $parsed->post_id;
                     ?>
                     <tr id="<?php echo esc_attr($form_id); ?>">
@@ -149,7 +149,7 @@ if (!defined('ABSPATH')) {
             </table>
 
             <?php
-            // Pagination WordPress native
+            // Native WordPress pagination
             if ($data['query']->max_num_pages > 1):
                 $pagination_args = array(
                         'base' => add_query_arg('paged', '%#%'),
@@ -193,7 +193,7 @@ if (!defined('ABSPATH')) {
             .then(data => {
                 if (data.success) {
                     button.textContent = '<?php esc_html_e('✓ Synchronization complete', 'reviews-for-google-my-business'); ?>';
-                    // Recharger la page après 2 secondes
+                    // Reload the page after 2 seconds
                     setTimeout(() => {
                         window.location.reload();
                     }, 2000);
@@ -210,7 +210,7 @@ if (!defined('ABSPATH')) {
             });
     }
 
-    // Sauvegarde AJAX simple
+    // Simple AJAX backup
     document.addEventListener('click', (e) => {
         if (!e.target.matches('.gmb-save-review-btn')) return;
 

@@ -1,10 +1,10 @@
 <?php
 /**
  * Reviews for Google My Business - Custom Post Types & Taxonomies
- * Enregistrement du CPT pour les avis et de la taxonomie pour les catégories
+ * Registration of CPT for reviews and taxonomy for categories
  */
 
-// Interdire l'accès direct
+// Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -100,13 +100,13 @@ add_action('init', 'wgmbr_register_category_taxonomy', 1); // Priority 1: Regist
 // ============================================================================
 
 /**
- * Sauvegarde ou met à jour un avis Google en tant que CPT
+ * Save or update a Google review as CPT
  *
- * @param array $review_data Données de l'avis depuis l'API GMB
- * @return int|WP_Error ID du post créé/mis à jour ou WP_Error
+ * @param array $review_data Review data from GMB API
+ * @return int|WP_Error Created/updated post ID or WP_Error
  */
 function wgmbr_save_review_as_post($review_data) {
-    // Extraire les données
+    // Extract data
     $review_id = isset($review_data['reviewId']) ? $review_data['reviewId'] :
                  (isset($review_data['name']) ? $review_data['name'] : '');
 
@@ -114,22 +114,22 @@ function wgmbr_save_review_as_post($review_data) {
         return new WP_Error('missing_review_id', esc_html__('Review ID is missing', 'reviews-for-google-my-business'));
     }
 
-    // Vérifier si l'avis existe déjà
+    // Check if review already exists
     $existing_post = wgmbr_get_review_by_review_id($review_id);
 
-    // Données du reviewer
+    // Reviewer data
     $reviewer = isset($review_data['reviewer']) ? $review_data['reviewer'] : array();
     $reviewer_name = isset($reviewer['displayName']) ? $reviewer['displayName'] : esc_html__('Anonymous', 'reviews-for-google-my-business');
     $reviewer_photo = isset($reviewer['profilePhotoUrl']) ? $reviewer['profilePhotoUrl'] : '';
 
-    // Note
+    // Rating
     $star_rating = isset($review_data['starRating']) ? $review_data['starRating'] : 'STAR_RATING_UNSPECIFIED';
     $rating = wgmbr_convert_star_rating($star_rating);
 
-    // Commentaire
+    // Comment
     $comment = isset($review_data['comment']) ? $review_data['comment'] : '';
 
-    // Nettoyer la traduction Google
+    // Clean Google translation
     if (strpos($comment, '(Original)') !== false) {
         if (preg_match('/\(Original\)\s*(.+)$/s', $comment, $matches)) {
             $comment = trim($matches[1]);
@@ -139,7 +139,7 @@ function wgmbr_save_review_as_post($review_data) {
     // Date
     $review_date = isset($review_data['createTime']) ? $review_data['createTime'] : current_time('mysql');
 
-    // Préparer les données du post
+    // Prepare post data
     $post_data = array(
         /* translators: %s: Reviewer name */
         'post_title'    => sprintf(esc_html__('Review by %s', 'reviews-for-google-my-business'), $reviewer_name),
@@ -149,7 +149,7 @@ function wgmbr_save_review_as_post($review_data) {
         'post_date'     => wp_date('Y-m-d H:i:s', strtotime($review_date)),
     );
 
-    // Si le post existe, mettre à jour
+    // If post exists, update it
     if ($existing_post) {
         $post_data['ID'] = $existing_post->ID;
         $post_id = wp_update_post($post_data);
@@ -161,12 +161,12 @@ function wgmbr_save_review_as_post($review_data) {
         return $post_id;
     }
 
-    // Sauvegarder les meta données
+    // Save meta data
     update_post_meta($post_id, '_gmb_review_id', $review_id);
     update_post_meta($post_id, '_gmb_reviewer_name', $reviewer_name);
     update_post_meta($post_id, '_gmb_reviewer_photo', $reviewer_photo);
     update_post_meta($post_id, '_gmb_rating', $rating);
-    update_post_meta($post_id, '_gmb_job', ''); // Sera rempli manuellement dans l'admin
+    update_post_meta($post_id, '_gmb_job', ''); // Will be filled manually in admin
 
     return $post_id;
 }

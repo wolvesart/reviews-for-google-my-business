@@ -1,10 +1,10 @@
 <?php
 /**
- * Reviews for Google My Business - Template d'affichage des avis
+ * Reviews for Google My Business - Template reviews display
  *
- * Variables disponibles :
- * - $data (array) : Données des avis
- * - $atts (array) : Attributs du shortcode
+ * Variables:
+ * - $data (array) : reviews data
+ * - $atts (array) : shortcode attributs
  */
 
 if (!defined('ABSPATH')) {
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 <div class="gmb-reviews-container">
 
     <?php
-    // Vérifier si l'affichage du résumé est demandé (contrôlé par le shortcode)
+    // Check if the summary display is requested (controlled by the shortcode)
     $show_summary = isset($data['show_summary']) ? $data['show_summary'] : true;
     if ($show_summary && isset($data['average_rating']) && $data['average_rating'] > 0):
         ?>
@@ -38,7 +38,7 @@ if (!defined('ABSPATH')) {
                 foreach ($data['reviews'] as $parsed):
                     $count++;
 
-                    // $parsed est déjà un objet parsé depuis le CPT
+                    // $parsed is already a parsed object from the CPT
                     ?>
 
                     <div class="swiper-slide">
@@ -68,7 +68,7 @@ if (!defined('ABSPATH')) {
             </button>
 
             <div class="gmb-modal-body">
-                <!-- Contenu injecté dynamiquement -->
+                <!-- Dynamically injected content -->
             </div>
         </div>
     </div>

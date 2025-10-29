@@ -8,10 +8,10 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Parse les données d'un avis CPT et retourne un objet standardisé
+ * Parse review CPT data and return a standardized object
  *
- * @param WP_Post|int $post Post object ou ID du post
- * @return object|null Objet contenant les données parsées de l'avis ou null
+ * @param WP_Post|int $post Post object or post ID
+ * @return object|null Object containing parsed review data or null
  */
 function wgmbr_parse_review_from_post($post)
 {
@@ -25,7 +25,7 @@ function wgmbr_parse_review_from_post($post)
 
     $parsed = new stdClass();
 
-    // Données du reviewer
+    // Reviewer data
     $parsed->name = get_post_meta($post->ID, '_gmb_reviewer_name', true);
     if (empty($parsed->name)) {
         $parsed->name = esc_html__('Anonymous', 'reviews-for-google-my-business');
@@ -33,22 +33,22 @@ function wgmbr_parse_review_from_post($post)
 
     $parsed->photo = get_post_meta($post->ID, '_gmb_reviewer_photo', true);
 
-    // Note
+    // Rating
     $parsed->rating = (float)get_post_meta($post->ID, '_gmb_rating', true);
 
-    // Commentaire
+    // Comment
     $parsed->comment = $post->post_content;
 
     // Date
     $parsed->date = strtotime($post->post_date);
 
-    // ID de l'avis Google
+    // Google review ID
     $parsed->review_id = get_post_meta($post->ID, '_gmb_review_id', true);
 
-    // Données personnalisées (job)
+    // Custom data (job)
     $parsed->job = get_post_meta($post->ID, '_gmb_job', true);
 
-    // Catégories (taxonomie)
+    // Categories (taxonomy)
     $terms = wp_get_post_terms($post->ID, 'gmb_category');
     $parsed->categories = !is_wp_error($terms) ? $terms : array();
     $parsed->category_ids = array_map(function ($term) {
@@ -61,17 +61,17 @@ function wgmbr_parse_review_from_post($post)
         return $term->slug;
     }, $parsed->categories);
 
-    // ID du post WordPress
+    // WordPress post ID
     $parsed->post_id = $post->ID;
 
     return $parsed;
 }
 
 /**
- * Récupère tous les avis avec filtrage optionnel
+ * Get all reviews with optional filtering
  *
- * @param array $args Arguments personnalisés
- * @return array Tableau d'objets parsés
+ * @param array $args Custom arguments
+ * @return array Array of parsed objects
  */
 function wgmbr_get_all_reviews($args = array())
 {
@@ -103,10 +103,10 @@ function wgmbr_get_all_reviews($args = array())
 }
 
 /**
- * Récupère tous les avis avec filtrage optionnel et retourne l'objet WP_Query
- * Utilisé pour la pagination dans l'admin
+ * Get all reviews with optional filtering and return WP_Query object
+ * Used for pagination in admin
  *
- * @param array $args Arguments personnalisés
+ * @param array $args Custom arguments
  * @return array ['query' => WP_Query, 'reviews' => array]
  */
 function wgmbr_get_all_reviews_with_query($args = array())
@@ -143,11 +143,11 @@ function wgmbr_get_all_reviews_with_query($args = array())
 }
 
 /**
- * Récupère les avis filtrés par catégorie
+ * Get reviews filtered by category
  *
- * @param string|array $category_slug Slug de la catégorie (vide = avis sans catégorie, tableau = plusieurs catégories)
- * @param int $limit Nombre d'avis à récupérer
- * @return array Tableau d'objets parsés
+ * @param string|array $category_slug Category slug (empty = reviews without category, array = multiple categories)
+ * @param int $limit Number of reviews to retrieve
+ * @return array Array of parsed objects
  */
 function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
 {
@@ -159,7 +159,7 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
         'order' => 'DESC',
     );
 
-    // Si la catégorie est une chaîne vide, chercher les avis sans catégorie
+    // If category is empty string, find reviews without category
     if ($category_slug === '') {
         // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by taxonomy, standard WordPress method
         $args['tax_query'] = array(
@@ -169,14 +169,14 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
             ),
         );
     } else {
-        // Filtrer par slug de catégorie (supporte string ou array)
+        // Filter by category slug (supports string or array)
         // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by category, standard WordPress method
         $args['tax_query'] = array(
             array(
                 'taxonomy' => 'gmb_category',
                 'field' => 'slug',
-                'terms' => $category_slug, // WordPress accepte string ou array
-                'operator' => 'IN', // IN = au moins une des catégories
+                'terms' => $category_slug, // WordPress accepts string or array
+                'operator' => 'IN', // IN = at least one of the categories
             ),
         );
     }
@@ -185,10 +185,10 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
 }
 
 /**
- * Calcule la note moyenne de tous les avis
+ * Calculate average rating of all reviews
  * Optimized version with caching and single query
  *
- * @return float Note moyenne
+ * @return float Average rating
  */
 function wgmbr_get_average_rating()
 {
@@ -228,9 +228,9 @@ function wgmbr_get_average_rating()
 }
 
 /**
- * Compte le nombre total d'avis
+ * Count total number of reviews
  *
- * @return int Nombre total d'avis
+ * @return int Total number of reviews
  */
 function wgmbr_get_total_reviews_count()
 {
@@ -239,11 +239,11 @@ function wgmbr_get_total_reviews_count()
 }
 
 /**
- * Met à jour le job d'un avis
+ * Update review job field
  *
- * @param int $post_id ID du post
- * @param string $job Poste de la personne
- * @return bool True si succès
+ * @param int $post_id Post ID
+ * @param string $job Person's job title
+ * @return bool True on success
  */
 function wgmbr_update_review_job($post_id, $job)
 {
@@ -251,33 +251,33 @@ function wgmbr_update_review_job($post_id, $job)
 }
 
 /**
- * Assigne des catégories à un avis
+ * Assign categories to a review
  *
- * @param int $post_id ID du post
- * @param array $category_ids Tableau des IDs de catégories (term_ids)
- * @return array|WP_Error Array of term taxonomy IDs ou WP_Error
+ * @param int $post_id Post ID
+ * @param array $category_ids Array of category IDs (term_ids)
+ * @return array|WP_Error Array of term taxonomy IDs or WP_Error
  */
 function wgmbr_set_review_categories($post_id, $category_ids = array())
 {
     if (empty($category_ids)) {
-        // Retirer toutes les catégories
+        // Remove all categories
         return wp_set_post_terms($post_id, array(), 'gmb_category');
     }
 
-    // Assigner les catégories
+    // Assign categories
     return wp_set_post_terms($post_id, $category_ids, 'gmb_category');
 }
 
 /**
- * Récupère un avis parsé par son review_id Google
- * Note: utilise wgmbr_get_review_post_by_review_id() de post-types.php
+ * Get parsed review by Google review_id
+ * Note: uses wgmbr_get_review_post_by_review_id() from post-types.php
  *
- * @param string $review_id ID de l'avis Google
- * @return object|null Objet parsé de l'avis ou null
+ * @param string $review_id Google review ID
+ * @return object|null Parsed review object or null
  */
 function wgmbr_get_parsed_review_by_review_id($review_id)
 {
-    // Utiliser la fonction de post-types.php qui retourne le WP_Post
+    // Use post-types.php function that returns WP_Post
     $args = array(
         'post_type' => 'gmb_review',
         'post_status' => 'any',
@@ -301,7 +301,7 @@ function wgmbr_get_parsed_review_by_review_id($review_id)
     return wgmbr_parse_review_from_post($posts[0]);
 }
 
-//Create php component
+// Create PHP component
 function wgmbr_get_template_parts($path, $params = [])
 {
     include WOLVES_GMB_PLUGIN_DIR . $path . '.php';

@@ -1,11 +1,11 @@
 <?php
 /**
- * Template partiel pour une carte d'avis
+ * Partial template for review card
  *
- * Variables attendues :
- * - $parsed (object) : Données parsées de l'avis
- * - $is_modal (bool) : Si true, affichage pour la modale (sans truncation)
- * - $review_index (int) : Index de l'avis (pour le bouton "Lire la suite")
+ * Variables:
+ * - $parsed (object)
+ * - $is_modal (bool)
+ * - $review_index (int)
  */
 
 if (!defined('ABSPATH')) {

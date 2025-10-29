@@ -45,9 +45,8 @@ function wgmbr_add_admin_menu()
 
 add_action('admin_menu', 'wgmbr_add_admin_menu');
 
-/**
- * Save styles and admin scripts
- */
+
+// Save styles and admin scripts
 function wgmbr_enqueue_admin_assets($hook)
 {
     if (!in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_SETTINGS_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
@@ -186,9 +185,7 @@ function wgmbr_manage_reviews_page()
     require_once WOLVES_GMB_PLUGIN_DIR . 'templates/manage-reviews-page.php';
 }
 
-/**
- * Categories page
- */
+// Categories page
 function wgmbr_categories_page()
 {
     if (!current_user_can('manage_options')) {
@@ -202,9 +199,7 @@ function wgmbr_categories_page()
 // ACTIONS AJAX
 // ============================================================================
 
-/**
- * Refresh locations
- */
+// Refresh locations
 function wgmbr_refresh_locations_ajax()
 {
     if (!current_user_can('manage_options')) {
@@ -223,9 +218,8 @@ function wgmbr_refresh_locations_ajax()
 
 add_action('wp_ajax_wgmbr_refresh_locations', 'wgmbr_refresh_locations_ajax');
 
-/**
- * Reset: Clear cache and delete all review CPTs
- */
+
+// Reset: Clear cache and delete all review CPTs
 function wgmbr_clear_cache_ajax()
 {
     if (!current_user_can('manage_options')) {
@@ -268,9 +262,8 @@ function wgmbr_clear_cache_ajax()
 
 add_action('wp_ajax_wgmbr_clear_cache', 'wgmbr_clear_cache_ajax');
 
-/**
- * Test connection
- */
+
+// Test connection
 function wgmbr_test_connection_ajax()
 {
     if (!current_user_can('manage_options')) {
@@ -306,9 +299,8 @@ add_action('wp_ajax_wgmbr_test_connection', 'wgmbr_test_connection_ajax');
 // ACTIONS POST
 // ============================================================================
 
-/**
- * Save credentials
- */
+
+// Save credentials
 function wgmbr_save_credentials()
 {
     if (!current_user_can('manage_options')) {
@@ -360,9 +352,8 @@ function wgmbr_save_credentials()
 
 add_action('admin_post_wgmbr_save_credentials', 'wgmbr_save_credentials');
 
-/**
- * Save location
- */
+
+// Save location
 function wgmbr_save_location()
 {
     if (!current_user_can('manage_options')) {
@@ -399,9 +390,8 @@ function wgmbr_save_location()
 
 add_action('admin_post_wgmbr_save_location', 'wgmbr_save_location');
 
-/**
- * Revoke OAuth access
- */
+
+// Revoke OAuth access
 function wgmbr_revoke_access()
 {
     if (!current_user_can('manage_options')) {
@@ -463,9 +453,8 @@ function wgmbr_process_customization_save()
     }
 }
 
-/**
- * Save customization
- */
+
+// Save customization
 function wgmbr_save_customization()
 {
     if (!current_user_can('manage_options')) {
@@ -482,9 +471,8 @@ function wgmbr_save_customization()
 
 add_action('admin_post_wgmbr_save_customization', 'wgmbr_save_customization');
 
-/**
- * Save customization (AJAX version)
- */
+
+// Save customization (AJAX version)
 function wgmbr_save_customization_ajax()
 {
     if (!current_user_can('manage_options')) {
@@ -501,9 +489,8 @@ function wgmbr_save_customization_ajax()
 
 add_action('wp_ajax_wgmbr_save_customization', 'wgmbr_save_customization_ajax');
 
-/**
- * Reset customisation
- */
+
+// Reset customisation
 function wgmbr_reset_customization_ajax()
 {
     if (!current_user_can('manage_options')) {
@@ -528,9 +515,9 @@ function wgmbr_reset_customization_ajax()
 
 add_action('wp_ajax_wgmbr_reset_customization', 'wgmbr_reset_customization_ajax');
 
-/**
- * Synchronized reviews from API to CPT
- */
+
+// Synchronized reviews from API to CPT
+
 function wgmbr_sync_reviews_ajax()
 {
     if (!current_user_can('manage_options')) {
@@ -593,9 +580,8 @@ function wgmbr_sync_reviews_ajax()
 
 add_action('wp_ajax_wgmbr_sync_reviews', 'wgmbr_sync_reviews_ajax');
 
-/**
- * Create new category
- */
+
+// Create new category
 function wgmbr_create_category_ajax()
 {
     // Check permissions
@@ -641,9 +627,8 @@ function wgmbr_create_category_ajax()
 
 add_action('wp_ajax_wgmbr_create_category', 'wgmbr_create_category_ajax');
 
-/**
- * Delete category
- */
+
+// Delete category
 function wgmbr_delete_category_ajax()
 {
     // Check permissions
@@ -686,9 +671,8 @@ function wgmbr_delete_category_ajax()
 
 add_action('wp_ajax_wgmbr_delete_category', 'wgmbr_delete_category_ajax');
 
-/**
- * Save review
- */
+
+// Save review
 function wgmbr_save_review_ajax()
 {
     // Check permissions
