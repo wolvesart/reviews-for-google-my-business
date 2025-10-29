@@ -23,3 +23,19 @@ Key Features
 2. Activate the plugin in the WordPress “Plugins” menu.
 3. Go to Google Reviews and click “Configure Authentication”.
 4. Follow the instructions to configure the plugin. Documentation is available in Google Reviews → Configuration, “Documentation” tab.
+
+== Frequently Asked Questions ==
+= Do I need technical skills to use this plugin? =
+No! Although the initial setup requires creating a project on the Google Cloud Console (we provide a detailed step-by-step guide), once configured, using the plugin is very simple. Simply insert a shortcode on your page.
+
+= Is the plugin really free? =
+Yes, the plugin is 100% free. However, you must create a project on the Google Cloud Console to obtain your API credentials. Google offers a free quota that is more than sufficient for most websites.
+
+= Why do I need to create a Google Cloud project? =
+To display your Google My Business reviews, the plugin must connect to the Google API. This requires OAuth 2.0 credentials, which you obtain by creating a free project on the Google Cloud Console. This also ensures the security of your data.
+
+= Are reviews updated automatically? =
+Yes, the plugin automatically retrieves your new Google My Business reviews.
+
+= Can I customize the appearance of reviews? =
+Absolutely! The plugin offers many customization options: colors, layout, number of reviews displayed, category system, and more. You can adapt the display to your site's design.

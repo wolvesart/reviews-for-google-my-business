@@ -1,8 +1,8 @@
 <?php
 /**
- * Reviews for Google My Business - Template de la page admin
+ * Reviews for Google My Business - Admin page template
  *
- * Variables disponibles :
+ * Available variables:
  * - $has_token
  * - $available_locations
  * - $current_account_id
@@ -10,7 +10,6 @@
  * - $has_credentials
  */
 
-// Interdire l'accès direct
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -20,7 +19,7 @@ if (!defined('ABSPATH')) {
     <?php include_once(WOLVES_GMB_PLUGIN_DIR . 'template-parts/header.php'); ?>
 
     <div class="gmb-container">
-        <!-- Sidebar avec tabs -->
+        <!-- Sidebar with tabs -->
         <div class="gmb-sidebar">
             <nav class="gmb-tabs-nav">
 
@@ -43,7 +42,7 @@ if (!defined('ABSPATH')) {
             </nav>
         </div>
 
-        <!-- Contenu principal -->
+        <!-- Main content -->
         <div class="gmb-content">
 
             <!-- Tab: Configuration -->
@@ -53,9 +52,22 @@ if (!defined('ABSPATH')) {
                         <div class="card">
                             <h2><?php esc_html_e('1. Google API Configuration', 'reviews-for-google-my-business'); ?></h2>
 
+                            <?php if (!is_ssl() && !defined('WP_DEBUG') && !in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'), true)): ?>
+                                <div class="gmb-notice error">
+                                    <p>
+                                        <strong>⚠️ <?php esc_html_e('HTTPS Required', 'reviews-for-google-my-business'); ?></strong><br>
+                                        <?php esc_html_e('For security reasons, HTTPS is required to save API credentials. Please enable SSL/TLS on your site.', 'reviews-for-google-my-business'); ?>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
+
                             <?php if ($has_credentials): ?>
                                 <div class="gmb-notice success">
-                                    <p><?php esc_html_e('API credentials configured', 'reviews-for-google-my-business'); ?></p>
+                                    <p>
+                                        <?php esc_html_e('API credentials configured', 'reviews-for-google-my-business'); ?>
+                                        <br>
+                                        <small><?php esc_html_e('Client secret is encrypted and secured', 'reviews-for-google-my-business'); ?></small>
+                                    </p>
                                 </div>
                             <?php else: ?>
                                 <div class="gmb-notice warning">
@@ -64,8 +76,8 @@ if (!defined('ABSPATH')) {
                                 </div>
                             <?php endif; ?>
 
-                            <details <?php echo !$has_credentials ? 'open' : ''; ?>>
-                                <summary style="cursor: pointer; font-weight: bold; padding: 10px 0;">
+                            <details class="accordion-details" <?php echo !$has_credentials ? 'open' : ''; ?>>
+                                <summary>
                                     <?php echo $has_credentials ? esc_html__('Edit API credentials', 'reviews-for-google-my-business') : esc_html__('Add API credentials', 'reviews-for-google-my-business'); ?>
                                 </summary>
 
@@ -102,11 +114,17 @@ if (!defined('ABSPATH')) {
                                                        name="wgmbr_client_secret"
                                                        id="wgmbr_client_secret"
                                                        class="regular-text"
-                                                       value="<?php echo esc_attr(GMB_CLIENT_SECRET); ?>"
-                                                       placeholder="GOCSPX-xxxxxxxxxxxx"
-                                                       required>
+                                                       value=""
+                                                       placeholder="<?php echo GMB_CLIENT_SECRET ? esc_attr__('••••••••••••••••', 'reviews-for-google-my-business') : esc_attr__('GOCSPX-xxxxxxxxxxxx', 'reviews-for-google-my-business'); ?>"
+                                                       <?php echo GMB_CLIENT_SECRET ? '' : 'required'; ?>>
                                                 <p class="description">
-                                                    <?php esc_html_e('Your Google Cloud Client Secret', 'reviews-for-google-my-business'); ?>
+                                                    <?php
+                                                    if (GMB_CLIENT_SECRET) {
+                                                        esc_html_e('Leave blank to keep current secret, or enter new secret to update', 'reviews-for-google-my-business');
+                                                    } else {
+                                                        esc_html_e('Your Google Cloud Client Secret', 'reviews-for-google-my-business');
+                                                    }
+                                                    ?>
                                                 </p>
                                             </td>
                                         </tr>
@@ -115,7 +133,7 @@ if (!defined('ABSPATH')) {
                                                 <label for="wgmbr_redirect_uri">Redirect URI</label>
                                             </th>
                                             <td>
-                                                <input type="url"
+                                                <input type="text"
                                                        name="wgmbr_redirect_uri"
                                                        id="wgmbr_redirect_uri"
                                                        class="regular-text"
@@ -131,11 +149,10 @@ if (!defined('ABSPATH')) {
                                         </tr>
                                     </table>
 
-                                    <p class="submit">
-                                        <button type="submit" class="button button-primary">
-                                            <?php esc_html_e('Save credentials', 'reviews-for-google-my-business'); ?>
-                                        </button>
-                                    </p>
+                                    <button type="submit" class="button button-primary">
+                                        <?php esc_html_e('Save credentials', 'reviews-for-google-my-business'); ?>
+                                    </button>
+
                                 </form>
                             </details>
                         </div>
@@ -162,7 +179,8 @@ if (!defined('ABSPATH')) {
                                 </div>
                             <?php else: ?>
                                 <div class="gmb-notice warning">
-                                    <p><?php esc_html_e('Not authenticated', 'reviews-for-google-my-business'); ?></p></div>
+                                    <p><?php esc_html_e('Not authenticated', 'reviews-for-google-my-business'); ?></p>
+                                </div>
                                 <div class="button-wrapper">
                                     <a href="<?php echo esc_url(wgmbr_get_auth_url()); ?>"
                                        class="button button-primary">
@@ -226,8 +244,8 @@ if (!defined('ABSPATH')) {
                                 </p>
                             <?php else: ?>
                                 <p class="gmb-notice warning">
-                                    <strong><?php esc_html_e('You must first authenticate yourself', 'reviews-for-google-my-business'); ?></strong><br>
-                                    <?php esc_html_e('Go to the "Authentication" tab to connect your Google account.', 'reviews-for-google-my-business'); ?>
+                                    <strong><?php esc_html_e('You must first authenticate yourself', 'reviews-for-google-my-business'); ?></strong>
+                                    <?php esc_html_e('Go back to the second step to connect your Google account.', 'reviews-for-google-my-business'); ?>
                                 </p>
                             <?php endif; ?>
                         </div>
@@ -239,8 +257,8 @@ if (!defined('ABSPATH')) {
                                 <button type="button" class="button button-primary" onclick="testGMBConnection()">
                                     <?php esc_html_e('Test reviews retrieval', 'reviews-for-google-my-business'); ?>
                                 </button>
-                                <button type="button" class="button button-secondary" onclick="clearGMBCache()">
-                                    <?php esc_html_e('Clear cache', 'reviews-for-google-my-business'); ?>
+                                <button type="button" class="button button-secondary" onclick="if(confirm('<?php echo esc_js(__('This will delete the cache and ALL reviews. Are you sure?', 'reviews-for-google-my-business')); ?>')) clearGMBCache()">
+                                    <?php esc_html_e('Reset', 'reviews-for-google-my-business'); ?>
                                 </button>
                             </div>
                             <div id="gmb-test-result"></div>
@@ -250,7 +268,7 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
-            <!-- Tab: Utilisation -->
+            <!-- Tab: Usage -->
             <div class="gmb-tab-content" data-tab-content="usage">
                 <div class="section row">
                     <div class="card-list">
@@ -260,13 +278,14 @@ if (!defined('ABSPATH')) {
 
                             <div class="gmb-shortcode-generator">
 
-                                    <div class="gmb-main-shortcode">
-                                        <code id="gmb-generated-shortcode">[gmb_reviews]</code>
-                                        <button type="button" class="button button-primary" onclick="wgmbrCopyGeneratedShortcode(this)">
-                                            <span class="dashicons dashicons-admin-page"></span>
-                                            <?php esc_html_e('Copy', 'reviews-for-google-my-business'); ?>
-                                        </button>
-                                    </div>
+                                <div class="gmb-main-shortcode">
+                                    <code id="gmb-generated-shortcode">[gmb_reviews]</code>
+                                    <button type="button" class="button button-primary"
+                                            onclick="wgmbrCopyGeneratedShortcode(this)">
+                                        <span class="dashicons dashicons-admin-page"></span>
+                                        <?php esc_html_e('Copy', 'reviews-for-google-my-business'); ?>
+                                    </button>
+                                </div>
 
                                 <table class="form-table">
                                     <tr>
@@ -293,8 +312,8 @@ if (!defined('ABSPATH')) {
                                             <div class="gmb-categories-checkboxes" id="gmb-gen-categories">
                                                 <?php
                                                 $categories = get_terms(array(
-                                                    'taxonomy' => 'gmb_category',
-                                                    'hide_empty' => false,
+                                                        'taxonomy' => 'gmb_category',
+                                                        'hide_empty' => false,
                                                 ));
                                                 if (!empty($categories) && !is_wp_error($categories)):
                                                     foreach ($categories as $cat): ?>
@@ -331,11 +350,11 @@ if (!defined('ABSPATH')) {
                                 </table>
                             </div>
 
-                            <h3 style="margin-top: 40px;"><?php esc_html_e('Available parameters', 'reviews-for-google-my-business'); ?></h3>
+                            <h3><?php esc_html_e('Available parameters', 'reviews-for-google-my-business'); ?></h3>
                             <table class="form-table">
                                 <tr>
                                     <th><code>limit</code></th>
-                                    <td><?php esc_html_e('Number of reviews to display (maximum 50)', 'reviews-for-google-my-business'); ?></td>
+                                    <td><?php esc_html_e('Number of reviews to display (maximum 100)', 'reviews-for-google-my-business'); ?></td>
                                 </tr>
                                 <tr>
                                     <th><code>category</code></th>
@@ -373,9 +392,10 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
-            <!-- Tab: Personnalisation -->
+            <!-- Tab: Customization -->
             <div class="gmb-tab-content" data-tab-content="customization">
-                <form method="post" id="gmb-customization-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <form method="post" id="gmb-customization-form"
+                      action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <?php wp_nonce_field('wgmbr_save_customization', 'wgmbr_customization_nonce'); ?>
                     <input type="hidden" name="action" value="wgmbr_save_customization">
                     <div class="section row">
@@ -393,14 +413,14 @@ if (!defined('ABSPATH')) {
                                                 <input type="color"
                                                        id="wgmbr_color_text_resume_picker"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_text_resume', '#222222')); ?>"
-                                                       >
+                                                >
                                                 <input type="text"
                                                        id="wgmbr_color_text_resume_hex"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_text_resume', '#222222')); ?>"
                                                        pattern="^#[0-9A-Fa-f]{6}$"
                                                        maxlength="7"
                                                        placeholder="#000000"
-                                                       >
+                                                >
                                                 <input type="hidden"
                                                        name="wgmbr_color_text_resume"
                                                        id="wgmbr_color_text_resume"
@@ -417,14 +437,14 @@ if (!defined('ABSPATH')) {
                                                 <input type="color"
                                                        id="wgmbr_color_card_bg_picker"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_card_bg', '#F3F5F7')); ?>"
-                                                       >
+                                                >
                                                 <input type="text"
                                                        id="wgmbr_color_card_bg_hex"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_card_bg', '#F3F5F7')); ?>"
                                                        pattern="^#[0-9A-Fa-f]{6}$"
                                                        maxlength="7"
                                                        placeholder="#000000"
-                                                       >
+                                                >
                                                 <input type="hidden"
                                                        name="wgmbr_color_card_bg"
                                                        id="wgmbr_color_card_bg"
@@ -455,14 +475,14 @@ if (!defined('ABSPATH')) {
                                                 <input type="color"
                                                        id="wgmbr_color_star_picker"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_star', '#FFC83E')); ?>"
-                                                       >
+                                                >
                                                 <input type="text"
                                                        id="wgmbr_color_star_hex"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_star', '#FFC83E')); ?>"
                                                        pattern="^#[0-9A-Fa-f]{6}$"
                                                        maxlength="7"
                                                        placeholder="#000000"
-                                                       >
+                                                >
                                                 <input type="hidden"
                                                        name="wgmbr_color_star"
                                                        id="wgmbr_color_star"
@@ -479,14 +499,14 @@ if (!defined('ABSPATH')) {
                                                 <input type="color"
                                                        id="wgmbr_color_text_primary_picker"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_text_primary', '#222222')); ?>"
-                                                       >
+                                                >
                                                 <input type="text"
                                                        id="wgmbr_color_text_primary_hex"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_text_primary', '#222222')); ?>"
                                                        pattern="^#[0-9A-Fa-f]{6}$"
                                                        maxlength="7"
                                                        placeholder="#000000"
-                                                       >
+                                                >
                                                 <input type="hidden"
                                                        name="wgmbr_color_text_primary"
                                                        id="wgmbr_color_text_primary"
@@ -539,57 +559,7 @@ if (!defined('ABSPATH')) {
 
         <!-- Tab: Documentation -->
         <div class="gmb-tab-content" data-tab-content="help">
-            <div class="card">
-                <h2><?php esc_html_e('Google API Configuration', 'reviews-for-google-my-business'); ?></h2>
-
-                <h4 style="margin: 15px 0 10px 0;"><?php esc_html_e('1. Create the project', 'reviews-for-google-my-business'); ?></h4>
-                <ol style="margin: 0 0 0 20px;">
-                    <li><?php
-                    /* translators: %s: URL to Google Cloud Console */
-                    printf(esc_html__('Go to <a href="%s" target="_blank">Google Cloud Console</a>', 'reviews-for-google-my-business'), 'https://console.cloud.google.com/'); ?></li>
-                    <li><?php esc_html_e('Create a new project or select an existing one', 'reviews-for-google-my-business'); ?></li>
-                </ol>
-
-                <h4 style="margin: 15px 0 10px 0;"><?php esc_html_e('2. Enable required APIs', 'reviews-for-google-my-business'); ?></h4>
-                <ol style="margin: 0 0 0 20px;">
-                    <li><?php esc_html_e('In the menu, go to "APIs & Services" → "Library"', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Search and enable: <strong>"Google My Business API"</strong>', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Search and enable: <strong>"My Business Account Management API"</strong>', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Search and enable: <strong>"My Business Business Information API"</strong>', 'reviews-for-google-my-business'); ?></li>
-                </ol>
-
-                <h4 style="margin: 15px 0 10px 0;"><?php esc_html_e('3. Configure OAuth consent screen', 'reviews-for-google-my-business'); ?></h4>
-                <ol style="margin: 0 0 0 20px;">
-                    <li><?php esc_html_e('Go to "APIs & Services" → "OAuth consent screen"', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Choose <strong>"External"</strong> as user type', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Fill in the required information:', 'reviews-for-google-my-business'); ?>
-                        <ul style="margin: 5px 0 0 20px;">
-                            <li><?php esc_html_e('Application name', 'reviews-for-google-my-business'); ?></li>
-                            <li><?php esc_html_e('User support email', 'reviews-for-google-my-business'); ?></li>
-                            <li><?php esc_html_e('Developer contact email', 'reviews-for-google-my-business'); ?></li>
-                        </ul>
-                    </li>
-                    <li><strong><?php esc_html_e('IMPORTANT', 'reviews-for-google-my-business'); ?></strong> : <?php esc_html_e('In "Scopes", add these OAuth scopes:', 'reviews-for-google-my-business'); ?>
-                        <ul style="margin: 5px 0 0 20px;">
-                            <li><code>https://www.googleapis.com/auth/business.manage</code></li>
-                            <li><code>https://www.googleapis.com/auth/plus.business.manage</code></li>
-                        </ul>
-                    </li>
-                    <li><?php esc_html_e('In "Test users", add your Gmail address', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Save', 'reviews-for-google-my-business'); ?></li>
-                </ol>
-
-                <h4 style="margin: 15px 0 10px 0;"><?php esc_html_e('4. Create OAuth 2.0 credentials', 'reviews-for-google-my-business'); ?></h4>
-                <ol style="margin: 0 0 0 20px;">
-                    <li><?php esc_html_e('Go to "APIs & Services" → "Credentials"', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Click on "+ CREATE CREDENTIALS" → "OAuth client ID"', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Application type: <strong>"Web Application"</strong>', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Name: give it a name (eg: "WordPress GMB Reviews")', 'reviews-for-google-my-business'); ?></li>
-                    <li><strong><?php esc_html_e('Authorized redirect URIs', 'reviews-for-google-my-business'); ?></strong> : <?php esc_html_e('Add EXACTLY the URI above', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Click "Create"', 'reviews-for-google-my-business'); ?></li>
-                    <li><?php esc_html_e('Copy the Client ID and Client Secret into the fields above', 'reviews-for-google-my-business'); ?></li>
-                </ol>
-            </div>
+            <?php require WOLVES_GMB_PLUGIN_DIR . 'template-parts/documentation.php'; ?>
         </div>
 
     </div>

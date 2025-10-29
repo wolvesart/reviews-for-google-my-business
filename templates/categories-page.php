@@ -1,14 +1,14 @@
 <?php
 /**
- * Reviews for Google My Business - Page de gestion des catégories
+ * Reviews for Google My Business - Categories management page
  */
 
-// Interdire l'accès direct
+// Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
 }
 
-// Récupérer toutes les catégories (taxonomie WordPress)
+// Get all categories (WordPress taxonomy)
 $categories = get_terms(array(
         'taxonomy' => 'gmb_category',
         'hide_empty' => false,
@@ -16,7 +16,7 @@ $categories = get_terms(array(
         'order' => 'ASC',
 ));
 
-// Si erreur, initialiser avec un tableau vide
+// If error, initialize with an empty array
 if (is_wp_error($categories)) {
     $categories = array();
 }

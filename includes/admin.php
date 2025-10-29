@@ -50,7 +50,7 @@ add_action('admin_menu', 'wgmbr_add_admin_menu');
  */
 function wgmbr_enqueue_admin_assets($hook)
 {
-    if ('toplevel_page_gmb-manage-reviews' !== $hook && 'google-reviews_page_gmb-settings' !== $hook && 'google-reviews_page_gmb-categories' !== $hook) {
+    if (!in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_SETTINGS_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
         return;
     }
 
@@ -75,14 +75,15 @@ function wgmbr_enqueue_admin_assets($hook)
     wp_localize_script('gmb-admin-scripts', 'wgmbrAdmin', array(
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'settingsUrl' => admin_url('admin.php?page=gmb-settings'),
+        'nonce' => wp_create_nonce('wgmbr_admin_actions'),
         'i18n' => array(
             'loading' => esc_html__('Loading...', 'reviews-for-google-my-business'),
             'errorFetchingLocations' => esc_html__('Error fetching locations:', 'reviews-for-google-my-business'),
             'unknownError' => esc_html__('Unknown error', 'reviews-for-google-my-business'),
             'networkError' => esc_html__('Network error:', 'reviews-for-google-my-business'),
-            'clearingCache' => esc_html__('Clearing cache...', 'reviews-for-google-my-business'),
-            'cacheCleared' => esc_html__('Cache cleared successfully!', 'reviews-for-google-my-business'),
-            'errorClearingCache' => esc_html__('Error clearing cache', 'reviews-for-google-my-business'),
+            'resetting' => esc_html__('Resetting...', 'reviews-for-google-my-business'),
+            'resetSuccess' => esc_html__('Reset successful!', 'reviews-for-google-my-business'),
+            'errorResettingReviews' => esc_html__('Error resetting reviews', 'reviews-for-google-my-business'),
             'connectionSuccessful' => esc_html__('Connection successful!', 'reviews-for-google-my-business'),
             'reviewsFetched' => esc_html__('reviews fetched.', 'reviews-for-google-my-business'),
             'error' => esc_html__('Error:', 'reviews-for-google-my-business'),
@@ -93,7 +94,7 @@ function wgmbr_enqueue_admin_assets($hook)
     ));
 
     // Script pour la gestion des avis et catégories
-    if ('toplevel_page_gmb-manage-reviews' === $hook || 'google-reviews_page_gmb-categories' === $hook) {
+    if (in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
         wp_enqueue_script(
             'gmb-manage-reviews-scripts',
             WOLVES_GMB_PLUGIN_URL . 'assets/js/manage-reviews.js',
@@ -147,7 +148,7 @@ function wgmbr_manage_reviews_page()
         wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'reviews-for-google-my-business'));
     }
 
-    $posts_per_page = 20;
+    $posts_per_page = WGMBR_ADMIN_REVIEWS_PER_PAGE;
 
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Pagination parameter, nonce not required
     $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
@@ -211,6 +212,11 @@ function wgmbr_refresh_locations_ajax()
         return;
     }
 
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wgmbr_admin_actions')) {
+        wp_send_json_error(array('message' => esc_html__('Security check failed', 'reviews-for-google-my-business')));
+        return;
+    }
+
     wgmbr_auto_fetch_accounts_and_locations();
     wp_send_json_success();
 }
@@ -218,12 +224,46 @@ function wgmbr_refresh_locations_ajax()
 add_action('wp_ajax_wgmbr_refresh_locations', 'wgmbr_refresh_locations_ajax');
 
 /**
- * Clear cache
+ * Reset: Clear cache and delete all review CPTs
  */
 function wgmbr_clear_cache_ajax()
 {
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => esc_html__('Insufficient permissions', 'reviews-for-google-my-business')));
+        return;
+    }
+
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wgmbr_admin_actions')) {
+        wp_send_json_error(array('message' => esc_html__('Security check failed', 'reviews-for-google-my-business')));
+        return;
+    }
+
+    // Delete cache transient
     delete_transient('wgmbr_reviews_cache');
-    wp_send_json_success();
+    delete_transient('wgmbr_avg_rating_cache');
+
+    // Delete all review CPTs
+    $args = array(
+        'post_type' => 'gmb_review',
+        'posts_per_page' => -1,
+        'post_status' => 'any',
+        'fields' => 'ids'
+    );
+
+    $review_ids = get_posts($args);
+
+    foreach ($review_ids as $review_id) {
+        wp_delete_post($review_id, true); // true = force delete (skip trash)
+    }
+
+    wp_send_json_success(array(
+        'message' => sprintf(
+            /* translators: %d: number of reviews deleted */
+            esc_html__('%d reviews deleted', 'reviews-for-google-my-business'),
+            count($review_ids)
+        ),
+        'deleted_count' => count($review_ids)
+    ));
 }
 
 add_action('wp_ajax_wgmbr_clear_cache', 'wgmbr_clear_cache_ajax');
@@ -233,6 +273,16 @@ add_action('wp_ajax_wgmbr_clear_cache', 'wgmbr_clear_cache_ajax');
  */
 function wgmbr_test_connection_ajax()
 {
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => esc_html__('Insufficient permissions', 'reviews-for-google-my-business')));
+        return;
+    }
+
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wgmbr_admin_actions')) {
+        wp_send_json_error(array('message' => esc_html__('Security check failed', 'reviews-for-google-my-business')));
+        return;
+    }
+
     $data = wgmbr_fetch_reviews();
 
     if (isset($data['error']) && $data['error']) {
@@ -265,6 +315,23 @@ function wgmbr_save_credentials()
         wp_die(esc_html__('You do not have sufficient permissions.', 'reviews-for-google-my-business'));
     }
 
+    // Verify HTTPS for security (allow localhost without HTTPS)
+    $is_localhost = (
+        isset($_SERVER['REMOTE_ADDR']) &&
+        in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'), true)
+    ) || (
+        isset($_SERVER['HTTP_HOST']) &&
+        (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)
+    );
+
+    if (!is_ssl() && !$is_localhost && !defined('WP_DEBUG')) {
+        wp_die(
+            esc_html__('HTTPS is required to save API credentials. Please enable SSL/TLS on your site.', 'reviews-for-google-my-business'),
+            esc_html__('Security Error', 'reviews-for-google-my-business'),
+            array('response' => 403)
+        );
+    }
+
     check_admin_referer('wgmbr_save_credentials', 'wgmbr_credentials_nonce');
 
     if (!isset($_POST['wgmbr_client_id']) || !isset($_POST['wgmbr_client_secret']) || !isset($_POST['wgmbr_redirect_uri'])) {
@@ -277,7 +344,14 @@ function wgmbr_save_credentials()
     $redirect_uri = esc_url_raw(wp_unslash($_POST['wgmbr_redirect_uri']));
 
     update_option('wgmbr_client_id', $client_id);
-    update_option('wgmbr_client_secret', $client_secret);
+
+    // Only update secret if a new one is provided
+    if (!empty($client_secret)) {
+        // Encrypt the client secret before storing
+        $encrypted_secret = wgmbr_encrypt($client_secret);
+        update_option('wgmbr_client_secret', $encrypted_secret);
+    }
+
     update_option('wgmbr_redirect_uri', $redirect_uri);
 
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=credentials_saved'));
@@ -317,6 +391,7 @@ function wgmbr_save_location()
     update_option('wgmbr_location_id', $location_id);
 
     delete_transient('wgmbr_reviews_cache');
+    delete_transient('wgmbr_avg_rating_cache');
 
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=location_saved'));
     exit;
@@ -339,12 +414,46 @@ function wgmbr_revoke_access()
     delete_option('wgmbr_refresh_token');
     delete_option('wgmbr_token_expires');
     delete_transient('wgmbr_reviews_cache');
+    delete_transient('wgmbr_avg_rating_cache');
 
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=revoked'));
     exit;
 }
 
 add_action('admin_post_wgmbr_revoke', 'wgmbr_revoke_access');
+
+/**
+ * Process customization options save (helper function)
+ * Used by both POST and AJAX handlers to avoid code duplication
+ */
+function wgmbr_process_customization_save()
+{
+    $color_options = array(
+        'wgmbr_color_card_bg' => 'sanitize_hex_color',
+        'wgmbr_color_star' => 'sanitize_hex_color',
+        'wgmbr_color_text_primary' => 'sanitize_hex_color',
+        'wgmbr_color_accent' => 'sanitize_hex_color',
+        'wgmbr_color_text_resume' => 'sanitize_hex_color',
+    );
+
+    $int_options = array(
+        'wgmbr_radius_card' => 'absint',
+    );
+
+    // Process color options
+    foreach ($color_options as $key => $sanitizer) {
+        if (isset($_POST[$key])) {
+            update_option($key, $sanitizer(wp_unslash($_POST[$key])));
+        }
+    }
+
+    // Process integer options
+    foreach ($int_options as $key => $sanitizer) {
+        if (isset($_POST[$key])) {
+            update_option($key, $sanitizer(wp_unslash($_POST[$key])));
+        }
+    }
+}
 
 /**
  * Save customization
@@ -357,25 +466,7 @@ function wgmbr_save_customization()
 
     check_admin_referer('wgmbr_save_customization', 'wgmbr_customization_nonce');
 
-
-    if (isset($_POST['wgmbr_color_card_bg'])) {
-        update_option('wgmbr_color_card_bg', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_card_bg'])));
-    }
-    if (isset($_POST['wgmbr_radius_card'])) {
-        update_option('wgmbr_radius_card', absint(wp_unslash($_POST['wgmbr_radius_card'])));
-    }
-    if (isset($_POST['wgmbr_color_star'])) {
-        update_option('wgmbr_color_star', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_star'])));
-    }
-    if (isset($_POST['wgmbr_color_text_primary'])) {
-        update_option('wgmbr_color_text_primary', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_text_primary'])));
-    }
-    if (isset($_POST['wgmbr_color_accent'])) {
-        update_option('wgmbr_color_accent', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_accent'])));
-    }
-    if (isset($_POST['wgmbr_color_text_resume'])) {
-        update_option('wgmbr_color_text_resume', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_text_resume'])));
-    }
+    wgmbr_process_customization_save();
 
     wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=customization_saved') . '#customization');
     exit;
@@ -395,24 +486,7 @@ function wgmbr_save_customization_ajax()
 
     check_ajax_referer('wgmbr_save_customization', 'wgmbr_customization_nonce');
 
-    if (isset($_POST['wgmbr_color_card_bg'])) {
-        update_option('wgmbr_color_card_bg', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_card_bg'])));
-    }
-    if (isset($_POST['wgmbr_radius_card'])) {
-        update_option('wgmbr_radius_card', absint(wp_unslash($_POST['wgmbr_radius_card'])));
-    }
-    if (isset($_POST['wgmbr_color_star'])) {
-        update_option('wgmbr_color_star', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_star'])));
-    }
-    if (isset($_POST['wgmbr_color_text_primary'])) {
-        update_option('wgmbr_color_text_primary', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_text_primary'])));
-    }
-    if (isset($_POST['wgmbr_color_accent'])) {
-        update_option('wgmbr_color_accent', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_accent'])));
-    }
-    if (isset($_POST['wgmbr_color_text_resume'])) {
-        update_option('wgmbr_color_text_resume', sanitize_hex_color(wp_unslash($_POST['wgmbr_color_text_resume'])));
-    }
+    wgmbr_process_customization_save();
 
     wp_send_json_success(array('message' => esc_html__('Customization saved successfully', 'reviews-for-google-my-business')));
 }
@@ -426,6 +500,11 @@ function wgmbr_reset_customization_ajax()
 {
     if (!current_user_can('manage_options')) {
         wp_send_json_error(array('message' => esc_html__('Insufficient permissions', 'reviews-for-google-my-business')));
+        return;
+    }
+
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wgmbr_admin_actions')) {
+        wp_send_json_error(array('message' => esc_html__('Security check failed', 'reviews-for-google-my-business')));
         return;
     }
 
@@ -451,8 +530,34 @@ function wgmbr_sync_reviews_ajax()
         return;
     }
 
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'wgmbr_admin_actions')) {
+        wp_send_json_error(array('message' => esc_html__('Security check failed', 'reviews-for-google-my-business')));
+        return;
+    }
+
+    // Rate limiting: Check if synced recently (prevents API abuse)
+    $last_sync = get_transient('wgmbr_last_sync_time');
+    if ($last_sync !== false) {
+        $time_since_sync = time() - $last_sync;
+        $cooldown = 60; // 60 seconds cooldown
+
+        if ($time_since_sync < $cooldown) {
+            $retry_after = $cooldown - $time_since_sync;
+            wp_send_json_error(array(
+                /* translators: %d: number of seconds to wait */
+                'message' => sprintf(esc_html__('Please wait %d seconds before syncing again', 'reviews-for-google-my-business'), $retry_after),
+                'retry_after' => $retry_after
+            ));
+            return;
+        }
+    }
+
+    // Set rate limit timestamp
+    set_transient('wgmbr_last_sync_time', time(), 120); // 2 minutes expiry
+
     // Delete cache
     delete_transient('wgmbr_reviews_cache');
+    delete_transient('wgmbr_avg_rating_cache');
 
     // Retrieve reviews from the API
     $data = wgmbr_fetch_reviews();

@@ -1,14 +1,14 @@
 // ============================================================================
-// GESTION DES CATÉGORIES
+// CATEGORY MANAGEMENT
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Vérifier que l'objet wgmbrManage existe
+    // Check that wgmbrManage object exists
     if (typeof wgmbrManage === 'undefined') {
         return;
     }
 
-    // Bouton de création de catégorie
+    // Category creation button
     const createCategoryBtn = document.getElementById('gmb-create-category-btn');
     const categoryNameInput = document.getElementById('gmb-new-category-name');
 
@@ -21,11 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Désactiver le bouton pendant la requête
+            // Disable button during request
             createCategoryBtn.disabled = true;
             createCategoryBtn.textContent = wgmbrManage.i18n.creating;
 
-            // Créer la catégorie via AJAX
+            // Create category via AJAX
             fetch(wgmbrManage.ajaxUrl, {
                 method: 'POST',
                 headers: {
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Recharger la page pour afficher la nouvelle catégorie
+                    // Reload page to display new category
                     window.location.reload();
                 } else {
                     alert(wgmbrManage.i18n.error + ' ' + (data.data?.message || wgmbrManage.i18n.unknownError));
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Permettre de créer avec la touche Entrée
+        // Allow creation with Enter key
         categoryNameInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 createCategoryBtn.click();
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Boutons de suppression de catégorie
+    // Category deletion buttons
     const deleteCategoryBtns = document.querySelectorAll('.gmb-delete-category-btn');
 
     deleteCategoryBtns.forEach(function(btn) {
@@ -74,11 +74,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Désactiver le bouton pendant la requête
+            // Disable button during request
             this.disabled = true;
             this.textContent = wgmbrManage.i18n.deleting;
 
-            // Supprimer la catégorie via AJAX
+            // Delete category via AJAX
             fetch(wgmbrManage.ajaxUrl, {
                 method: 'POST',
                 headers: {
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Recharger la page pour mettre à jour la liste
+                    // Reload page to update list
                     window.location.reload();
                 } else {
                     alert(wgmbrManage.i18n.error + ' ' + (data.data?.message || wgmbrManage.i18n.unknownError));

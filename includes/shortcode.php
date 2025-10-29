@@ -1,10 +1,10 @@
 <?php
 /**
- * Reviews for Google My Business - Shortcode et affichage HTML
- * Shortcode [gmb_reviews] et fonctions de rendu
+ * Reviews for Google My Business - Shortcode and HTML display
+ * Shortcode [gmb_reviews] and rendering functions
  */
 
-// Interdire l'accès direct
+// Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 // ============================================================================
 
 /**
- * Enregistre les styles frontend
+ * Register frontend styles
  */
 function wgmbr_enqueue_frontend_styles() {
     wp_enqueue_style(
@@ -38,39 +38,41 @@ function wgmbr_enqueue_frontend_styles() {
 function wgmbr_generate_custom_css() {
     $custom_vars = array();
 
+    $default_colors = WGMBR_DEFAULT_COLORS;
+
     // Card background color
     $card_bg = get_option('wgmbr_color_card_bg');
-    if ($card_bg && $card_bg !== '#F3F5F7') {
+    if ($card_bg && $card_bg !== $default_colors['card_bg']) {
         $custom_vars[] = "--gmb-color-card-bg: {$card_bg}";
     }
 
     // Card border radius
     $card_radius = get_option('wgmbr_radius_card');
-    if ($card_radius !== false && $card_radius !== '' && $card_radius !== '16') {
+    if ($card_radius !== false && $card_radius !== '' && $card_radius !== WGMBR_DEFAULT_CARD_RADIUS) {
         $custom_vars[] = "--gmb-radius-card: {$card_radius}px";
     }
 
     // Star color
     $color_star = get_option('wgmbr_color_star');
-    if ($color_star && $color_star !== '#FFC83E') {
+    if ($color_star && $color_star !== $default_colors['star']) {
         $custom_vars[] = "--gmb-color-star: {$color_star}";
     }
 
     // Text color
     $color_text_primary = get_option('wgmbr_color_text_primary');
-    if ($color_text_primary && $color_text_primary !== '#222222') {
+    if ($color_text_primary && $color_text_primary !== $default_colors['text_primary']) {
         $custom_vars[] = "--gmb-color-text-primary: {$color_text_primary}";
     }
 
-    // Text color resume
+    // Summary text color
     $color_test_resume = get_option('wgmbr_color_text_resume');
-    if ($color_test_resume && $color_test_resume !== '#222222') {
+    if ($color_test_resume && $color_test_resume !== $default_colors['text_resume']) {
         $custom_vars[] = "--gmb-color-text-resume: {$color_test_resume}";
     }
 
     // Accent color
     $color_accent = get_option('wgmbr_color_accent');
-    if ($color_accent && $color_accent !== '#0F68DD') {
+    if ($color_accent && $color_accent !== $default_colors['accent']) {
         $custom_vars[] = "--gmb-color-accent: {$color_accent}";
     }
 
@@ -87,61 +89,74 @@ function wgmbr_generate_custom_css() {
 // ============================================================================
 
 /**
- * Shortcode pour afficher les avis GMB
+ * Shortcode to display GMB reviews
  *
- * Usage:
- * - [gmb_reviews limit="10"] - Affiche tous les avis (limite 10)
- * - [gmb_reviews category="formation"] - Affiche uniquement les avis de la catégorie "formation"
- * - [gmb_reviews category="formation,coaching"] - Affiche les avis des catégories "formation" ET "coaching"
- * - [gmb_reviews category="formation,coaching,dev" limit="5"] - Affiche 5 avis de plusieurs catégories
- * - [gmb_reviews category=""] - Affiche uniquement les avis sans catégorie
- * - [gmb_reviews show_summary="false"] - Masque le résumé (note moyenne et nombre d'avis)
- *
- * @param array $atts Attributs du shortcode
- * @return string HTML des avis
+ * @param array $atts Shortcode attributes
+ * @return string Reviews HTML
  */
 function wgmbr_reviews_shortcode($atts) {
-    // Charger les styles uniquement si le shortcode est utilisé
+    // Load styles only if shortcode is used
     wgmbr_enqueue_frontend_styles();
 
     $atts = shortcode_atts(array(
-        'limit' => 50,
-        'category' => null,  // Slug de la catégorie (null = toutes, string = une ou plusieurs séparées par virgule)
-        'show_summary' => 'true'  // Afficher le résumé (true/false)
+        'limit' => WGMBR_DEFAULT_REVIEW_LIMIT,
+        'category' => null,  // Category slug (null = all, string = one or more separated by comma)
+        'show_summary' => 'true'  // Display summary (true/false)
     ), $atts);
 
-    // Récupérer les avis depuis les CPT
+    // Check if API is authenticated and if there are reviews
+    $has_token = get_option('wgmbr_access_token') ? true : false;
+    $total_reviews = wgmbr_get_total_reviews_count();
+
+    // If not authenticated and no reviews exist, show error message
+    if (!$has_token && $total_reviews === 0) {
+        $admin_url = admin_url('admin.php?page=gmb-settings');
+        return sprintf(
+            '<div class="gmb-notice warning">
+                <p>
+                    <strong>%s</strong><br>
+                    %s <a href="%s" style="text-decoration: underline;">%s</a>
+                </p>
+            </div>',
+            esc_html__('Google My Business API is not authenticated.', 'reviews-for-google-my-business'),
+            esc_html__('Please configure OAuth from the', 'reviews-for-google-my-business'),
+            esc_url($admin_url),
+            esc_html__('GMB Reviews page in the admin', 'reviews-for-google-my-business')
+        );
+    }
+
+    // Get reviews from CPT
     if ($atts['category'] !== null) {
-        // Parser les catégories multiples (séparées par des virgules)
+        // Parse multiple categories (comma-separated)
         $category_param = $atts['category'];
 
-        // Si ce n'est pas une chaîne vide, vérifier s'il y a plusieurs catégories
+        // If not an empty string, check if there are multiple categories
         if ($category_param !== '') {
             $categories = array_map('trim', explode(',', $category_param));
-            // Si une seule catégorie, utiliser la string, sinon utiliser le tableau
+            // If single category, use string, otherwise use array
             $category_param = (count($categories) === 1) ? $categories[0] : $categories;
         }
 
-        // Filtrer par catégorie(s)
+        // Filter by category(ies)
         $reviews = wgmbr_get_reviews_by_category($category_param, (int) $atts['limit']);
     } else {
-        // Tous les avis
+        // All reviews
         $reviews = wgmbr_get_all_reviews(array(
             'posts_per_page' => (int) $atts['limit']
         ));
     }
 
-    // Convertir show_summary en boolean
+    // Convert show_summary to boolean
     $show_summary = filter_var($atts['show_summary'], FILTER_VALIDATE_BOOLEAN);
 
-    // Préparer les données pour le template (format compatible avec l'ancien système)
+    // Prepare data for template (compatible format with old system)
     $data = array(
         'error' => false,
         'source' => 'Custom Post Type',
         'reviews' => $reviews,
         'total' => wgmbr_get_total_reviews_count(),
         'average_rating' => wgmbr_get_average_rating(),
-        'show_summary' => $show_summary,  // Contrôle de l'affichage du résumé
+        'show_summary' => $show_summary,  // Summary display control
     );
 
     ob_start();
@@ -155,7 +170,7 @@ add_shortcode('gmb_reviews', 'wgmbr_reviews_shortcode');
 // ============================================================================
 
 /**
- * Génère le HTML des étoiles
+ * Generate stars HTML
  */
 function wgmbr_render_stars($rating) {
     $full_stars = floor($rating);
@@ -179,4 +194,4 @@ function wgmbr_render_stars($rating) {
     return $html;
 }
 
-// Note: wgmbr_convert_star_rating() est maintenant définie dans includes/post-types.php
+// Note: wgmbr_convert_star_rating() is now defined in includes/post-types.php

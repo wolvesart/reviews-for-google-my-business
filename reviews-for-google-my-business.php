@@ -22,6 +22,41 @@ define('WOLVES_GMB_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WOLVES_GMB_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WOLVES_GMB_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
+// Admin page slugs
+define('WGMBR_MANAGE_PAGE_SLUG', 'gmb-manage-reviews');
+define('WGMBR_SETTINGS_PAGE_SLUG', 'gmb-settings');
+define('WGMBR_CATEGORIES_PAGE_SLUG', 'gmb-categories');
+
+// Admin page hooks (for enqueue scripts)
+define('WGMBR_MANAGE_PAGE_HOOK', 'toplevel_page_gmb-manage-reviews');
+define('WGMBR_SETTINGS_PAGE_HOOK', 'google-reviews_page_gmb-settings');
+define('WGMBR_CATEGORIES_PAGE_HOOK', 'google-reviews_page_gmb-categories');
+
+// API Configuration
+define('WGMBR_API_PAGE_SIZE', 100);
+define('WGMBR_API_SORT_ORDER', 'updateTime desc');
+define('WGMBR_API_MAX_PAGES', 10);
+define('WGMBR_API_TIMEOUT', 15);
+
+// Default limits
+define('WGMBR_DEFAULT_REVIEW_LIMIT', 50);
+define('WGMBR_ADMIN_REVIEWS_PER_PAGE', 20);
+
+// Cache durations
+define('WGMBR_CACHE_DURATION', HOUR_IN_SECONDS);
+
+// Default colors
+define('WGMBR_DEFAULT_COLORS', array(
+    'card_bg' => '#F3F5F7',
+    'star' => '#FFC83E',
+    'text_primary' => '#222222',
+    'accent' => '#0F68DD',
+    'text_resume' => '#222222',
+));
+
+// Default card radius
+define('WGMBR_DEFAULT_CARD_RADIUS', 8);
+
 
 class reviews_for_google_my_business {
 
@@ -45,10 +80,11 @@ class reviews_for_google_my_business {
     // Loads plugin dependencies
     private function load_dependencies() {
         // Load the different modules
+        // IMPORTANT: helpers.php must be loaded first as it contains encryption functions used by config.php
+        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/helpers.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/config.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/post-types.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/api.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/helpers.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/shortcode.php';
         require_once WOLVES_GMB_PLUGIN_DIR . 'includes/admin.php';
     }

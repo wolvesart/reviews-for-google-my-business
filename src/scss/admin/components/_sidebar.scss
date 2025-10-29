@@ -1,0 +1,62 @@
+/* Sidebar with tab navigation */
+.gmb-sidebar {
+  margin: -20px -20px 30px -20px;
+  padding: 20px 50px 0 50px;
+  flex-shrink: 0;
+  background-color: #FFF;
+}
+
+.gmb-tabs-nav {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  overflow: hidden;
+}
+
+.gmb-tab-button {
+  display: flex;
+  align-items: center;
+  padding-bottom: 8px;
+  gap: 10px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-grey-800);
+  transition: all 0.2s ease;
+  background-color: transparent;
+
+  &:hover {
+    border-bottom: 3px solid var(--color-grey-200);
+  }
+
+  &.active {
+    color: var(--color-green-800);
+    border-bottom: 3px solid var(--color-green-800);
+
+    .dashicons {
+      color: var(--color-green-800);
+    }
+  }
+
+  &:focus {
+    border-bottom: 3px solid var(--color-green-800);
+  }
+
+  .dashicons {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+/* Tabs content */
+.gmb-tab-content {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}

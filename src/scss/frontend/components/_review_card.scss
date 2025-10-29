@@ -8,7 +8,7 @@
   --gmb-color-accent: #0F68DD;
 }
 
-// Mixin pour les styles d'étoiles (réutilisable)
+// Mixin for star styles (reusable)
 @mixin star-styles {
   .gmb-stars {
     display: flex;
@@ -66,7 +66,7 @@
       font-size: 0.875rem;
     }
 
-    // Utiliser le mixin pour les étoiles
+    // Use star mixin
     @include star-styles;
   }
 }
@@ -90,7 +90,7 @@
   width: 100%;
 
   .gmb-review-meta {
-    // Utiliser le mixin pour les étoiles
+    // Use star mixin
     @include star-styles;
   }
 
@@ -145,7 +145,7 @@
     color: var(--gmb-color-text-primary);
   }
 
-  // Limitation à 7 lignes uniquement dans le slider (pas dans la modale)
+  // Limit to 7 lines only in slider (not in modal)
   .gmb-review-card:not(.is-modal) & p {
     display: -webkit-box;
     -webkit-line-clamp: 7;

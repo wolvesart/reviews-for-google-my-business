@@ -78,7 +78,7 @@ function wgmbr_get_all_reviews($args = array())
     $defaults = array(
         'post_type' => 'gmb_review',
         'post_status' => 'publish',
-        'posts_per_page' => 50,
+        'posts_per_page' => WGMBR_DEFAULT_REVIEW_LIMIT,
         'orderby' => 'date',
         'order' => 'DESC',
     );
@@ -186,36 +186,44 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
 
 /**
  * Calcule la note moyenne de tous les avis
+ * Optimized version with caching and single query
  *
  * @return float Note moyenne
  */
 function wgmbr_get_average_rating()
 {
-    $args = array(
-        'post_type' => 'gmb_review',
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-        'fields' => 'ids',
+    // Check cache first
+    $cache_key = 'wgmbr_avg_rating_cache';
+    $cached = get_transient($cache_key);
+
+    if ($cached !== false) {
+        return $cached;
+    }
+
+    global $wpdb;
+
+    // Single SQL query to calculate average directly
+    $average = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT AVG(CAST(pm.meta_value AS DECIMAL(3,2)))
+            FROM {$wpdb->postmeta} pm
+            INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+            WHERE pm.meta_key = %s
+            AND p.post_type = %s
+            AND p.post_status = %s
+            AND pm.meta_value != ''",
+            '_gmb_rating',
+            'gmb_review',
+            'publish'
+        )
     );
 
-    $posts = get_posts($args);
+    $result = $average ? (float) $average : 0;
 
-    if (empty($posts)) {
-        return 0;
-    }
+    // Cache for 1 hour
+    set_transient($cache_key, $result, HOUR_IN_SECONDS);
 
-    $total = 0;
-    $count = 0;
-
-    foreach ($posts as $post_id) {
-        $rating = get_post_meta($post_id, '_gmb_rating', true);
-        if ($rating) {
-            $total += (float)$rating;
-            $count++;
-        }
-    }
-
-    return $count > 0 ? ($total / $count) : 0;
+    return $result;
 }
 
 /**
@@ -296,4 +304,290 @@ function wgmbr_get_parsed_review_by_review_id($review_id)
 function wgmbr_get_template_parts($path, $params = [])
 {
     include WOLVES_GMB_PLUGIN_DIR . $path . '.php';
+}
+
+// ============================================================================
+// ENCRYPTION / DECRYPTION FOR SENSITIVE DATA
+// ============================================================================
+
+/**
+ * Encrypt sensitive data using WordPress salts
+ *
+ * @param string $data Data to encrypt
+ * @return string Encrypted data (base64 encoded)
+ */
+function wgmbr_encrypt($data) {
+    if (empty($data)) {
+        return '';
+    }
+
+    // Check if OpenSSL is available
+    if (!function_exists('openssl_encrypt')) {
+        error_log('[GMB Reviews] OpenSSL not available for encryption');
+        return $data; // Fallback: return plain text
+    }
+
+    // Generate encryption key from WordPress salts
+    // Use constants directly instead of wp_hash() which might not be loaded yet
+    if (!defined('AUTH_KEY') || !defined('SECURE_AUTH_KEY')) {
+        error_log('[GMB Reviews] WordPress salts not defined, cannot encrypt');
+        return $data; // Fallback: return plain text
+    }
+
+    $salt_combo = AUTH_KEY . SECURE_AUTH_KEY . LOGGED_IN_KEY . NONCE_KEY;
+    $key = substr(hash('sha256', $salt_combo, true), 0, 32); // 256-bit key
+
+    // Generate IV (Initialization Vector)
+    $iv_length = openssl_cipher_iv_length('aes-256-cbc');
+    $iv = openssl_random_pseudo_bytes($iv_length);
+
+    // Encrypt
+    $encrypted = openssl_encrypt($data, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+
+    if ($encrypted === false) {
+        error_log('[GMB Reviews] Failed to encrypt data');
+        return $data; // Fallback: return plain text
+    }
+
+    // Combine IV and encrypted data, then base64 encode
+    return base64_encode($iv . $encrypted);
+}
+
+/**
+ * Decrypt sensitive data
+ *
+ * @param string $encrypted_data Encrypted data (base64 encoded)
+ * @return string Decrypted data
+ */
+function wgmbr_decrypt($encrypted_data) {
+    if (empty($encrypted_data)) {
+        return '';
+    }
+
+    // Check if OpenSSL is available
+    if (!function_exists('openssl_decrypt')) {
+        error_log('[GMB Reviews] OpenSSL not available for decryption');
+        return $encrypted_data; // Fallback: return as-is (might be plain text)
+    }
+
+    // Generate encryption key from WordPress salts (same as encryption)
+    if (!defined('AUTH_KEY') || !defined('SECURE_AUTH_KEY')) {
+        error_log('[GMB Reviews] WordPress salts not defined, cannot decrypt');
+        return $encrypted_data; // Fallback: return as-is
+    }
+
+    $salt_combo = AUTH_KEY . SECURE_AUTH_KEY . LOGGED_IN_KEY . NONCE_KEY;
+    $key = substr(hash('sha256', $salt_combo, true), 0, 32);
+
+    // Decode base64
+    $data = base64_decode($encrypted_data, true);
+
+    if ($data === false) {
+        error_log('[GMB Reviews] Failed to decode encrypted data');
+        return ''; // Invalid data
+    }
+
+    // Extract IV and encrypted content
+    $iv_length = openssl_cipher_iv_length('aes-256-cbc');
+
+    // Check if data is long enough to contain IV
+    if (strlen($data) <= $iv_length) {
+        error_log('[GMB Reviews] Encrypted data too short');
+        return ''; // Invalid data
+    }
+
+    $iv = substr($data, 0, $iv_length);
+    $encrypted = substr($data, $iv_length);
+
+    // Decrypt
+    $decrypted = openssl_decrypt($encrypted, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+
+    if ($decrypted === false) {
+        error_log('[GMB Reviews] Failed to decrypt data');
+        return '';
+    }
+
+    return $decrypted;
+}
+
+/**
+ * Check if client secret is stored in encrypted format
+ * Helper for migration from plain text to encrypted
+ *
+ * @param string $value Value to check
+ * @return bool True if encrypted, false if plain text
+ */
+function wgmbr_is_encrypted($value) {
+    if (empty($value)) {
+        return false;
+    }
+
+    // Encrypted values are base64 encoded and have a minimum length
+    $decoded = base64_decode($value, true);
+
+    // Check if it's valid base64 and has minimum length for IV + data
+    return ($decoded !== false && strlen($decoded) > openssl_cipher_iv_length('aes-256-cbc'));
+}
+
+// ============================================================================
+// CENTRALIZED ERROR LOGGING SYSTEM
+// ============================================================================
+
+/**
+ * Centralized error logging function
+ * Logs to WordPress error log and stores in database for admin display
+ *
+ * @param string $context Context of the error (e.g., 'oauth', 'api', 'sync')
+ * @param string $message Error message
+ * @param array $data Additional data for debugging
+ * @param string $level Error level: 'error', 'warning', 'info'
+ */
+function wgmbr_log_error($context, $message, $data = array(), $level = 'error') {
+    $timestamp = current_time('mysql');
+
+    $log_entry = array(
+        'timestamp' => $timestamp,
+        'context' => $context,
+        'message' => $message,
+        'level' => $level,
+        'user_id' => get_current_user_id(),
+        'data' => $data
+    );
+
+    // Log to WordPress error log
+    $log_message = sprintf(
+        '[GMB Reviews] [%s] %s: %s',
+        strtoupper($level),
+        $context,
+        $message
+    );
+
+    if (!empty($data)) {
+        $log_message .= ' | Data: ' . wp_json_encode($data);
+    }
+
+    error_log($log_message);
+
+    // Save to database for admin dashboard (keep last 100 entries)
+    $logs = get_option('wgmbr_error_logs', array());
+    array_unshift($logs, $log_entry); // Add to beginning
+    $logs = array_slice($logs, 0, 100); // Keep last 100
+    update_option('wgmbr_error_logs', $logs, false); // false = don't autoload
+
+    // Send email notification for critical errors
+    if ($level === 'error' && in_array($context, array('oauth', 'token_refresh', 'api_error'), true)) {
+        wgmbr_send_error_notification($context, $message, $data);
+    }
+}
+
+/**
+ * Send email notification for critical errors
+ *
+ * @param string $context Error context
+ * @param string $message Error message
+ * @param array $data Additional data
+ */
+function wgmbr_send_error_notification($context, $message, $data = array()) {
+    // Check if we've sent an email recently (throttle to 1 per hour per context)
+    $throttle_key = 'wgmbr_email_sent_' . $context;
+    if (get_transient($throttle_key)) {
+        return; // Already sent recently
+    }
+
+    set_transient($throttle_key, true, HOUR_IN_SECONDS);
+
+    $admin_email = get_option('admin_email');
+    $site_name = get_bloginfo('name');
+
+    /* translators: %s: Site name */
+    $subject = sprintf(__('[%s] GMB Reviews Error: %s', 'reviews-for-google-my-business'), $site_name, $context);
+
+    $body = sprintf(
+        /* translators: 1: Error context, 2: Error message, 3: Additional data */
+        __("An error occurred in the Google My Business Reviews plugin.\n\nContext: %1\$s\nMessage: %2\$s\n\nAdditional data:\n%3\$s\n\nPlease check the plugin settings.", 'reviews-for-google-my-business'),
+        $context,
+        $message,
+        !empty($data) ? print_r($data, true) : 'None'
+    );
+
+    wp_mail($admin_email, $subject, $body);
+}
+
+/**
+ * Get recent error logs for admin display
+ *
+ * @param int $limit Number of logs to retrieve
+ * @param string $level Filter by error level (optional)
+ * @return array Error logs
+ */
+function wgmbr_get_error_logs($limit = 50, $level = null) {
+    $logs = get_option('wgmbr_error_logs', array());
+
+    if ($level) {
+        $logs = array_filter($logs, function($log) use ($level) {
+            return isset($log['level']) && $log['level'] === $level;
+        });
+    }
+
+    return array_slice($logs, 0, $limit);
+}
+
+/**
+ * Clear all error logs
+ */
+function wgmbr_clear_error_logs() {
+    delete_option('wgmbr_error_logs');
+}
+
+// ============================================================================
+// API RESPONSE FORMAT STANDARDIZATION
+// ============================================================================
+
+/**
+ * Format success API response with standard structure
+ *
+ * @param array $data Response data
+ * @param string $message Optional success message
+ * @return array Standardized success response
+ */
+function wgmbr_api_success_response($data = array(), $message = '') {
+    return array(
+        'error' => false,
+        'success' => true,
+        'message' => $message,
+        'data' => $data,
+        'timestamp' => current_time('mysql')
+    );
+}
+
+/**
+ * Format error API response with standard structure
+ *
+ * @param string $message Error message
+ * @param int|null $status_code HTTP status code
+ * @param array $details Additional error details
+ * @param string $error_code Optional error code for programmatic handling
+ * @return array Standardized error response
+ */
+function wgmbr_api_error_response($message, $status_code = null, $details = array(), $error_code = null) {
+    $response = array(
+        'error' => true,
+        'success' => false,
+        'message' => $message,
+        'timestamp' => current_time('mysql')
+    );
+
+    if ($status_code !== null) {
+        $response['status_code'] = $status_code;
+    }
+
+    if (!empty($details)) {
+        $response['details'] = $details;
+    }
+
+    if ($error_code !== null) {
+        $response['error_code'] = $error_code;
+    }
+
+    return $response;
 }

@@ -53,22 +53,24 @@ if (!defined('ABSPATH')) {
             </div>
         <?php else: ?>
             <div class="top-bar">
-                <div>
+                <div class="head">
                     <h2>
                         <?php
                         printf(
-                            /* translators: %s: Number of reviews */
-                            esc_html(_n('Review found (%s)', 'Reviews found (%s)', $data['total'], 'reviews-for-google-my-business')),
-                            esc_html(number_format_i18n($data['total']))
+                        /* translators: %s: Number of reviews */
+                                esc_html(_n('Review found (%s)', 'Reviews found (%s)', $data['total'], 'reviews-for-google-my-business')),
+                                esc_html(number_format_i18n($data['total']))
                         );
                         ?>
                     </h2>
+
+                    <button type="button" class="button button-primary" onclick="wgmbr_syncReviewsFromAPI()">
+                        <?php esc_html_e('Sync Reviews from API', 'reviews-for-google-my-business'); ?>
+                    </button>
                 </div>
                 <div id="sync-result"></div>
-                <button type="button" class="button button-primary" onclick="wgmbr_syncReviewsFromAPI()">
-                    <?php esc_html_e('Sync Reviews from API', 'reviews-for-google-my-business'); ?>
-                </button>
             </div>
+
 
             <table class="wp-list-table widefat fixed striped">
                 <thead>
@@ -102,7 +104,7 @@ if (!defined('ABSPATH')) {
                         </td>
                         <td><strong><?php echo esc_html($parsed->name); ?></strong></td>
                         <td>
-                            <?php echo esc_html(str_repeat('⭐', $parsed->rating)); ?>
+                            <?php echo esc_html(str_repeat('★', $parsed->rating)); ?>
                         </td>
                         <td>
                             <?php echo esc_html(date_i18n('d/m/Y', $parsed->date)); ?>
@@ -179,7 +181,14 @@ if (!defined('ABSPATH')) {
         button.disabled = true;
         button.textContent = '<?php esc_html_e('Syncing...', 'reviews-for-google-my-business'); ?>';
 
-        fetch('<?php echo esc_url(admin_url('admin-ajax.php')); ?>?action=wgmbr_sync_reviews')
+        const formData = new FormData();
+        formData.append('action', 'wgmbr_sync_reviews');
+        formData.append('nonce', '<?php echo esc_attr(wp_create_nonce('wgmbr_admin_actions')); ?>');
+
+        fetch('<?php echo esc_url(admin_url('admin-ajax.php')); ?>', {
+            method: 'POST',
+            body: formData
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

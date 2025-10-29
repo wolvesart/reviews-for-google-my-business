@@ -1,5 +1,5 @@
 // ============================================================================
-// GESTION DES TABS
+// TAB MANAGEMENT
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -69,7 +69,14 @@ window.refreshLocations = function() {
     button.disabled = true;
     button.textContent = wgmbrAdmin.i18n.loading;
 
-    fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_refresh_locations')
+    const formData = new FormData();
+    formData.append('action', 'wgmbr_refresh_locations');
+    formData.append('nonce', wgmbrAdmin.nonce);
+
+    fetch(wgmbrAdmin.ajaxUrl, {
+        method: 'POST',
+        body: formData
+    })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -88,17 +95,27 @@ window.refreshLocations = function() {
 }
 
 window.clearGMBCache = function() {
-    document.getElementById('gmb-test-result').innerHTML = '<p>' + wgmbrAdmin.i18n.clearingCache + '</p>';
+    document.getElementById('gmb-test-result').innerHTML = '<p>' + wgmbrAdmin.i18n.resetting + '</p>';
 
-    fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_clear_cache')
+    const formData = new FormData();
+    formData.append('action', 'wgmbr_clear_cache');
+    formData.append('nonce', wgmbrAdmin.nonce);
+
+    fetch(wgmbrAdmin.ajaxUrl, {
+        method: 'POST',
+        body: formData
+    })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                const message = data.data && data.data.message
+                    ? data.data.message
+                    : wgmbrAdmin.i18n.resetSuccess;
                 document.getElementById('gmb-test-result').innerHTML =
-                    '<div class="gmb-notice success"><p>' + wgmbrAdmin.i18n.cacheCleared + '</p></div>';
+                    '<div class="gmb-notice success"><p>' + message + '</p></div>';
             } else {
                 document.getElementById('gmb-test-result').innerHTML =
-                    '<div class="gmb-notice error"><p>' + wgmbrAdmin.i18n.errorClearingCache + '</p></div>';
+                    '<div class="gmb-notice error"><p>' + wgmbrAdmin.i18n.errorResettingReviews + '</p></div>';
             }
         });
 }
@@ -106,7 +123,14 @@ window.clearGMBCache = function() {
 window.testGMBConnection = function() {
     document.getElementById('gmb-test-result').innerHTML = '<p>' + wgmbrAdmin.i18n.loading + '</p>';
 
-    fetch(wgmbrAdmin.ajaxUrl + '?action=wgmbr_test_connection')
+    const formData = new FormData();
+    formData.append('action', 'wgmbr_test_connection');
+    formData.append('nonce', wgmbrAdmin.nonce);
+
+    fetch(wgmbrAdmin.ajaxUrl, {
+        method: 'POST',
+        body: formData
+    })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -142,12 +166,13 @@ window.resetGMBCustomization = function(btn) {
     btn.disabled = true;
     btn.textContent = wgmbrAdmin.i18n.loading;
 
+    const formData = new FormData();
+    formData.append('action', 'wgmbr_reset_customization');
+    formData.append('nonce', wgmbrAdmin.nonce);
+
     fetch(wgmbrAdmin.ajaxUrl, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'action=wgmbr_reset_customization'
+        body: formData
     })
         .then(response => {
             if (!response.ok) {
@@ -299,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================================================
 
 window.wgmbrCopyShortcode = function(btn) {
-    // Récupérer le texte du shortcode
+    // Get shortcode text
     const shortcode = document.getElementById("gmb-shortcode");
 
     if (!shortcode) {
@@ -307,15 +332,15 @@ window.wgmbrCopyShortcode = function(btn) {
         return;
     }
 
-    // Copier dans le presse-papier
+    // Copy to clipboard
     navigator.clipboard.writeText(shortcode.textContent)
         .then(() => {
-            // Feedback visuel dans le bouton
+            // Visual feedback in button
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (wgmbrAdmin.i18n?.copied || 'Copied!');
             btn.style.color = '#46b450';
 
-            // Restaurer le bouton après 2 secondes
+            // Restore button after 2 seconds
             setTimeout(() => {
                 btn.innerHTML = originalHTML;
                 btn.style.color = '';
@@ -339,31 +364,31 @@ window.wgmbrGenerateShortcode = function() {
 
     if (!outputElement) return;
 
-    // Récupérer les catégories sélectionnées depuis les checkboxes
+    // Get selected categories from checkboxes
     const selectedCategories = Array.from(categoriesContainer.querySelectorAll('input[name="gen_category_slugs[]"]:checked'))
         .map(checkbox => checkbox.value);
 
-    // Construire le shortcode
+    // Build shortcode
     let shortcode = '[gmb_reviews';
 
-    // Ajouter le paramètre limit seulement s'il est différent de la valeur par défaut
+    // Add limit parameter only if different from default value
     if (limit && limit !== '50') {
         shortcode += ' limit="' + limit + '"';
     }
 
-    // Ajouter les catégories
+    // Add categories
     if (selectedCategories.length > 0) {
         shortcode += ' category="' + selectedCategories.join(',') + '"';
     }
 
-    // Ajouter show_summary seulement si false
+    // Add show_summary only if false
     if (!showSummary) {
         shortcode += ' show_summary="false"';
     }
 
     shortcode += ']';
 
-    // Mettre à jour l'affichage
+    // Update display
     outputElement.textContent = shortcode;
 }
 
@@ -375,15 +400,15 @@ window.wgmbrCopyGeneratedShortcode = function(btn) {
         return;
     }
 
-    // Copier dans le presse-papier
+    // Copy to clipboard
     navigator.clipboard.writeText(shortcode.textContent)
         .then(() => {
-            // Feedback visuel dans le bouton
+            // Visual feedback in button
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (wgmbrAdmin.i18n?.copied || 'Copied!');
             btn.classList.add('is-success');
 
-            // Restaurer le bouton après 2 secondes
+            // Restore button after 2 seconds
             setTimeout(() => {
                 btn.innerHTML = originalHTML;
                 btn.classList.remove('is-success');

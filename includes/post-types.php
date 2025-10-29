@@ -52,7 +52,7 @@ function wgmbr_register_review_post_type() {
 
     register_post_type('gmb_review', $args);
 }
-add_action('init', 'wgmbr_register_review_post_type');
+add_action('init', 'wgmbr_register_review_post_type', 0); // Priority 0: Register CPT very early
 
 // ============================================================================
 // TAXONOMIE : GMB_CATEGORY
@@ -93,7 +93,7 @@ function wgmbr_register_category_taxonomy() {
 
     register_taxonomy('gmb_category', array('gmb_review'), $args);
 }
-add_action('init', 'wgmbr_register_category_taxonomy');
+add_action('init', 'wgmbr_register_category_taxonomy', 1); // Priority 1: Register taxonomy after CPT
 
 // ============================================================================
 // FONCTIONS HELPER POUR LE CPT

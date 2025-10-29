@@ -1,6 +1,6 @@
 .gmb-wrap {
 
-  //Input + button
+  // Input + button
   .input-button {
     display: flex;
     flex-direction: row;
@@ -11,14 +11,14 @@
     }
   }
 
-  //Input + color
+  // Input + color
   .input-color {
     display: flex;
     gap: 8px;
     align-items: center;
   }
 
-  //Globals changes
+  // Global changes
   input, select {
     height: 40px;
     border-radius: var(--radius-md);
@@ -37,7 +37,7 @@
     color: var(--color-grey-500);
   }
 
-  //Type of input
+  // Input types
   input[type="color"] {
     border-radius: inherit;
   }
@@ -76,7 +76,7 @@
     }
   }
 
-  //Transform input type checkbox to toogle
+  // Transform checkbox input to toggle
   .switch {
     position: relative;
     display: inline-block;

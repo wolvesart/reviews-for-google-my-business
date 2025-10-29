@@ -1,5 +1,5 @@
 <div class="card info">
-    <img class="pattern-info" src="<?php echo esc_url(WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern-info.jpg'); ?>"
+    <img class="pattern-info" src="<?php echo esc_url(WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern-info.png'); ?>"
          alt=""
          width="550"
          height="256"

@@ -41,3 +41,28 @@
     }
   }
 }
+
+.config-table {
+  background-color: #F5F6F7;
+  border-radius: 12px;
+  text-align: left;
+  overflow: hidden;
+  border: 1px solid #e1e1e8;
+  margin: 12px 0;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-style: hidden;
+  }
+
+  th, td {
+    border: 1px solid #e1e1e8;
+    padding: 8px;
+    vertical-align: top;
+  }
+
+  p {
+    margin: 0;
+  }
+}
