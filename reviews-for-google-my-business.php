@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name: Reviews for Google My Business
- * Plugin URI: https://wolvesart.fr
  * Description: Display your Google My Business reviews on your website for free. Improve your credibility and gain trust. Category system, full customization, and flexible shortcode.
  * Version: 1.0.0
  * Author: Wolvesart
