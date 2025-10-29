@@ -52,7 +52,7 @@ if (!defined('ABSPATH')) {
                         <div class="card">
                             <h2><?php esc_html_e('1. Google API Configuration', 'reviews-for-google-my-business'); ?></h2>
 
-                            <?php if (!is_ssl() && !defined('WP_DEBUG') && !in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'), true)): ?>
+                            <?php if (!is_ssl() && !defined('WP_DEBUG') && (!isset($_SERVER['REMOTE_ADDR']) || !in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'), true))): ?>
                                 <div class="gmb-notice error">
                                     <p>
                                         <strong>⚠️ <?php esc_html_e('HTTPS Required', 'reviews-for-google-my-business'); ?></strong><br>

@@ -203,6 +203,7 @@ function wgmbr_get_average_rating()
     global $wpdb;
 
     // Single SQL query to calculate average directly
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Optimized aggregate query, result is cached with transients
     $average = $wpdb->get_var(
         $wpdb->prepare(
             "SELECT AVG(CAST(pm.meta_value AS DECIMAL(3,2)))
@@ -323,6 +324,7 @@ function wgmbr_encrypt($data) {
 
     // Check if OpenSSL is available
     if (!function_exists('openssl_encrypt')) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] OpenSSL not available for encryption');
         return $data; // Fallback: return plain text
     }
@@ -330,6 +332,7 @@ function wgmbr_encrypt($data) {
     // Generate encryption key from WordPress salts
     // Use constants directly instead of wp_hash() which might not be loaded yet
     if (!defined('AUTH_KEY') || !defined('SECURE_AUTH_KEY')) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] WordPress salts not defined, cannot encrypt');
         return $data; // Fallback: return plain text
     }
@@ -345,6 +348,7 @@ function wgmbr_encrypt($data) {
     $encrypted = openssl_encrypt($data, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
 
     if ($encrypted === false) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] Failed to encrypt data');
         return $data; // Fallback: return plain text
     }
@@ -366,12 +370,14 @@ function wgmbr_decrypt($encrypted_data) {
 
     // Check if OpenSSL is available
     if (!function_exists('openssl_decrypt')) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] OpenSSL not available for decryption');
         return $encrypted_data; // Fallback: return as-is (might be plain text)
     }
 
     // Generate encryption key from WordPress salts (same as encryption)
     if (!defined('AUTH_KEY') || !defined('SECURE_AUTH_KEY')) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] WordPress salts not defined, cannot decrypt');
         return $encrypted_data; // Fallback: return as-is
     }
@@ -383,6 +389,7 @@ function wgmbr_decrypt($encrypted_data) {
     $data = base64_decode($encrypted_data, true);
 
     if ($data === false) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] Failed to decode encrypted data');
         return ''; // Invalid data
     }
@@ -392,6 +399,7 @@ function wgmbr_decrypt($encrypted_data) {
 
     // Check if data is long enough to contain IV
     if (strlen($data) <= $iv_length) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] Encrypted data too short');
         return ''; // Invalid data
     }
@@ -403,6 +411,7 @@ function wgmbr_decrypt($encrypted_data) {
     $decrypted = openssl_decrypt($encrypted, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
 
     if ($decrypted === false) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional error logging for security debugging
         error_log('[GMB Reviews] Failed to decrypt data');
         return '';
     }
@@ -466,6 +475,7 @@ function wgmbr_log_error($context, $message, $data = array(), $level = 'error') 
         $log_message .= ' | Data: ' . wp_json_encode($data);
     }
 
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional centralized error logging system
     error_log($log_message);
 
     // Save to database for admin dashboard (keep last 100 entries)
@@ -507,6 +517,7 @@ function wgmbr_send_error_notification($context, $message, $data = array()) {
         __("An error occurred in the Google My Business Reviews plugin.\n\nContext: %1\$s\nMessage: %2\$s\n\nAdditional data:\n%3\$s\n\nPlease check the plugin settings.", 'reviews-for-google-my-business'),
         $context,
         $message,
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Used for email body formatting, not debug output
         !empty($data) ? print_r($data, true) : 'None'
     );
 

@@ -548,7 +548,9 @@ function wgmbr_auto_fetch_accounts_and_locations() {
     // We'll also need to clear all location caches, but we don't know the account IDs yet
     // So we'll use a wildcard delete pattern - WordPress transients are stored with prefix
     global $wpdb;
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Wildcard delete of transients, no WP function available for this pattern
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wgmbr_locations_cache_%'");
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Wildcard delete of transient timeouts, no WP function available for this pattern
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wgmbr_locations_cache_%'");
 
     $accounts_response = wgmbr_list_accounts();
@@ -657,7 +659,7 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
 
     // Step 2: Fetch ALL existing reviews in ONE query (1 query instead of 100)
     $placeholders = implode(',', array_fill(0, count($review_ids), '%s'));
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Placeholders are safely generated
+    // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is safely generated from array_fill with '%s' only, not user input
     $existing_query = $wpdb->prepare(
         "SELECT pm.post_id, pm.meta_value as review_id
         FROM {$wpdb->postmeta} pm
@@ -667,8 +669,9 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         AND pm.meta_value IN ($placeholders)",
         ...$review_ids
     );
+    // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared -- Optimized bulk query to check existing reviews, caching not appropriate for this operation
     $existing_reviews = $wpdb->get_results($existing_query, OBJECT_K);
 
     // Create a map: review_id => post_id
