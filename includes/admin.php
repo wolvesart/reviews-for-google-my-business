@@ -446,6 +446,7 @@ function wgmbr_process_customization_save()
 
     // Process color options
     foreach ($color_options as $key => $sanitizer) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
         if (isset($_POST[$key])) {
             // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by calling function, sanitization done by $sanitizer callback
             update_option($key, $sanitizer(wp_unslash($_POST[$key])));
@@ -454,6 +455,7 @@ function wgmbr_process_customization_save()
 
     // Process integer options
     foreach ($int_options as $key => $sanitizer) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
         if (isset($_POST[$key])) {
             // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by calling function, sanitization done by $sanitizer callback
             update_option($key, $sanitizer(wp_unslash($_POST[$key])));
