@@ -499,8 +499,8 @@ function wgmbr_send_error_notification($context, $message, $data = array()) {
     $admin_email = get_option('admin_email');
     $site_name = get_bloginfo('name');
 
-    /* translators: %s: Site name */
-    $subject = sprintf(__('[%s] GMB Reviews Error: %s', 'reviews-for-google-my-business'), $site_name, $context);
+    /* translators: 1: Site name, 2: Error context */
+    $subject = sprintf(__('[%1$s] GMB Reviews Error: %2$s', 'reviews-for-google-my-business'), $site_name, $context);
 
     $body = sprintf(
         /* translators: 1: Error context, 2: Error message, 3: Additional data */
