@@ -321,7 +321,7 @@ function wgmbr_save_credentials()
         in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'), true)
     ) || (
         isset($_SERVER['HTTP_HOST']) &&
-        (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)
+        (strpos(sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])), 'localhost') !== false || strpos(sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])), '127.0.0.1') !== false)
     );
 
     if (!is_ssl() && !$is_localhost && !defined('WP_DEBUG')) {
@@ -425,6 +425,10 @@ add_action('admin_post_wgmbr_revoke', 'wgmbr_revoke_access');
 /**
  * Process customization options save (helper function)
  * Used by both POST and AJAX handlers to avoid code duplication
+ *
+ * Note: Nonce verification is performed by the calling functions:
+ * - wgmbr_save_customization() uses check_admin_referer()
+ * - wgmbr_save_customization_ajax() uses check_ajax_referer()
  */
 function wgmbr_process_customization_save()
 {
@@ -441,14 +445,18 @@ function wgmbr_process_customization_save()
     );
 
     // Process color options
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
     foreach ($color_options as $key => $sanitizer) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by calling function, sanitization done by $sanitizer callback
         if (isset($_POST[$key])) {
             update_option($key, $sanitizer(wp_unslash($_POST[$key])));
         }
     }
 
     // Process integer options
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
     foreach ($int_options as $key => $sanitizer) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by calling function, sanitization done by $sanitizer callback
         if (isset($_POST[$key])) {
             update_option($key, $sanitizer(wp_unslash($_POST[$key])));
         }
