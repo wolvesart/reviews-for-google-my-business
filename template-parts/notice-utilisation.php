@@ -1,4 +1,7 @@
-<?php wgmbr_get_template_parts('template-parts/components/notice', [
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+wgmbr_get_template_parts('template-parts/components/notice', [
     'title' => __("How to use a shortcode in WordPress?", 'reviews-for-google-my-business'),
     'body' => __("
 <p>A shortcode is a small piece of code in brackets that allows you to display specific content on your site.</p>

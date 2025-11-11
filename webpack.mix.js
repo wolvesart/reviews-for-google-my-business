@@ -7,4 +7,5 @@ mix
     .js('src/js/app.js', 'js')
     .js('src/js/admin.js', 'js')
     .js('src/js/categories.js', 'js')
+    .js('src/js/manage-reviews.js', 'js')
     .setPublicPath('assets');

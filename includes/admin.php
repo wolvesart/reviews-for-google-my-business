@@ -18,27 +18,27 @@ function wgmbr_add_admin_menu()
         esc_html__('Google Reviews', 'reviews-for-google-my-business'),
         esc_html__('Google Reviews', 'reviews-for-google-my-business'),
         'manage_options',
-        'gmb-manage-reviews',
+        'wgmbr-manage-reviews',
         'wgmbr_manage_reviews_page',
         'dashicons-star-filled',
         30
     );
 
     add_submenu_page(
-        'gmb-manage-reviews',
+        'wgmbr-manage-reviews',
         esc_html__('Categories', 'reviews-for-google-my-business'),
         esc_html__('Categories', 'reviews-for-google-my-business'),
         'manage_options',
-        'gmb-categories',
+        'wgmbr-categories',
         'wgmbr_categories_page'
     );
 
     add_submenu_page(
-        'gmb-manage-reviews',
+        'wgmbr-manage-reviews',
         esc_html__('Configuration', 'reviews-for-google-my-business'),
         esc_html__('Configuration', 'reviews-for-google-my-business'),
         'manage_options',
-        'gmb-settings',
+        'wgmbr-settings',
         'wgmbr_settings_page'
     );
 }
@@ -55,25 +55,27 @@ function wgmbr_enqueue_admin_assets($hook)
 
     wp_enqueue_style(
         'gmb-admin-styles',
-        WOLVES_GMB_PLUGIN_URL . 'assets/css/admin.css',
+        WGMBR_PLUGIN_URL . 'assets/css/admin.css',
         array(),
-        WOLVES_GMB_VERSION
+        WGMBR_VERSION
     );
 
-    $custom_css = '.gmb-header { background-image: url("' . WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern.png") !important; }';
+    // ESCAPE LATE: Properly escape URL for CSS output
+    $pattern_url = esc_url(WGMBR_PLUGIN_URL . 'assets/images/gmb-pattern.png');
+    $custom_css = '.gmb-header { background-image: url("' . $pattern_url . '") !important; }';
     wp_add_inline_style('gmb-admin-styles', $custom_css);
 
     wp_enqueue_script(
         'gmb-admin-scripts',
-        WOLVES_GMB_PLUGIN_URL . 'assets/js/admin.js',
+        WGMBR_PLUGIN_URL . 'assets/js/admin.js',
         array(),
-        WOLVES_GMB_VERSION,
+        WGMBR_VERSION,
         true
     );
 
     wp_localize_script('gmb-admin-scripts', 'wgmbrAdmin', array(
         'ajaxUrl' => admin_url('admin-ajax.php'),
-        'settingsUrl' => admin_url('admin.php?page=gmb-settings'),
+        'settingsUrl' => admin_url('admin.php?page=wgmbr-settings'),
         'nonce' => wp_create_nonce('wgmbr_admin_actions'),
         'i18n' => array(
             'loading' => esc_html__('Loading...', 'reviews-for-google-my-business'),
@@ -96,15 +98,17 @@ function wgmbr_enqueue_admin_assets($hook)
     if (in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
         wp_enqueue_script(
             'gmb-manage-reviews-scripts',
-            WOLVES_GMB_PLUGIN_URL . 'assets/js/manage-reviews.js',
+            WGMBR_PLUGIN_URL . 'assets/js/manage-reviews.js',
             array(),
-            WOLVES_GMB_VERSION,
+            WGMBR_VERSION,
             true
         );
 
         wp_localize_script('gmb-manage-reviews-scripts', 'wgmbrManage', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wgmbr_categories'),
+            'syncNonce' => wp_create_nonce('wgmbr_admin_actions'),
+            'saveReviewNonce' => wp_create_nonce('wgmbr_save_review_job'),
             'i18n' => array(
                 'enterCategoryName' => esc_html__('Please enter a category name', 'reviews-for-google-my-business'),
                 'creating' => esc_html__('Creating...', 'reviews-for-google-my-business'),
@@ -115,6 +119,10 @@ function wgmbr_enqueue_admin_assets($hook)
                 'confirmDeleteCategory' => esc_html__('Are you sure you want to delete this category? It will be removed from all reviews that use it.', 'reviews-for-google-my-business'),
                 'deleting' => esc_html__('Deleting...', 'reviews-for-google-my-business'),
                 'delete' => esc_html__('Delete', 'reviews-for-google-my-business'),
+                'syncing' => esc_html__('Syncing...', 'reviews-for-google-my-business'),
+                'syncComplete' => esc_html__('✓ Synchronization complete', 'reviews-for-google-my-business'),
+                'errorSyncing' => esc_html__('Error syncing reviews', 'reviews-for-google-my-business'),
+                'updated' => esc_html__('Updated', 'reviews-for-google-my-business'),
             )
         ));
     }
@@ -136,9 +144,9 @@ function wgmbr_settings_page()
     $available_locations = get_option('wgmbr_available_locations', array());
     $current_account_id = get_option('wgmbr_account_id');
     $current_location_id = get_option('wgmbr_location_id');
-    $has_credentials = GMB_CLIENT_ID && GMB_CLIENT_SECRET;
+    $has_credentials = WGMBR_CLIENT_ID && WGMBR_CLIENT_SECRET;
 
-    require_once WOLVES_GMB_PLUGIN_DIR . 'templates/admin-page.php';
+    require_once WGMBR_PLUGIN_DIR . 'templates/admin-page.php';
 }
 
 function wgmbr_manage_reviews_page()
@@ -161,7 +169,7 @@ function wgmbr_manage_reviews_page()
     $query = $result['query'];
 
     $categories = get_terms(array(
-        'taxonomy' => 'gmb_category',
+        'taxonomy' => 'wgmbr_category',
         'hide_empty' => false,
     ));
 
@@ -182,7 +190,7 @@ function wgmbr_manage_reviews_page()
         }
     }
 
-    require_once WOLVES_GMB_PLUGIN_DIR . 'templates/manage-reviews-page.php';
+    require_once WGMBR_PLUGIN_DIR . 'templates/manage-reviews-page.php';
 }
 
 // Categories page
@@ -192,7 +200,7 @@ function wgmbr_categories_page()
         wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'reviews-for-google-my-business'));
     }
 
-    require_once WOLVES_GMB_PLUGIN_DIR . 'templates/categories-page.php';
+    require_once WGMBR_PLUGIN_DIR . 'templates/categories-page.php';
 }
 
 // ============================================================================
@@ -238,7 +246,7 @@ function wgmbr_clear_cache_ajax()
 
     // Delete all review CPTs
     $args = array(
-        'post_type' => 'gmb_review',
+        'post_type' => 'wgmbr_review',
         'posts_per_page' => -1,
         'post_status' => 'any',
         'fields' => 'ids'
@@ -327,7 +335,7 @@ function wgmbr_save_credentials()
     check_admin_referer('wgmbr_save_credentials', 'wgmbr_credentials_nonce');
 
     if (!isset($_POST['wgmbr_client_id']) || !isset($_POST['wgmbr_client_secret']) || !isset($_POST['wgmbr_redirect_uri'])) {
-        wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=error'));
+        wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=error'));
         exit;
     }
 
@@ -346,7 +354,7 @@ function wgmbr_save_credentials()
 
     update_option('wgmbr_redirect_uri', $redirect_uri);
 
-    wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=credentials_saved'));
+    wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=credentials_saved'));
     exit;
 }
 
@@ -363,20 +371,30 @@ function wgmbr_save_location()
     check_admin_referer('wgmbr_save_location', 'wgmbr_location_nonce');
 
     if (!isset($_POST['wgmbr_location']) || empty($_POST['wgmbr_location'])) {
-        wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=error'));
+        wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=error'));
         exit;
     }
 
+    // SANITIZE: Remove slashes and sanitize the location data
     $location_data = sanitize_text_field(wp_unslash($_POST['wgmbr_location']));
+
+    // VALIDATE: Parse the location data (format: account_id|location_id)
     $parts = explode('|', $location_data);
 
     if (count($parts) !== 2) {
-        wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=error'));
+        wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=error'));
         exit;
     }
 
-    $account_id = $parts[0];
-    $location_id = $parts[1];
+    // SANITIZE: Sanitize each part separately for extra safety
+    $account_id = sanitize_text_field($parts[0]);
+    $location_id = sanitize_text_field($parts[1]);
+
+    // VALIDATE: Ensure neither is empty
+    if (empty($account_id) || empty($location_id)) {
+        wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=error'));
+        exit;
+    }
 
     update_option('wgmbr_account_id', $account_id);
     update_option('wgmbr_location_id', $location_id);
@@ -384,7 +402,7 @@ function wgmbr_save_location()
     delete_transient('wgmbr_reviews_cache');
     delete_transient('wgmbr_avg_rating_cache');
 
-    wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=location_saved'));
+    wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=location_saved'));
     exit;
 }
 
@@ -406,7 +424,7 @@ function wgmbr_revoke_access()
     delete_transient('wgmbr_reviews_cache');
     delete_transient('wgmbr_avg_rating_cache');
 
-    wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=revoked'));
+    wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=revoked'));
     exit;
 }
 
@@ -419,36 +437,51 @@ add_action('admin_post_wgmbr_revoke', 'wgmbr_revoke_access');
  * Note: Nonce verification is performed by the calling functions:
  * - wgmbr_save_customization() uses check_admin_referer()
  * - wgmbr_save_customization_ajax() uses check_ajax_referer()
+ *
+ * Security: Implements "Sanitize Early, Escape Late, Always Validate" principle
  */
 function wgmbr_process_customization_save()
 {
+    // Define color options with their keys
     $color_options = array(
-        'wgmbr_color_card_bg' => 'sanitize_hex_color',
-        'wgmbr_color_star' => 'sanitize_hex_color',
-        'wgmbr_color_text_primary' => 'sanitize_hex_color',
-        'wgmbr_color_accent' => 'sanitize_hex_color',
-        'wgmbr_color_text_resume' => 'sanitize_hex_color',
-    );
-
-    $int_options = array(
-        'wgmbr_radius_card' => 'absint',
+        'wgmbr_color_card_bg',
+        'wgmbr_color_star',
+        'wgmbr_color_text_primary',
+        'wgmbr_color_accent',
+        'wgmbr_color_text_resume',
     );
 
     // Process color options
-    foreach ($color_options as $key => $sanitizer) {
+    foreach ($color_options as $key) {
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
         if (isset($_POST[$key])) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by calling function, sanitization done by $sanitizer callback
-            update_option($key, $sanitizer(wp_unslash($_POST[$key])));
+            // Step 1: SANITIZE - Unslash and sanitize as text field
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
+            $sanitized_value = sanitize_text_field(wp_unslash($_POST[$key]));
+
+            // Step 2: VALIDATE - Ensure it's a valid hex color
+            $validated_color = sanitize_hex_color($sanitized_value);
+
+            // Step 3: VALIDATE - Only save if it's a valid hex color
+            if ($validated_color !== null) {
+                update_option($key, $validated_color);
+            }
         }
     }
 
-    // Process integer options
-    foreach ($int_options as $key => $sanitizer) {
+    // Process border radius option
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
+    if (isset($_POST['wgmbr_radius_card'])) {
+        // Step 1: SANITIZE - Unslash and sanitize as text field
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
-        if (isset($_POST[$key])) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by calling function, sanitization done by $sanitizer callback
-            update_option($key, $sanitizer(wp_unslash($_POST[$key])));
+        $sanitized_value = sanitize_text_field(wp_unslash($_POST['wgmbr_radius_card']));
+
+        // Step 2: SANITIZE - Convert to absolute integer (removes any non-numeric chars)
+        $int_value = absint($sanitized_value);
+
+        // Step 3: VALIDATE - Ensure radius is within reasonable bounds (0-100 pixels)
+        if ($int_value >= 0 && $int_value <= 100) {
+            update_option('wgmbr_radius_card', $int_value);
         }
     }
 }
@@ -465,7 +498,7 @@ function wgmbr_save_customization()
 
     wgmbr_process_customization_save();
 
-    wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=customization_saved') . '#customization');
+    wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=customization_saved') . '#customization');
     exit;
 }
 
@@ -596,18 +629,25 @@ function wgmbr_create_category_ajax()
         return;
     }
 
-    // Check category name
-    if (!isset($_POST['category_name']) || empty(trim(sanitize_text_field(wp_unslash($_POST['category_name']))))) {
+    // VALIDATE: Check category name exists
+    if (!isset($_POST['category_name'])) {
         wp_send_json_error(array('message' => esc_html__('Category name is required', 'reviews-for-google-my-business')));
         return;
     }
 
+    // SANITIZE: Clean the category name
     $category_name = sanitize_text_field(wp_unslash($_POST['category_name']));
+
+    // VALIDATE: Ensure category name is not empty after sanitization
+    if (empty(trim($category_name))) {
+        wp_send_json_error(array('message' => esc_html__('Category name cannot be empty', 'reviews-for-google-my-business')));
+        return;
+    }
 
     // Create category with wp_insert_term
     $result = wp_insert_term(
         $category_name,
-        'gmb_category',
+        'wgmbr_category',
         array(
             'slug' => sanitize_title($category_name)
         )
@@ -619,8 +659,11 @@ function wgmbr_create_category_ajax()
     }
 
     wp_send_json_success(array(
-        /* translators: %s: Category name */
-        'message' => sprintf(esc_html__('Category "%s" created successfully', 'reviews-for-google-my-business'), $category_name),
+        'message' => sprintf(
+            /* translators: %s: Category name */
+            esc_html__('Category "%s" created successfully', 'reviews-for-google-my-business'),
+            esc_html($category_name) // ESCAPE: Escape the category name for output
+        ),
         'term_id' => $result['term_id']
     ));
 }
@@ -643,16 +686,23 @@ function wgmbr_delete_category_ajax()
         return;
     }
 
-    // Check category ID
-    if (!isset($_POST['category_id']) || empty(absint(wp_unslash($_POST['category_id'])))) {
+    // VALIDATE: Check category ID exists
+    if (!isset($_POST['category_id'])) {
         wp_send_json_error(array('message' => esc_html__('Category ID is required', 'reviews-for-google-my-business')));
         return;
     }
 
+    // SANITIZE: Clean category ID and ensure it's a positive integer
     $category_id = absint(wp_unslash($_POST['category_id']));
 
+    // VALIDATE: Ensure category ID is valid (greater than 0)
+    if ($category_id <= 0) {
+        wp_send_json_error(array('message' => esc_html__('Invalid category ID', 'reviews-for-google-my-business')));
+        return;
+    }
+
     // Delete category with wp_delete_term
-    $result = wp_delete_term($category_id, 'gmb_category');
+    $result = wp_delete_term($category_id, 'wgmbr_category');
 
     if (is_wp_error($result)) {
         wp_send_json_error(array('message' => $result->get_error_message()));
@@ -687,19 +737,32 @@ function wgmbr_save_review_ajax()
         return;
     }
 
-    // Check the required data
+    // VALIDATE: Check the required data
     if (!isset($_POST['post_id'])) {
         wp_send_json_error(array('message' => esc_html__('Post ID is required', 'reviews-for-google-my-business')));
         return;
     }
 
+    // SANITIZE: Clean post ID and ensure it's a positive integer
     $post_id = absint(wp_unslash($_POST['post_id']));
+
+    // VALIDATE: Ensure post ID is valid
+    if ($post_id <= 0) {
+        wp_send_json_error(array('message' => esc_html__('Invalid post ID', 'reviews-for-google-my-business')));
+        return;
+    }
+
+    // SANITIZE: Clean job title (optional field)
     $job = isset($_POST['job']) ? sanitize_text_field(wp_unslash($_POST['job'])) : '';
 
-    // Retrieve selected categories (table)
-    $category_ids = isset($_POST['category_ids']) && is_array($_POST['category_ids'])
-        ? array_map('absint', $_POST['category_ids'])
-        : array();
+    // SANITIZE: Clean category IDs array
+    $category_ids = array();
+    if (isset($_POST['category_ids']) && is_array($_POST['category_ids'])) {
+        // Remove slashes and convert each to absolute integer
+        $category_ids = array_map('absint', wp_unslash($_POST['category_ids']));
+        // Remove any zeros (invalid IDs)
+        $category_ids = array_filter($category_ids);
+    }
 
     // Update job
     $job_updated = wgmbr_update_review_job($post_id, $job);

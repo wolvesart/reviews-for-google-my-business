@@ -16,8 +16,8 @@ if (!defined('ABSPATH')) {
 
     <?php
     // Check if the summary display is requested (controlled by the shortcode)
-    $show_summary = isset($data['show_summary']) ? $data['show_summary'] : true;
-    if ($show_summary && isset($data['average_rating']) && $data['average_rating'] > 0):
+    $wgmbr_show_summary = isset($data['show_summary']) ? $data['show_summary'] : true;
+    if ($wgmbr_show_summary && isset($data['average_rating']) && $data['average_rating'] > 0):
         ?>
         <div class="gmb-reviews-summary">
             <span class="gmb-rating-number"><?php echo number_format($data['average_rating'], 1); ?></span>
@@ -34,18 +34,19 @@ if (!defined('ABSPATH')) {
         <div class="gmb-reviews-swiper swiper">
             <div class="swiper-wrapper">
                 <?php
-                $count = 0;
-                foreach ($data['reviews'] as $parsed):
-                    $count++;
+                $wgmbr_count = 0;
+                foreach ($data['reviews'] as $wgmbr_parsed):
+                    $wgmbr_count++;
 
-                    // $parsed is already a parsed object from the CPT
+                    // $wgmbr_parsed is already a parsed object from the CPT
                     ?>
 
                     <div class="swiper-slide">
                         <?php
-                        $review_index = $count - 1;
-                        $is_modal = false;
-                        include WOLVES_GMB_PLUGIN_DIR . 'templates/review-card.php';
+                        $wgmbr_review_index = $wgmbr_count - 1;
+                        $wgmbr_is_modal = false;
+                        $wgmbr_parsed_item = $wgmbr_parsed;
+                        include WGMBR_PLUGIN_DIR . 'templates/review-card.php';
                         ?>
                     </div>
 
@@ -75,16 +76,17 @@ if (!defined('ABSPATH')) {
 
     <div id="gmb-modal-templates" style="display: none;">
         <?php
-        $count = 0;
-        foreach ($data['reviews'] as $parsed):
-            $review_index = $count;
-            $is_modal = true;
+        $wgmbr_count = 0;
+        foreach ($data['reviews'] as $wgmbr_parsed):
+            $wgmbr_review_index = $wgmbr_count;
+            $wgmbr_is_modal = true;
+            $wgmbr_parsed_item = $wgmbr_parsed;
             ?>
-            <div class="gmb-modal-template" data-review-index="<?php echo absint($review_index); ?>">
-                <?php include WOLVES_GMB_PLUGIN_DIR . 'templates/review-card.php'; ?>
+            <div class="gmb-modal-template" data-review-index="<?php echo absint($wgmbr_review_index); ?>">
+                <?php include WGMBR_PLUGIN_DIR . 'templates/review-card.php'; ?>
             </div>
             <?php
-            $count++;
+            $wgmbr_count++;
         endforeach;
         ?>
     </div>

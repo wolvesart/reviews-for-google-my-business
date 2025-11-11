@@ -1,7 +1,7 @@
 <?php
 /**
  * Reviews for Google My Business - Shortcode and HTML display
- * Shortcode [gmb_reviews] and rendering functions
+ * Shortcode [wgmbr_reviews] and rendering functions
  */
 
 // Prevent direct access
@@ -19,9 +19,9 @@ if (!defined('ABSPATH')) {
 function wgmbr_enqueue_frontend_styles() {
     wp_enqueue_style(
         'gmb-frontend-styles',
-        WOLVES_GMB_PLUGIN_URL . 'assets/css/frontend.css',
+        WGMBR_PLUGIN_URL . 'assets/css/frontend.css',
         array(),
-        WOLVES_GMB_VERSION
+        WGMBR_VERSION
     );
 
     // Add custom inline styles if options are set
@@ -34,6 +34,8 @@ function wgmbr_enqueue_frontend_styles() {
 /**
  * Generate custom CSS based on user options
  * Uses CSS Custom Properties (CSS variables) for cleaner overrides
+ *
+ * Security: Implements "Escape Late" principle - all values are escaped before output
  */
 function wgmbr_generate_custom_css() {
     $custom_vars = array();
@@ -43,37 +45,43 @@ function wgmbr_generate_custom_css() {
     // Card background color
     $card_bg = get_option('wgmbr_color_card_bg');
     if ($card_bg && $card_bg !== $default_colors['card_bg']) {
-        $custom_vars[] = "--gmb-color-card-bg: {$card_bg}";
+        // ESCAPE LATE: Escape hex color for CSS output
+        $custom_vars[] = "--gmb-color-card-bg: " . esc_attr($card_bg);
     }
 
     // Card border radius
     $card_radius = get_option('wgmbr_radius_card');
     if ($card_radius !== false && $card_radius !== '' && $card_radius !== WGMBR_DEFAULT_CARD_RADIUS) {
-        $custom_vars[] = "--gmb-radius-card: {$card_radius}px";
+        // ESCAPE LATE: Ensure it's a safe integer for CSS output
+        $custom_vars[] = "--gmb-radius-card: " . absint($card_radius) . "px";
     }
 
     // Star color
     $color_star = get_option('wgmbr_color_star');
     if ($color_star && $color_star !== $default_colors['star']) {
-        $custom_vars[] = "--gmb-color-star: {$color_star}";
+        // ESCAPE LATE: Escape hex color for CSS output
+        $custom_vars[] = "--gmb-color-star: " . esc_attr($color_star);
     }
 
     // Text color
     $color_text_primary = get_option('wgmbr_color_text_primary');
     if ($color_text_primary && $color_text_primary !== $default_colors['text_primary']) {
-        $custom_vars[] = "--gmb-color-text-primary: {$color_text_primary}";
+        // ESCAPE LATE: Escape hex color for CSS output
+        $custom_vars[] = "--gmb-color-text-primary: " . esc_attr($color_text_primary);
     }
 
     // Summary text color
     $color_test_resume = get_option('wgmbr_color_text_resume');
     if ($color_test_resume && $color_test_resume !== $default_colors['text_resume']) {
-        $custom_vars[] = "--gmb-color-text-resume: {$color_test_resume}";
+        // ESCAPE LATE: Escape hex color for CSS output
+        $custom_vars[] = "--gmb-color-text-resume: " . esc_attr($color_test_resume);
     }
 
     // Accent color
     $color_accent = get_option('wgmbr_color_accent');
     if ($color_accent && $color_accent !== $default_colors['accent']) {
-        $custom_vars[] = "--gmb-color-accent: {$color_accent}";
+        // ESCAPE LATE: Escape hex color for CSS output
+        $custom_vars[] = "--gmb-color-accent: " . esc_attr($color_accent);
     }
 
     // Generate CSS only if there are custom values
@@ -110,7 +118,7 @@ function wgmbr_reviews_shortcode($atts) {
 
     // If not authenticated and no reviews exist, show error message
     if (!$has_token && $total_reviews === 0) {
-        $admin_url = admin_url('admin.php?page=gmb-settings');
+        $admin_url = admin_url('admin.php?page=wgmbr-settings');
         return sprintf(
             '<div class="gmb-notice warning">
                 <p>
@@ -160,10 +168,10 @@ function wgmbr_reviews_shortcode($atts) {
     );
 
     ob_start();
-    require WOLVES_GMB_PLUGIN_DIR . 'templates/reviews-display.php';
+    require WGMBR_PLUGIN_DIR . 'templates/reviews-display.php';
     return ob_get_clean();
 }
-add_shortcode('gmb_reviews', 'wgmbr_reviews_shortcode');
+add_shortcode('wgmbr_reviews', 'wgmbr_reviews_shortcode');
 
 // ============================================================================
 // FONCTIONS UTILITAIRES

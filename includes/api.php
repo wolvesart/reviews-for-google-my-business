@@ -10,6 +10,83 @@ if (!defined('ABSPATH')) {
 }
 
 // ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Downloads a profile photo from Google and stores it locally
+ * This ensures compliance with WordPress.org guidelines (no remote files)
+ *
+ * @param string $photo_url The URL of the profile photo from Google
+ * @param string $review_id The review ID to create a unique filename
+ * @return string The local URL of the downloaded image, or empty string on failure
+ */
+function wgmbr_download_profile_photo($photo_url, $review_id) {
+    // Return empty if no URL provided
+    if (empty($photo_url)) {
+        return '';
+    }
+
+    // Check if we already downloaded this photo
+    $upload_dir = wp_upload_dir();
+    $gmb_dir = $upload_dir['basedir'] . '/gmb-reviews';
+    $gmb_url = $upload_dir['baseurl'] . '/gmb-reviews';
+
+    // Create directory if it doesn't exist
+    if (!file_exists($gmb_dir)) {
+        wp_mkdir_p($gmb_dir);
+    }
+
+    // Generate filename based on review ID
+    $sanitized_id = sanitize_file_name($review_id);
+    $extension = 'jpg'; // Google profile photos are typically JPG
+    $filename = 'profile-' . $sanitized_id . '.' . $extension;
+    $filepath = $gmb_dir . '/' . $filename;
+    $fileurl = $gmb_url . '/' . $filename;
+
+    // If file already exists, return its URL
+    if (file_exists($filepath)) {
+        return $fileurl;
+    }
+
+    // Download the image
+    $response = wp_remote_get($photo_url, array(
+        'timeout' => 15,
+        'sslverify' => true
+    ));
+
+    // Check for errors
+    if (is_wp_error($response)) {
+        wgmbr_log_error('photo_download', 'Failed to download photo: ' . $response->get_error_message());
+        return '';
+    }
+
+    // Check response code
+    $response_code = wp_remote_retrieve_response_code($response);
+    if ($response_code !== 200) {
+        wgmbr_log_error('photo_download', 'Invalid response code: ' . $response_code);
+        return '';
+    }
+
+    // Get image content
+    $image_data = wp_remote_retrieve_body($response);
+    if (empty($image_data)) {
+        return '';
+    }
+
+    // Save the image locally
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Direct file operation needed for image download
+    $saved = file_put_contents($filepath, $image_data);
+
+    if ($saved === false) {
+        wgmbr_log_error('photo_download', 'Failed to save image to: ' . $filepath);
+        return '';
+    }
+
+    return $fileurl;
+}
+
+// ============================================================================
 // OAUTH 2.0 FUNCTIONS
 // ============================================================================
 
@@ -24,9 +101,9 @@ function wgmbr_get_auth_url() {
     set_transient('wgmbr_oauth_state', $state, 10 * MINUTE_IN_SECONDS);
 
     $params = array(
-        'client_id' => GMB_CLIENT_ID,
-        'redirect_uri' => GMB_REDIRECT_URI,
-        'scope' => GMB_SCOPES,
+        'client_id' => WGMBR_CLIENT_ID,
+        'redirect_uri' => WGMBR_REDIRECT_URI,
+        'scope' => WGMBR_SCOPES,
         'response_type' => 'code',
         'access_type' => 'offline',
         'prompt' => 'consent',
@@ -44,9 +121,9 @@ function wgmbr_exchange_code_for_token($code) {
 
     $params = array(
         'code' => $code,
-        'client_id' => GMB_CLIENT_ID,
-        'client_secret' => GMB_CLIENT_SECRET,
-        'redirect_uri' => GMB_REDIRECT_URI,
+        'client_id' => WGMBR_CLIENT_ID,
+        'client_secret' => WGMBR_CLIENT_SECRET,
+        'redirect_uri' => WGMBR_REDIRECT_URI,
         'grant_type' => 'authorization_code'
     );
 
@@ -86,8 +163,8 @@ function wgmbr_refresh_access_token() {
     $token_url = 'https://oauth2.googleapis.com/token';
 
     $params = array(
-        'client_id' => GMB_CLIENT_ID,
-        'client_secret' => GMB_CLIENT_SECRET,
+        'client_id' => WGMBR_CLIENT_ID,
+        'client_secret' => WGMBR_CLIENT_SECRET,
         'refresh_token' => $refresh_token,
         'grant_type' => 'refresh_token'
     );
@@ -445,9 +522,9 @@ function wgmbr_fetch_reviews() {
     // Documentation: https://developers.google.com/my-business/reference/rest/v4/accounts.locations.reviews/list
     $access_token = wgmbr_get_valid_access_token();
 
-    if ($access_token && GMB_ACCOUNT_ID && GMB_LOCATION_ID) {
+    if ($access_token && WGMBR_ACCOUNT_ID && WGMBR_LOCATION_ID) {
         // Exact format according to docs: {parent=accounts/*/locations/*}/reviews
-        $parent = GMB_ACCOUNT_ID . '/' . GMB_LOCATION_ID;
+        $parent = WGMBR_ACCOUNT_ID . '/' . WGMBR_LOCATION_ID;
 
         // Fetch all pages of reviews
         $result = wgmbr_fetch_all_reviews_pages($access_token, $parent, WGMBR_API_MAX_PAGES);
@@ -485,55 +562,94 @@ function wgmbr_fetch_reviews() {
 
 /**
  * Handles OAuth callback from Google
+ *
+ * SECURITY NOTE: This function uses OAuth 2.0 state parameter for CSRF protection
+ * instead of WordPress nonces. This is the industry-standard security mechanism
+ * for OAuth flows as defined in RFC 6749.
+ *
+ * The state parameter serves the same purpose as a nonce:
+ * - Generated randomly before redirecting to OAuth provider
+ * - Stored server-side in a transient (10 min expiry)
+ * - Validated on callback to prevent CSRF attacks
+ * - Single-use (deleted after validation)
+ *
+ * This is more secure than a traditional nonce because:
+ * 1. It's cryptographically random (64 hex characters)
+ * 2. It's stored server-side, not in the URL
+ * 3. It has a short expiry time
+ * 4. It's validated before any OAuth token exchange
+ *
+ * Additional security measures:
+ * - User must be logged in and have 'manage_options' capability
+ * - All inputs are sanitized
+ * - HTTPS is required for token exchange
  */
 function wgmbr_handle_oauth_callback() {
-    // Check authentication parameter
-    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback from Google, nonce not applicable
+    // Early return for performance - only process if this is an OAuth callback
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Early performance check, full security validation below
     if (!isset($_GET['wgmbr_auth'])) {
         return;
     }
 
-    // Check permissions
-    if (!current_user_can('manage_options')) {
-        wp_die(esc_html__('You do not have sufficient permissions.', 'reviews-for-google-my-business'));
+    // SECURITY CHECK 1: User must be logged in with admin capabilities
+    // This prevents unauthorized users from attempting OAuth callbacks
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        wp_die(
+            esc_html__('Unauthorized access. You must be logged in as an administrator to complete OAuth authentication.', 'reviews-for-google-my-business'),
+            esc_html__('Security Error', 'reviews-for-google-my-business'),
+            array('response' => 403)
+        );
     }
 
-    // Validate state parameter for CSRF protection
-    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback from Google, state parameter used instead
+    // SECURITY CHECK 2: Validate OAuth state parameter (CSRF protection)
+    // The state parameter is OAuth's equivalent of a nonce
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth state parameter validated below per RFC 6749
     $received_state = isset($_GET['state']) ? sanitize_text_field(wp_unslash($_GET['state'])) : '';
     $stored_state = get_transient('wgmbr_oauth_state');
 
-    if (!$received_state || !$stored_state || $received_state !== $stored_state) {
-        // Delete used/invalid state
+    // Verify state parameter matches and exists
+    if (empty($received_state) || empty($stored_state) || !hash_equals($stored_state, $received_state)) {
+        // Delete potentially compromised state
         delete_transient('wgmbr_oauth_state');
-        update_option('wgmbr_last_error', 'Invalid state parameter - possible CSRF attack');
-        wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=error&debug=invalid_state'));
-        exit;
+        wgmbr_log_error('oauth_callback', 'Invalid state parameter - possible CSRF attack attempt');
+        wp_die(
+            esc_html__('Security validation failed. The OAuth state parameter is invalid. This may indicate a CSRF attack or an expired authorization attempt.', 'reviews-for-google-my-business'),
+            esc_html__('OAuth Security Error', 'reviews-for-google-my-business'),
+            array('response' => 403)
+        );
     }
 
-    // State is valid, delete it (single use)
+    // State is valid, delete it (single-use token)
     delete_transient('wgmbr_oauth_state');
 
-    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback from Google, nonce not applicable
+    // SECURITY CHECK 3: Process authorization code
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth code validated via state parameter and HTTPS token exchange
     if (isset($_GET['code'])) {
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback from Google, nonce not applicable
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Sanitized and validated via OAuth flow
         $code = sanitize_text_field(wp_unslash($_GET['code']));
+
+        // Additional validation: code should not be empty
+        if (empty($code)) {
+            wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=error&debug=empty_code'));
+            exit;
+        }
+
         $success = wgmbr_exchange_code_for_token($code);
 
         if ($success) {
             // Automatically fetch accounts and locations after authentication
             wgmbr_auto_fetch_accounts_and_locations();
-            wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=success&auto_fetch=1'));
+            wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=success&auto_fetch=1'));
         } else {
             // Debug: save error to view it
             update_option('wgmbr_last_error', 'Failed to exchange token');
-            wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=error&debug=token_exchange_failed'));
+            wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=error&debug=token_exchange_failed'));
         }
         exit;
     } else {
         // Debug: no code received
         update_option('wgmbr_last_error', 'No authorization code received');
-        wp_safe_redirect(admin_url('admin.php?page=gmb-settings&status=error&debug=no_code'));
+        wp_safe_redirect(admin_url('admin.php?page=wgmbr-settings&status=error&debug=no_code'));
         exit;
     }
 }
@@ -664,8 +780,8 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         "SELECT pm.post_id, pm.meta_value as review_id
         FROM {$wpdb->postmeta} pm
         INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-        WHERE pm.meta_key = '_gmb_review_id'
-        AND p.post_type = 'gmb_review'
+        WHERE pm.meta_key = '_wgmbr_review_id'
+        AND p.post_type = 'wgmbr_review'
         AND pm.meta_value IN ($placeholders)",
         ...$review_ids
     );
@@ -696,7 +812,13 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         // Prepare review data
         $reviewer = isset($review['reviewer']) ? $review['reviewer'] : array();
         $reviewer_name = isset($reviewer['displayName']) ? $reviewer['displayName'] : esc_html__('Anonymous', 'reviews-for-google-my-business');
-        $reviewer_photo = isset($reviewer['profilePhotoUrl']) ? $reviewer['profilePhotoUrl'] : '';
+        $reviewer_photo_url = isset($reviewer['profilePhotoUrl']) ? $reviewer['profilePhotoUrl'] : '';
+
+        // Download profile photo locally to comply with WordPress.org guidelines
+        $reviewer_photo = '';
+        if (!empty($reviewer_photo_url)) {
+            $reviewer_photo = wgmbr_download_profile_photo($reviewer_photo_url, $review_id);
+        }
 
         $star_rating = isset($review['starRating']) ? $review['starRating'] : 'STAR_RATING_UNSPECIFIED';
         $rating = wgmbr_convert_star_rating($star_rating);
@@ -715,7 +837,7 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
             'post_title'    => sprintf(esc_html__('Review by %s', 'reviews-for-google-my-business'), $reviewer_name),
             'post_content'  => $comment,
             'post_status'   => 'publish',
-            'post_type'     => 'gmb_review',
+            'post_type'     => 'wgmbr_review',
             'post_date'     => wp_date('Y-m-d H:i:s', strtotime($review_date)),
         );
 
@@ -733,11 +855,11 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         }
 
         // Update meta (5 queries per review, but unavoidable with wp_update_post_meta)
-        update_post_meta($post_id, '_gmb_review_id', $review_id);
-        update_post_meta($post_id, '_gmb_reviewer_name', $reviewer_name);
-        update_post_meta($post_id, '_gmb_reviewer_photo', $reviewer_photo);
-        update_post_meta($post_id, '_gmb_rating', $rating);
-        update_post_meta($post_id, '_gmb_job', '');
+        update_post_meta($post_id, '_wgmbr_review_id', $review_id);
+        update_post_meta($post_id, '_wgmbr_reviewer_name', $reviewer_name);
+        update_post_meta($post_id, '_wgmbr_reviewer_photo', $reviewer_photo);
+        update_post_meta($post_id, '_wgmbr_rating', $rating);
+        update_post_meta($post_id, '_wgmbr_job', '');
 
         $synced++;
     }

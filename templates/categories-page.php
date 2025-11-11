@@ -9,21 +9,21 @@ if (!defined('ABSPATH')) {
 }
 
 // Get all categories (WordPress taxonomy)
-$categories = get_terms(array(
-        'taxonomy' => 'gmb_category',
+$wgmbr_categories = get_terms(array(
+        'taxonomy' => 'wgmbr_category',
         'hide_empty' => false,
         'orderby' => 'name',
         'order' => 'ASC',
 ));
 
 // If error, initialize with an empty array
-if (is_wp_error($categories)) {
-    $categories = array();
+if (is_wp_error($wgmbr_categories)) {
+    $wgmbr_categories = array();
 }
 ?>
 
 <div class="wrap gmb-wrap">
-    <?php include_once(WOLVES_GMB_PLUGIN_DIR . 'template-parts/header.php'); ?>
+    <?php include_once(WGMBR_PLUGIN_DIR . 'template-parts/header.php'); ?>
 
     <div class="gmb-container">
         <div class="section row">
@@ -48,9 +48,9 @@ if (is_wp_error($categories)) {
                 <div class="card">
                     <h2><?php
                     /* translators: %d: Number of categories */
-                    printf(esc_html__('Existing categories (%d)', 'reviews-for-google-my-business'), count($categories)); ?></h2>
+                    printf(esc_html__('Existing categories (%d)', 'reviews-for-google-my-business'), count($wgmbr_categories)); ?></h2>
 
-                    <?php if (!empty($categories)): ?>
+                    <?php if (!empty($wgmbr_categories)): ?>
                         <table class="wp-list-table widefat fixed striped">
                             <thead>
                             <tr>
@@ -60,7 +60,7 @@ if (is_wp_error($categories)) {
                             </tr>
                             </thead>
                             <tbody>
-                            <?php foreach ($categories as $cat): ?>
+                            <?php foreach ($wgmbr_categories as $cat): ?>
                                 <tr>
                                     <td>
                                         <strong><?php echo esc_html($cat->name); ?></strong>
@@ -84,7 +84,6 @@ if (is_wp_error($categories)) {
                         </table>
                     <?php else: ?>
                         <div>
-                            <span class="dashicons dashicons-category"></span>
                             <p>
                                 <?php esc_html_e('No categories created yet.', 'reviews-for-google-my-business'); ?><br>
                                 <?php esc_html_e('Create your first category above to start organizing your reviews.', 'reviews-for-google-my-business'); ?>
@@ -94,7 +93,7 @@ if (is_wp_error($categories)) {
                 </div>
             </div>
 
-            <?php require WOLVES_GMB_PLUGIN_DIR . 'template-parts/notice-categories.php'; ?>
+            <?php require WGMBR_PLUGIN_DIR . 'template-parts/notice-categories.php'; ?>
 
         </div>
     </div>

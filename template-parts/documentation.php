@@ -1,3 +1,6 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+?>
 <div class="title">
     <h2><?php esc_html_e('Google API Configuration Guide', 'reviews-for-google-my-business'); ?></h2>
     <p><?php esc_html_e('This process requires a Google Cloud Console account. The complete setup takes approximately 15 minutes. Step 4 requires validation from Google which can take 1-3 business days.', 'reviews-for-google-my-business'); ?></p>
@@ -105,7 +108,7 @@
                             <td>
                                 <p><?php echo wp_kses_post(__('Click <strong>"+ ADD URI"</strong>', 'reviews-for-google-my-business')); ?></p>
                                 <p><?php echo wp_kses_post(__('Copy and paste the Redirect URI :', 'reviews-for-google-my-business')); ?><p>
-                                    <code><?php echo esc_attr(admin_url('admin.php?page=gmb-settings&wgmbr_auth=1')); ?></code>
+                                    <code><?php echo esc_attr(admin_url('admin.php?page=wgmbr-settings&wgmbr_auth=1')); ?></code>
                             </td>
                         </tr>
                     </table>

@@ -16,20 +16,21 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('WOLVES_GMB_VERSION', '1.0.0');
-define('WOLVES_GMB_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('WOLVES_GMB_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('WOLVES_GMB_PLUGIN_BASENAME', plugin_basename(__FILE__));
+// Using WGMBR prefix (5+ characters) for WordPress.org compliance
+define('WGMBR_VERSION', '1.0.0');
+define('WGMBR_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('WGMBR_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('WGMBR_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-// Admin page slugs
-define('WGMBR_MANAGE_PAGE_SLUG', 'gmb-manage-reviews');
-define('WGMBR_SETTINGS_PAGE_SLUG', 'gmb-settings');
-define('WGMBR_CATEGORIES_PAGE_SLUG', 'gmb-categories');
+// Admin page slugs (using wgmbr- prefix for compliance)
+define('WGMBR_MANAGE_PAGE_SLUG', 'wgmbr-manage-reviews');
+define('WGMBR_SETTINGS_PAGE_SLUG', 'wgmbr-settings');
+define('WGMBR_CATEGORIES_PAGE_SLUG', 'wgmbr-categories');
 
 // Admin page hooks (for enqueue scripts)
-define('WGMBR_MANAGE_PAGE_HOOK', 'toplevel_page_gmb-manage-reviews');
-define('WGMBR_SETTINGS_PAGE_HOOK', 'google-reviews_page_gmb-settings');
-define('WGMBR_CATEGORIES_PAGE_HOOK', 'google-reviews_page_gmb-categories');
+define('WGMBR_MANAGE_PAGE_HOOK', 'toplevel_page_wgmbr-manage-reviews');
+define('WGMBR_SETTINGS_PAGE_HOOK', 'google-reviews_page_wgmbr-settings');
+define('WGMBR_CATEGORIES_PAGE_HOOK', 'google-reviews_page_wgmbr-categories');
 
 // API Configuration
 define('WGMBR_API_PAGE_SIZE', 100);
@@ -80,12 +81,12 @@ class reviews_for_google_my_business {
     private function load_dependencies() {
         // Load the different modules
         // IMPORTANT: helpers.php must be loaded first as it contains encryption functions used by config.php
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/helpers.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/config.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/post-types.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/api.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/shortcode.php';
-        require_once WOLVES_GMB_PLUGIN_DIR . 'includes/admin.php';
+        require_once WGMBR_PLUGIN_DIR . 'includes/helpers.php';
+        require_once WGMBR_PLUGIN_DIR . 'includes/config.php';
+        require_once WGMBR_PLUGIN_DIR . 'includes/post-types.php';
+        require_once WGMBR_PLUGIN_DIR . 'includes/api.php';
+        require_once WGMBR_PLUGIN_DIR . 'includes/shortcode.php';
+        require_once WGMBR_PLUGIN_DIR . 'includes/admin.php';
     }
 
     // Initializes WordPress hooks
@@ -97,7 +98,42 @@ class reviews_for_google_my_business {
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
         // Add the configuration link to the plugins list
-        add_filter('plugin_action_links_' . WOLVES_GMB_PLUGIN_BASENAME, array($this, 'add_action_links'));
+        add_filter('plugin_action_links_' . WGMBR_PLUGIN_BASENAME, array($this, 'add_action_links'));
+
+        // Clean up local profile photo when review is deleted
+        add_action('before_delete_post', array($this, 'cleanup_review_photo'), 10, 2);
+    }
+
+    /**
+     * Cleanup local profile photo when a review is deleted
+     *
+     * @param int $post_id Post ID
+     * @param WP_Post $post Post object
+     */
+    public function cleanup_review_photo($post_id, $post) {
+        // Only process for gmb_review post type
+        if ($post->post_type !== 'wgmbr_review') {
+            return;
+        }
+
+        // Get review ID
+        $review_id = get_post_meta($post_id, '_wgmbr_review_id', true);
+        if (empty($review_id)) {
+            return;
+        }
+
+        // Build photo path
+        $upload_dir = wp_upload_dir();
+        $gmb_dir = $upload_dir['basedir'] . '/gmb-reviews';
+        $sanitized_id = sanitize_file_name($review_id);
+        $filename = 'profile-' . $sanitized_id . '.jpg';
+        $filepath = $gmb_dir . '/' . $filename;
+
+        // Delete photo file if it exists
+        if (file_exists($filepath)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Direct file operation needed for cleanup
+            unlink($filepath);
+        }
     }
 
     // Actions when activating the plugin
@@ -116,7 +152,7 @@ class reviews_for_google_my_business {
 
     // Add links to the plugins list
     public function add_action_links($links) {
-        $settings_link = '<a href="' . admin_url('admin.php?page=gmb-settings') . '">' . esc_html__('Configuration', 'reviews-for-google-my-business') . '</a>';
+        $settings_link = '<a href="' . admin_url('admin.php?page=wgmbr-settings') . '">' . esc_html__('Configuration', 'reviews-for-google-my-business') . '</a>';
         array_unshift($links, $settings_link);
 
         return $links;

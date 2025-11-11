@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 ?>
 
 <div class="wrap gmb-wrap">
-    <?php include_once(WOLVES_GMB_PLUGIN_DIR . 'template-parts/header.php'); ?>
+    <?php include_once(WGMBR_PLUGIN_DIR . 'template-parts/header.php'); ?>
 
     <div class="gmb-container">
         <!-- Sidebar with tabs -->
@@ -76,7 +76,7 @@ if (!defined('ABSPATH')) {
                                 </div>
                             <?php endif; ?>
 
-                            <details class="accordion-details" <?php echo !$has_credentials ? 'open' : ''; ?>>
+                            <details class="accordion-details" <?php echo esc_attr(!$has_credentials ? 'open' : ''); ?>>
                                 <summary>
                                     <?php echo $has_credentials ? esc_html__('Edit API credentials', 'reviews-for-google-my-business') : esc_html__('Add API credentials', 'reviews-for-google-my-business'); ?>
                                 </summary>
@@ -96,7 +96,7 @@ if (!defined('ABSPATH')) {
                                                        name="wgmbr_client_id"
                                                        id="wgmbr_client_id"
                                                        class="regular-text"
-                                                       value="<?php echo esc_attr(GMB_CLIENT_ID); ?>"
+                                                       value="<?php echo esc_attr(WGMBR_CLIENT_ID); ?>"
                                                        placeholder="123456789.apps.googleusercontent.com"
                                                        required>
                                                 <p class="description">
@@ -115,11 +115,11 @@ if (!defined('ABSPATH')) {
                                                        id="wgmbr_client_secret"
                                                        class="regular-text"
                                                        value=""
-                                                       placeholder="<?php echo GMB_CLIENT_SECRET ? esc_attr__('••••••••••••••••', 'reviews-for-google-my-business') : esc_attr__('GOCSPX-xxxxxxxxxxxx', 'reviews-for-google-my-business'); ?>"
-                                                       <?php echo GMB_CLIENT_SECRET ? '' : 'required'; ?>>
+                                                       placeholder="<?php echo WGMBR_CLIENT_SECRET ? esc_attr__('••••••••••••••••', 'reviews-for-google-my-business') : esc_attr__('GOCSPX-xxxxxxxxxxxx', 'reviews-for-google-my-business'); ?>"
+                                                       <?php echo WGMBR_CLIENT_SECRET ? '' : 'required'; ?>>
                                                 <p class="description">
                                                     <?php
-                                                    if (GMB_CLIENT_SECRET) {
+                                                    if (WGMBR_CLIENT_SECRET) {
                                                         esc_html_e('Leave blank to keep current secret, or enter new secret to update', 'reviews-for-google-my-business');
                                                     } else {
                                                         esc_html_e('Your Google Cloud Client Secret', 'reviews-for-google-my-business');
@@ -137,12 +137,12 @@ if (!defined('ABSPATH')) {
                                                        name="wgmbr_redirect_uri"
                                                        id="wgmbr_redirect_uri"
                                                        class="regular-text"
-                                                       value="<?php echo esc_attr(GMB_REDIRECT_URI); ?>"
-                                                       placeholder="<?php echo esc_attr(admin_url('admin.php?page=gmb-settings&wgmbr_auth=1')); ?>"
+                                                       value="<?php echo esc_attr(WGMBR_REDIRECT_URI); ?>"
+                                                       placeholder="<?php echo esc_attr(admin_url('admin.php?page=wgmbr-settings&wgmbr_auth=1')); ?>"
                                                        required>
                                                 <p class="description">
                                                     <?php esc_html_e('Default:', 'reviews-for-google-my-business'); ?>
-                                                    <code><?php echo esc_html(admin_url('admin.php?page=gmb-settings&wgmbr_auth=1')); ?></code><br>
+                                                    <code><?php echo esc_html(admin_url('admin.php?page=wgmbr-settings&wgmbr_auth=1')); ?></code><br>
                                                     ⚠️ <?php esc_html_e('This URI must match the one configured in Google Cloud', 'reviews-for-google-my-business'); ?>
                                                 </p>
                                             </td>
@@ -207,14 +207,14 @@ if (!defined('ABSPATH')) {
                                                         class="regular-text"
                                                         required>
                                                     <option value=""><?php esc_html_e('-- Select a location --', 'reviews-for-google-my-business'); ?></option>
-                                                    <?php foreach ($available_locations as $location): ?>
+                                                    <?php foreach ($available_locations as $wgmbr_location): ?>
                                                         <?php
-                                                        $value = $location['account_id'] . '|' . $location['location_id'];
-                                                        $current_value = $current_account_id . '|' . $current_location_id;
+                                                        $wgmbr_value = $wgmbr_location['account_id'] . '|' . $wgmbr_location['location_id'];
+                                                        $wgmbr_current_value = $current_account_id . '|' . $current_location_id;
                                                         ?>
-                                                        <option value="<?php echo esc_attr($value); ?>" <?php selected($value, $current_value); ?>>
-                                                            <?php echo esc_html($location['location_title']); ?>
-                                                            (<?php echo esc_html($location['account_name']); ?>)
+                                                        <option value="<?php echo esc_attr($wgmbr_value); ?>" <?php selected($wgmbr_value, $wgmbr_current_value); ?>>
+                                                            <?php echo esc_html($wgmbr_location['location_title']); ?>
+                                                            (<?php echo esc_html($wgmbr_location['account_name']); ?>)
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
@@ -264,7 +264,7 @@ if (!defined('ABSPATH')) {
                             <div id="gmb-test-result"></div>
                         </div>
                     </div>
-                    <?php require WOLVES_GMB_PLUGIN_DIR . 'template-parts/notice-configuration.php'; ?>
+                    <?php require WGMBR_PLUGIN_DIR . 'template-parts/notice-configuration.php'; ?>
                 </div>
             </div>
 
@@ -279,7 +279,7 @@ if (!defined('ABSPATH')) {
                             <div class="gmb-shortcode-generator">
 
                                 <div class="gmb-main-shortcode">
-                                    <code id="gmb-generated-shortcode">[gmb_reviews]</code>
+                                    <code id="gmb-generated-shortcode">[wgmbr_reviews]</code>
                                     <button type="button" class="button button-primary"
                                             onclick="wgmbrCopyGeneratedShortcode(this)">
                                         <span class="dashicons dashicons-admin-page"></span>
@@ -311,12 +311,12 @@ if (!defined('ABSPATH')) {
                                         <td>
                                             <div class="gmb-categories-checkboxes" id="gmb-gen-categories">
                                                 <?php
-                                                $categories = get_terms(array(
-                                                        'taxonomy' => 'gmb_category',
+                                                $wgmbr_categories = get_terms(array(
+                                                        'taxonomy' => 'wgmbr_category',
                                                         'hide_empty' => false,
                                                 ));
-                                                if (!empty($categories) && !is_wp_error($categories)):
-                                                    foreach ($categories as $cat): ?>
+                                                if (!empty($wgmbr_categories) && !is_wp_error($wgmbr_categories)):
+                                                    foreach ($wgmbr_categories as $cat): ?>
                                                         <label class="gmb-category-checkbox">
                                                             <input type="checkbox"
                                                                    name="gen_category_slugs[]"
@@ -326,7 +326,7 @@ if (!defined('ABSPATH')) {
                                                         </label>
                                                     <?php endforeach;
                                                 else: ?>
-                                                    <span class="gmb-categories-empty"><?php esc_html_e('No categories', 'reviews-for-google-my-business'); ?></span>
+                                                    <span class="wgmbr-categories-empty"><?php esc_html_e('No categories', 'reviews-for-google-my-business'); ?></span>
                                                 <?php endif; ?>
                                             </div>
                                             <p class="description"><?php esc_html_e('Select one or multiple categories to filter reviews', 'reviews-for-google-my-business'); ?></p>
@@ -370,25 +370,25 @@ if (!defined('ABSPATH')) {
 
                             <ul class="gmb-shortcode-examples">
                                 <li>
-                                    <code>[gmb_reviews]</code>
+                                    <code>[wgmbr_reviews]</code>
                                     <p><?php esc_html_e('Display all reviews (maximum 50)', 'reviews-for-google-my-business'); ?></p>
                                 </li>
                                 <li>
-                                    <code>[gmb_reviews limit="20"]</code>
+                                    <code>[wgmbr_reviews limit="20"]</code>
                                     <p><?php esc_html_e('Display 20 reviews', 'reviews-for-google-my-business'); ?></p>
                                 </li>
                                 <li>
-                                    <code>[gmb_reviews category="formation"]</code>
+                                    <code>[wgmbr_reviews category="formation"]</code>
                                     <p><?php esc_html_e('Display only reviews from the "formation" category', 'reviews-for-google-my-business'); ?></p>
                                 </li>
                                 <li>
-                                    <code>[gmb_reviews category="formation,coaching" limit="10"]</code>
+                                    <code>[wgmbr_reviews category="formation,coaching" limit="10"]</code>
                                     <p><?php esc_html_e('Display 10 reviews from "formation" OR "coaching"', 'reviews-for-google-my-business'); ?></p>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <?php require WOLVES_GMB_PLUGIN_DIR . 'template-parts/notice-utilisation.php'; ?>
+                    <?php require WGMBR_PLUGIN_DIR . 'template-parts/notice-utilisation.php'; ?>
                 </div>
             </div>
 
@@ -559,7 +559,7 @@ if (!defined('ABSPATH')) {
 
         <!-- Tab: Documentation -->
         <div class="gmb-tab-content" data-tab-content="help">
-            <?php require WOLVES_GMB_PLUGIN_DIR . 'template-parts/documentation.php'; ?>
+            <?php require WGMBR_PLUGIN_DIR . 'template-parts/documentation.php'; ?>
         </div>
 
     </div>

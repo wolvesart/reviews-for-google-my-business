@@ -1,5 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+?>
 <div class="card info">
-    <img class="pattern-info" src="<?php echo esc_url(WOLVES_GMB_PLUGIN_URL . 'assets/images/gmb-pattern-info.png'); ?>"
+    <img class="pattern-info" src="<?php echo esc_url(WGMBR_PLUGIN_URL . 'assets/images/gmb-pattern-info.png'); ?>"
          alt=""
          width="550"
          height="256"

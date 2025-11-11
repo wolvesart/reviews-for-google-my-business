@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 // ============================================================================
-// CUSTOM POST TYPE : GMB_REVIEW
+// CUSTOM POST TYPE : WGMBR_REVIEW
 // ============================================================================
 
 /**
@@ -50,12 +50,12 @@ function wgmbr_register_review_post_type() {
         'show_in_rest'          => true,   // Support de l'éditeur Gutenberg et REST API
     );
 
-    register_post_type('gmb_review', $args);
+    register_post_type('wgmbr_review', $args);
 }
 add_action('init', 'wgmbr_register_review_post_type', 0); // Priority 0: Register CPT very early
 
 // ============================================================================
-// TAXONOMIE : GMB_CATEGORY
+// TAXONOMIE : WGMBR_CATEGORY
 // ============================================================================
 
 /**
@@ -91,7 +91,7 @@ function wgmbr_register_category_taxonomy() {
         'rewrite'               => false,
     );
 
-    register_taxonomy('gmb_category', array('gmb_review'), $args);
+    register_taxonomy('wgmbr_category', array('wgmbr_review'), $args);
 }
 add_action('init', 'wgmbr_register_category_taxonomy', 1); // Priority 1: Register taxonomy after CPT
 
@@ -145,7 +145,7 @@ function wgmbr_save_review_as_post($review_data) {
         'post_title'    => sprintf(esc_html__('Review by %s', 'reviews-for-google-my-business'), $reviewer_name),
         'post_content'  => $comment,
         'post_status'   => 'publish',
-        'post_type'     => 'gmb_review',
+        'post_type'     => 'wgmbr_review',
         'post_date'     => wp_date('Y-m-d H:i:s', strtotime($review_date)),
     );
 
@@ -162,11 +162,11 @@ function wgmbr_save_review_as_post($review_data) {
     }
 
     // Save meta data
-    update_post_meta($post_id, '_gmb_review_id', $review_id);
-    update_post_meta($post_id, '_gmb_reviewer_name', $reviewer_name);
-    update_post_meta($post_id, '_gmb_reviewer_photo', $reviewer_photo);
-    update_post_meta($post_id, '_gmb_rating', $rating);
-    update_post_meta($post_id, '_gmb_job', ''); // Will be filled manually in admin
+    update_post_meta($post_id, '_wgmbr_review_id', $review_id);
+    update_post_meta($post_id, '_wgmbr_reviewer_name', $reviewer_name);
+    update_post_meta($post_id, '_wgmbr_reviewer_photo', $reviewer_photo);
+    update_post_meta($post_id, '_wgmbr_rating', $rating);
+    update_post_meta($post_id, '_wgmbr_job', ''); // Will be filled manually in admin
 
     return $post_id;
 }
@@ -179,13 +179,13 @@ function wgmbr_save_review_as_post($review_data) {
  */
 function wgmbr_get_review_by_review_id($review_id) {
     $args = array(
-        'post_type'      => 'gmb_review',
+        'post_type'      => 'wgmbr_review',
         'post_status'    => 'any',
         'posts_per_page' => 1,
         // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary to find existing review by unique Google review ID to prevent duplicates during sync
         'meta_query'     => array(
             array(
-                'key'     => '_gmb_review_id',
+                'key'     => '_wgmbr_review_id',
                 'value'   => $review_id,
                 'compare' => '='
             )
@@ -210,7 +210,7 @@ function wgmbr_get_review_by_review_id($review_id) {
  */
 function wgmbr_get_reviews($args = array()) {
     $defaults = array(
-        'post_type'      => 'gmb_review',
+        'post_type'      => 'wgmbr_review',
         'post_status'    => 'publish',
         'posts_per_page' => 50,
         'orderby'        => 'date',

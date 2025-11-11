@@ -19,22 +19,22 @@ function wgmbr_parse_review_from_post($post)
         $post = get_post($post);
     }
 
-    if (!$post || $post->post_type !== 'gmb_review') {
+    if (!$post || $post->post_type !== 'wgmbr_review') {
         return null;
     }
 
     $parsed = new stdClass();
 
     // Reviewer data
-    $parsed->name = get_post_meta($post->ID, '_gmb_reviewer_name', true);
+    $parsed->name = get_post_meta($post->ID, '_wgmbr_reviewer_name', true);
     if (empty($parsed->name)) {
         $parsed->name = esc_html__('Anonymous', 'reviews-for-google-my-business');
     }
 
-    $parsed->photo = get_post_meta($post->ID, '_gmb_reviewer_photo', true);
+    $parsed->photo = get_post_meta($post->ID, '_wgmbr_reviewer_photo', true);
 
     // Rating
-    $parsed->rating = (float)get_post_meta($post->ID, '_gmb_rating', true);
+    $parsed->rating = (float)get_post_meta($post->ID, '_wgmbr_rating', true);
 
     // Comment
     $parsed->comment = $post->post_content;
@@ -43,13 +43,13 @@ function wgmbr_parse_review_from_post($post)
     $parsed->date = strtotime($post->post_date);
 
     // Google review ID
-    $parsed->review_id = get_post_meta($post->ID, '_gmb_review_id', true);
+    $parsed->review_id = get_post_meta($post->ID, '_wgmbr_review_id', true);
 
     // Custom data (job)
-    $parsed->job = get_post_meta($post->ID, '_gmb_job', true);
+    $parsed->job = get_post_meta($post->ID, '_wgmbr_job', true);
 
     // Categories (taxonomy)
-    $terms = wp_get_post_terms($post->ID, 'gmb_category');
+    $terms = wp_get_post_terms($post->ID, 'wgmbr_category');
     $parsed->categories = !is_wp_error($terms) ? $terms : array();
     $parsed->category_ids = array_map(function ($term) {
         return $term->term_id;
@@ -76,7 +76,7 @@ function wgmbr_parse_review_from_post($post)
 function wgmbr_get_all_reviews($args = array())
 {
     $defaults = array(
-        'post_type' => 'gmb_review',
+        'post_type' => 'wgmbr_review',
         'post_status' => 'publish',
         'posts_per_page' => WGMBR_DEFAULT_REVIEW_LIMIT,
         'orderby' => 'date',
@@ -112,7 +112,7 @@ function wgmbr_get_all_reviews($args = array())
 function wgmbr_get_all_reviews_with_query($args = array())
 {
     $defaults = array(
-        'post_type' => 'gmb_review',
+        'post_type' => 'wgmbr_review',
         'post_status' => 'publish',
         'posts_per_page' => 20,
         'orderby' => 'date',
@@ -152,7 +152,7 @@ function wgmbr_get_all_reviews_with_query($args = array())
 function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
 {
     $args = array(
-        'post_type' => 'gmb_review',
+        'post_type' => 'wgmbr_review',
         'post_status' => 'publish',
         'posts_per_page' => $limit,
         'orderby' => 'date',
@@ -164,7 +164,7 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
         // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by taxonomy, standard WordPress method
         $args['tax_query'] = array(
             array(
-                'taxonomy' => 'gmb_category',
+                'taxonomy' => 'wgmbr_category',
                 'operator' => 'NOT EXISTS',
             ),
         );
@@ -173,7 +173,7 @@ function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
         // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by category, standard WordPress method
         $args['tax_query'] = array(
             array(
-                'taxonomy' => 'gmb_category',
+                'taxonomy' => 'wgmbr_category',
                 'field' => 'slug',
                 'terms' => $category_slug, // WordPress accepts string or array
                 'operator' => 'IN', // IN = at least one of the categories
@@ -213,8 +213,8 @@ function wgmbr_get_average_rating()
             AND p.post_type = %s
             AND p.post_status = %s
             AND pm.meta_value != ''",
-            '_gmb_rating',
-            'gmb_review',
+            '_wgmbr_rating',
+            'wgmbr_review',
             'publish'
         )
     );
@@ -234,7 +234,7 @@ function wgmbr_get_average_rating()
  */
 function wgmbr_get_total_reviews_count()
 {
-    $count = wp_count_posts('gmb_review');
+    $count = wp_count_posts('wgmbr_review');
     return isset($count->publish) ? (int)$count->publish : 0;
 }
 
@@ -247,7 +247,7 @@ function wgmbr_get_total_reviews_count()
  */
 function wgmbr_update_review_job($post_id, $job)
 {
-    return update_post_meta($post_id, '_gmb_job', sanitize_text_field($job));
+    return update_post_meta($post_id, '_wgmbr_job', sanitize_text_field($job));
 }
 
 /**
@@ -261,11 +261,11 @@ function wgmbr_set_review_categories($post_id, $category_ids = array())
 {
     if (empty($category_ids)) {
         // Remove all categories
-        return wp_set_post_terms($post_id, array(), 'gmb_category');
+        return wp_set_post_terms($post_id, array(), 'wgmbr_category');
     }
 
     // Assign categories
-    return wp_set_post_terms($post_id, $category_ids, 'gmb_category');
+    return wp_set_post_terms($post_id, $category_ids, 'wgmbr_category');
 }
 
 /**
@@ -279,13 +279,13 @@ function wgmbr_get_parsed_review_by_review_id($review_id)
 {
     // Use post-types.php function that returns WP_Post
     $args = array(
-        'post_type' => 'gmb_review',
+        'post_type' => 'wgmbr_review',
         'post_status' => 'any',
         'posts_per_page' => 1,
         // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary to find existing review by unique Google review ID to prevent duplicates
         'meta_query' => array(
             array(
-                'key' => '_gmb_review_id',
+                'key' => '_wgmbr_review_id',
                 'value' => $review_id,
                 'compare' => '='
             )
@@ -304,7 +304,7 @@ function wgmbr_get_parsed_review_by_review_id($review_id)
 // Create PHP component
 function wgmbr_get_template_parts($path, $params = [])
 {
-    include WOLVES_GMB_PLUGIN_DIR . $path . '.php';
+    include WGMBR_PLUGIN_DIR . $path . '.php';
 }
 
 // ============================================================================

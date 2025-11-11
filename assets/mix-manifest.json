@@ -2,6 +2,7 @@
     "/js/app.js": "/js/app.js",
     "/js/admin.js": "/js/admin.js",
     "/js/categories.js": "/js/categories.js",
+    "/js/manage-reviews.js": "/js/manage-reviews.js",
     "/css/frontend.css": "/css/frontend.css",
     "/css/admin.css": "/css/admin.css"
 }
