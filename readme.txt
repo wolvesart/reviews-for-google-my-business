@@ -1,9 +1,9 @@
-=== Reviews for Google My Business - 100% Free & No Limits ===
+=== Reviews for Google My Business ===
 Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -12,9 +12,13 @@ Display Google My Business reviews on your website for free. Improve credibility
 
 == Description ==
 
-**The ONLY WordPress plugin that gives you UNLIMITED access to 100 Google reviews - Completely FREE!**
+**The only WordPress plugin that gives you unlimited access to 100 Google reviews - Completely free!**
 
-Unlike other plugins that limit you to 5-10 reviews or hide features behind paywalls, Reviews for Google My Business is 100% free forever with NO premium upsells.
+Unlike other plugins that limit you to 5-10 reviews or hide features behind paywalls, Reviews for Google My Business is 100% free forever with no premium upsells.
+
+**Before start**
+
+To operate you will need to follow instructions on the tab "Documentation". There you'll find the steps to configure access to reviews for your business listing. You'll also need Google validation (which can take 1-3 business days) before you can use the API.
 
 = Why choose this plugin? =
 
@@ -259,6 +263,15 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 
 == Changelog ==
 
+= 1.0.3 - 2025-01-19 =
+
+**Documentation:**
+
+* Improved: Simplified plugin title for better clarity
+* Improved: More professional tone (reduced excessive capitalization)
+* Added: "Before start" section with setup prerequisites and Google validation timeline
+* Improved: Better user expectations about initial configuration requirements
+
 = 1.0.2 - 2025-01-19 =
 
 * Updated: README short description to comply with 150 character limit
@@ -335,6 +348,9 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 * Fixed review card width in slider mode
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Documentation improvements: More professional tone and better user expectations. Added setup prerequisites information. No functional changes.
 
 = 1.0.2 =
 README update: Short description adjusted to meet WordPress.org 150 character limit. No functional changes.
