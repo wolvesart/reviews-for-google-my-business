@@ -369,10 +369,10 @@ window.wgmbrGenerateShortcode = function() {
         .map(checkbox => checkbox.value);
 
     // Build shortcode
-    let shortcode = '[gmb_reviews';
+    let shortcode = '[wgmbr_reviews';
 
     // Add limit parameter only if different from default value
-    if (limit && limit !== '50') {
+    if (limit && limit !== '100') {
         shortcode += ' limit="' + limit + '"';
     }
 

@@ -371,7 +371,7 @@ if (!defined('ABSPATH')) {
                             <ul class="gmb-shortcode-examples">
                                 <li>
                                     <code>[wgmbr_reviews]</code>
-                                    <p><?php esc_html_e('Display all reviews (maximum 50)', 'reviews-for-google-my-business'); ?></p>
+                                    <p><?php esc_html_e('Display all reviews (maximum 100)', 'reviews-for-google-my-business'); ?></p>
                                 </li>
                                 <li>
                                     <code>[wgmbr_reviews limit="20"]</code>

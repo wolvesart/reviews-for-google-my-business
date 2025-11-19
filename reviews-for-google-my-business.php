@@ -39,7 +39,7 @@ define('WGMBR_API_MAX_PAGES', 10);
 define('WGMBR_API_TIMEOUT', 15);
 
 // Default limits
-define('WGMBR_DEFAULT_REVIEW_LIMIT', 50);
+define('WGMBR_DEFAULT_REVIEW_LIMIT', 100);
 define('WGMBR_ADMIN_REVIEWS_PER_PAGE', 20);
 
 // Cache durations

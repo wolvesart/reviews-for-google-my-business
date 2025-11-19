@@ -32,6 +32,19 @@ function wgmbr_enqueue_frontend_styles() {
 }
 
 /**
+ * Register frontend scripts
+ */
+function wgmbr_enqueue_frontend_scripts() {
+    wp_enqueue_script(
+        'gmb-frontend-app',
+        WGMBR_PLUGIN_URL . 'assets/js/app.js',
+        array(),
+        WGMBR_VERSION,
+        true  // Load in footer
+    );
+}
+
+/**
  * Generate custom CSS based on user options
  * Uses CSS Custom Properties (CSS variables) for cleaner overrides
  *
@@ -103,8 +116,9 @@ function wgmbr_generate_custom_css() {
  * @return string Reviews HTML
  */
 function wgmbr_reviews_shortcode($atts) {
-    // Load styles only if shortcode is used
+    // Load styles and scripts only if shortcode is used
     wgmbr_enqueue_frontend_styles();
+    wgmbr_enqueue_frontend_scripts();
 
     $atts = shortcode_atts(array(
         'limit' => WGMBR_DEFAULT_REVIEW_LIMIT,
@@ -201,5 +215,3 @@ function wgmbr_render_stars($rating) {
 
     return $html;
 }
-
-// Note: wgmbr_convert_star_rating() is now defined in includes/post-types.php

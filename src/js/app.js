@@ -11,6 +11,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const slides = reviewsSwiper.querySelectorAll('.swiper-slide');
         const slideCount = slides.length;
 
+        // Don't initialize Swiper if less than 3 reviews
+        // Use pure CSS layout instead
+        if (slideCount < 3) {
+            // Add class to wrapper for CSS handling
+            const wrapper = reviewsSwiper.closest('.gmb-reviews-swiper-wrapper');
+            if (wrapper) {
+                wrapper.classList.add('gmb-static-layout');
+                wrapper.setAttribute('data-slide-count', slideCount);
+            }
+
+            // Hide navigation elements
+            const navButtons = document.querySelectorAll('.gmb-swiper-button-prev, .gmb-swiper-button-next');
+            const pagination = document.querySelector('.gmb-swiper-pagination');
+            navButtons.forEach(btn => btn.style.display = 'none');
+            if (pagination) pagination.style.display = 'none';
+
+            // Don't initialize Swiper
+            return;
+        }
+
         // Only enable loop if there are enough slides
         const shouldLoop = slideCount > 3;
 
@@ -56,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'bullets',
             },
 
-            // Autoplay (optional)
+            // Autoplay
             autoplay: {
                 delay: 5000,
                 disableOnInteraction: false,
