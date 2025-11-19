@@ -3,12 +3,12 @@ Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-🌟 Display up to 100 Google My Business reviews on your website - 100% Free, No Premium Version, No Hidden Fees! Beautiful slider with advanced customization.
+Display up to 100 Google My Business reviews on your website - 100% Free, No Premium Version, No Hidden Fees! Beautiful slider with advanced customization.
 
 == Description ==
 
@@ -16,21 +16,22 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Unlike other plugins that limit you to 5-10 reviews or hide features behind paywalls, Reviews for Google My Business is 100% free forever with NO premium upsells. Built by developers, for developers who believe in open-source.
 
-= 🎯 Why Choose This Plugin? =
+= WHY CHOOSE THIS PLUGIN? =
 
-✅ **Display up to 100 reviews** - No artificial limits, no premium versions
-✅ **100% Free Forever** - All features included, no hidden costs
-✅ **Beautiful Modern Slider** - Responsive design with smooth animations
-✅ **Category System** - Organize reviews by service type (Training, Coaching, Design, etc.)
-✅ **Advanced Customization** - Colors, borders, stars, layouts - fully customizable
-✅ **OAuth 2.0 Security** - Enterprise-grade secure authentication
-✅ **SEO Optimized** - Schema.org markup ready for better search rankings
-✅ **No External Dependencies** - Reviews stored locally on your server
-✅ **Lightning Fast** - Optimized code with 1-hour smart caching
+* **Display up to 100 reviews** - No artificial limits, no premium versions
+* **100% Free Forever** - All features included, no hidden costs
+* **Beautiful Modern Slider** - Responsive design with smooth animations
+* **Category System** - Organize reviews by service type (Training, Coaching, Design, etc.)
+* **Advanced Customization** - Colors, borders, stars, layouts - fully customizable
+* **OAuth 2.0 Security** - Enterprise-grade secure authentication
+* **SEO Optimized** - Schema.org markup ready for better search rankings
+* **No External Dependencies** - Reviews stored locally on your server
+* **Lightning Fast** - Optimized code with 1-hour smart caching
 
-= 🚀 Key Features =
+= KEY FEATURES =
 
 **Display & Layout:**
+
 * Modern responsive slider with 3 reviews per view on desktop
 * Automatic adaptation for 1-2 reviews (no broken layout)
 * Beautiful card design with customizable colors
@@ -40,18 +41,21 @@ Unlike other plugins that limit you to 5-10 reviews or hide features behind payw
 * Average rating summary with total review count
 
 **Organization:**
+
 * Category system to organize reviews by topic
 * Filter reviews by one or multiple categories
 * Custom job titles for each reviewer
 * Flexible shortcode with powerful parameters
 
 **Customization:**
+
 * Customize all colors (cards, stars, text, accents)
 * Adjustable border radius
 * Responsive design for all devices
 * No coding required - visual customization panel
 
 **Performance & Security:**
+
 * OAuth 2.0 secure authentication
 * 1-hour intelligent caching system
 * Reviews stored in WordPress database
@@ -59,7 +63,7 @@ Unlike other plugins that limit you to 5-10 reviews or hide features behind payw
 * GDPR compliant (no visitor data sent to Google)
 * Optimized database queries for large review sets
 
-= 📝 Simple Shortcode Usage =
+= SIMPLE SHORTCODE USAGE =
 
 Display all reviews (up to 100):
 `[wgmbr_reviews]`
@@ -76,9 +80,10 @@ Multiple categories:
 Hide summary statistics:
 `[wgmbr_reviews show_summary="false"]`
 
-= 🎨 Full Customization =
+= FULL CUSTOMIZATION =
 
 Access the customization panel in **Google Reviews → Configuration → Customization** to personalize:
+
 * Card background colors
 * Star colors
 * Text colors
@@ -86,9 +91,10 @@ Access the customization panel in **Google Reviews → Configuration → Customi
 * Border radius
 * All changes apply instantly with live preview
 
-= 🔒 Enterprise-Grade Security =
+= ENTERPRISE-GRADE SECURITY =
 
 This plugin takes security seriously:
+
 * OAuth 2.0 authentication (industry standard)
 * Encrypted credential storage
 * WordPress nonce verification on all actions
@@ -97,7 +103,7 @@ This plugin takes security seriously:
 * Prepared SQL statements
 * Regular security audits
 
-= 💡 Perfect For =
+= PERFECT FOR =
 
 * Local businesses showcasing customer testimonials
 * Service providers (coaches, trainers, consultants)
@@ -107,7 +113,7 @@ This plugin takes security seriously:
 * E-commerce stores
 * Any business with Google My Business reviews
 
-= 🆚 Compare to Other Plugins =
+= COMPARE TO OTHER PLUGINS =
 
 | Feature | This Plugin | Competitors |
 |---------|-------------|-------------|
@@ -118,14 +124,15 @@ This plugin takes security seriously:
 | Local storage | **Yes** | Often hotlinked |
 | Open source | **100%** | Varies |
 
-= 🌍 Multilingual Ready =
+= MULTILINGUAL READY =
 
 The plugin is translation-ready and includes:
+
 * English (default)
 * French (included)
 * Ready for translation to any language via .po/.mo files
 
-= 🛠️ For Developers =
+= FOR DEVELOPERS =
 
 * Clean, well-documented code
 * WordPress coding standards compliant
@@ -172,6 +179,7 @@ Google Privacy Policy: https://policies.google.com/privacy
 **Data sent:** Access token, Account ID, Location ID
 
 **Scopes used:**
+
 * `business.manage` - Permission to manage business information
 * `plus.business.manage` - Legacy Google+ business pages
 
@@ -180,12 +188,12 @@ Google APIs Terms: https://developers.google.com/terms
 
 = Privacy & Security Notes =
 
-✅ All communication uses secure HTTPS
-✅ Reviews are downloaded and stored locally (no hotlinking)
-✅ NO visitor, customer, or user data is sent to Google
-✅ Only authentication tokens and business identifiers are transmitted
-✅ You can revoke access anytime from plugin settings
-✅ API credentials encrypted in WordPress database
+* All communication uses secure HTTPS
+* Reviews are downloaded and stored locally (no hotlinking)
+* NO visitor, customer, or user data is sent to Google
+* Only authentication tokens and business identifiers are transmitted
+* You can revoke access anytime from plugin settings
+* API credentials encrypted in WordPress database
 
 By using this plugin, you agree to comply with Google's Terms of Service and Privacy Policy.
 
@@ -197,7 +205,7 @@ By using this plugin, you agree to comply with Google's Terms of Service and Pri
 2. Search for "Reviews for Google My Business"
 3. Click **Install Now** and then **Activate**
 4. Go to **Google Reviews → Configuration**
-5. Follow the setup wizard (takes ~5 minutes)
+5. Follow the setup wizard (takes approximately 5 minutes)
 
 = Manual Installation =
 
@@ -209,24 +217,27 @@ By using this plugin, you agree to comply with Google's Terms of Service and Pri
 
 = Configuration (One-Time Setup) =
 
-**Step 1:** Create Google Cloud Project (Free)
+**Step 1: Create Google Cloud Project (Free)**
+
 1. Go to https://console.cloud.google.com
 2. Create a new project
 3. Enable "Google My Business API"
 4. Create OAuth 2.0 credentials (detailed guide in plugin)
 
-**Step 2:** Connect the Plugin
+**Step 2: Connect the Plugin**
+
 1. Enter your Client ID and Client Secret
 2. Click "Connect with Google"
 3. Authorize the plugin
 4. Select your business location
 
-**Step 3:** Display Reviews
+**Step 3: Display Reviews**
+
 1. Add the shortcode `[wgmbr_reviews]` to any page or post
 2. Customize colors in the Customization tab
 3. Done! Your reviews are now live
 
-**⏱️ Setup Time:** ~5 minutes | **Documentation:** Available in the plugin under "Documentation" tab
+**Setup Time:** Approximately 5 minutes | **Documentation:** Available in the plugin under "Documentation" tab
 
 == Frequently Asked Questions ==
 
@@ -261,6 +272,7 @@ Yes! You can create custom categories (e.g., "Training", "Coaching", "Design") a
 = Can I customize the design? =
 
 Absolutely! Go to **Google Reviews → Configuration → Customization** to customize:
+
 * Card background color
 * Star color
 * Text colors
@@ -275,7 +287,7 @@ Yes! The plugin uses clean, modern CSS that works with any WordPress theme. The 
 
 = Does this affect my site's loading speed? =
 
-No! Reviews are cached for 1 hour and stored in your WordPress database. The slider uses optimized JavaScript (Swiper.js). Average load time impact: <100ms.
+No! Reviews are cached for 1 hour and stored in your WordPress database. The slider uses optimized JavaScript (Swiper.js). Average load time impact: less than 100ms.
 
 = What happens if I have less than 3 reviews? =
 
@@ -303,22 +315,44 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 
 == Screenshots ==
 
-1. **Modern Review Slider** - Beautiful responsive design with 3 reviews per view on desktop
-2. **Admin Configuration Panel** - Simple 4-step setup wizard with visual guides
-3. **Category Management** - Organize reviews by service type or topic
-4. **Full Customization Panel** - Change colors, borders, and styles without coding
-5. **Shortcode Generator** - Visual tool to build your perfect shortcode
-6. **Mobile Responsive** - Perfect display on all devices and screen sizes
-7. **Review Details Modal** - Click "Read more" to see full reviews in beautiful popup
-8. **Admin Reviews Manager** - Manage, edit, and categorize all your reviews
+1. Modern Review Slider - Beautiful responsive design with 3 reviews per view on desktop
+2. Admin Configuration Panel - Simple setup wizard with visual guides
+3. Category Management - Organize reviews by service type or topic
+4. Full Customization Panel - Change colors, borders, and styles without coding
+5. Shortcode Generator - Visual tool to build your perfect shortcode
+6. Mobile Responsive - Perfect display on all devices and screen sizes
+7. Review Details Modal - Click "Read more" to see full reviews in beautiful popup
+8. Admin Reviews Manager - Manage, edit, and categorize all your reviews
 
 == Changelog ==
+
+= 1.0.1 - 2025-01-19 =
+
+**Bug Fixes:**
+
+* Fixed: Slider layout broken when displaying 1-2 reviews (now uses static layout with proper centering)
+* Fixed: Shortcode generator showing incorrect prefix (`gmb_reviews` instead of `wgmbr_reviews`)
+* Fixed: Missing frontend JavaScript file (app.js was not enqueued, preventing slider from working)
+* Fixed: Review card width issues in slider mode
+
+**Improvements:**
+
+* Changed: Increased default review limit from 50 to 100
+* Changed: Slider automatically adapts - static layout for 1-2 reviews, slider for 3+ reviews
+* Improved: Better responsive design for small review counts
+
+**Documentation:**
+
+* Removed emojis from README for better WordPress.org compliance
+* Updated all documentation to reflect 100 review limit
+* Improved professional appearance and formatting
 
 = 1.0.0 - 2025-01-19 =
 
 **Initial Release - Built for the Community**
 
-✨ **New Features:**
+**New Features:**
+
 * Display up to 100 Google My Business reviews
 * Beautiful modern slider with smooth animations
 * Category system for review organization
@@ -331,7 +365,8 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 * SEO-optimized markup
 * Translation-ready (EN, FR included)
 
-🔒 **Security:**
+**Security:**
+
 * WordPress.org compliance: All functions prefixed with `wgmbr_`
 * Enhanced data sanitization and validation
 * OAuth 2.0 with CSRF protection (state parameter)
@@ -339,21 +374,24 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 * Prepared SQL statements
 * Input/output escaping
 
-🚀 **Performance:**
+**Performance:**
+
 * Smart 1-hour caching system
 * Optimized database queries for 100+ reviews
 * Lazy loading for images
 * Minified assets (CSS/JS)
 * CDN-ready
 
-📚 **Developer Features:**
+**Developer Features:**
+
 * Clean, documented code
 * WordPress coding standards compliant
 * Laravel Mix build system
 * Source files included (src/)
 * GitHub repository available
 
-🐛 **Bug Fixes:**
+**Bug Fixes:**
+
 * Fixed slider layout for 1-2 reviews (now uses static layout)
 * Fixed shortcode prefix in generator (`wgmbr_reviews` instead of `gmb_reviews`)
 * Fixed missing app.js enqueue (JavaScript now loads correctly)
@@ -361,5 +399,8 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 
 == Upgrade Notice ==
 
+= 1.0.1 =
+Important bug fixes: Resolves slider layout issues with 1-2 reviews, fixes missing JavaScript enqueue, and corrects shortcode generator. Default limit increased to 100 reviews. Update recommended.
+
 = 1.0.0 =
-Initial release. Welcome to the most generous Google Reviews plugin for WordPress! 🎉 Display up to 100 reviews, 100% free, forever.
+Initial release. Welcome to the most generous Google Reviews plugin for WordPress! Display up to 100 reviews, 100% free, forever.
