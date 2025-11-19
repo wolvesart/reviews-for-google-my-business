@@ -3,20 +3,20 @@ Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Display 100 Google My Business reviews FREE - No Premium! Beautiful slider with categories and full customization.
+Display Google My Business reviews on your website for free. Improve credibility with full customization, categories, and flexible shortcode.
 
 == Description ==
 
 **The ONLY WordPress plugin that gives you UNLIMITED access to 100 Google reviews - Completely FREE!**
 
-Unlike other plugins that limit you to 5-10 reviews or hide features behind paywalls, Reviews for Google My Business is 100% free forever with NO premium upsells. Built by developers, for developers who believe in open-source.
+Unlike other plugins that limit you to 5-10 reviews or hide features behind paywalls, Reviews for Google My Business is 100% free forever with NO premium upsells.
 
-= WHY CHOOSE THIS PLUGIN? =
+= Why choose this plugin? =
 
 * **Display up to 100 reviews** - No artificial limits, no premium versions
 * **100% Free Forever** - All features included, no hidden costs
@@ -28,14 +28,12 @@ Unlike other plugins that limit you to 5-10 reviews or hide features behind payw
 * **No External Dependencies** - Reviews stored locally on your server
 * **Lightning Fast** - Optimized code with 1-hour smart caching
 
-= KEY FEATURES =
+= Key features =
 
 **Display & Layout:**
 
 * Modern responsive slider with 3 reviews per view on desktop
-* Automatic adaptation for 1-2 reviews (no broken layout)
 * Beautiful card design with customizable colors
-* Star ratings with half-star precision
 * Author photos (automatically downloaded and stored locally)
 * "Read more" button for long reviews
 * Average rating summary with total review count
@@ -63,24 +61,12 @@ Unlike other plugins that limit you to 5-10 reviews or hide features behind payw
 * GDPR compliant (no visitor data sent to Google)
 * Optimized database queries for large review sets
 
-= SIMPLE SHORTCODE USAGE =
+= Simple shortcode usage =
 
-Display all reviews (up to 100):
-`[wgmbr_reviews]`
+To display Google My Business reviews on your site, just copy the shortcode and paste the shortcode in your pages, posts or widgets directly in the text editor.
+The shortcode will automatically transform into visible content on your site! You can place it anywhere: in a page, a post, or even in a widget area depending on your theme.
 
-Display specific number of reviews:
-`[wgmbr_reviews limit="20"]`
-
-Filter by category:
-`[wgmbr_reviews category="training"]`
-
-Multiple categories:
-`[wgmbr_reviews category="training,coaching" limit="50"]`
-
-Hide summary statistics:
-`[wgmbr_reviews show_summary="false"]`
-
-= FULL CUSTOMIZATION =
+= Full customization =
 
 Access the customization panel in **Google Reviews → Configuration → Customization** to personalize:
 
@@ -89,11 +75,8 @@ Access the customization panel in **Google Reviews → Configuration → Customi
 * Text colors
 * Accent colors (navigation, buttons)
 * Border radius
-* All changes apply instantly with live preview
 
-= ENTERPRISE-GRADE SECURITY =
-
-This plugin takes security seriously:
+= Enterprise-grade security =
 
 * OAuth 2.0 authentication (industry standard)
 * Encrypted credential storage
@@ -102,45 +85,6 @@ This plugin takes security seriously:
 * Input sanitization and output escaping
 * Prepared SQL statements
 * Regular security audits
-
-= PERFECT FOR =
-
-* Local businesses showcasing customer testimonials
-* Service providers (coaches, trainers, consultants)
-* Restaurants and hospitality businesses
-* Healthcare professionals
-* Real estate agents
-* E-commerce stores
-* Any business with Google My Business reviews
-
-= COMPARE TO OTHER PLUGINS =
-
-| Feature | This Plugin | Competitors |
-|---------|-------------|-------------|
-| Free reviews | **100** | 5-10 |
-| Premium version | **None** | Required for more |
-| Categories | **Yes** | Usually premium |
-| Customization | **Full** | Limited |
-| Local storage | **Yes** | Often hotlinked |
-| Open source | **100%** | Varies |
-
-= MULTILINGUAL READY =
-
-The plugin is translation-ready and includes:
-
-* English (default)
-* French (included)
-* Ready for translation to any language via .po/.mo files
-
-= FOR DEVELOPERS =
-
-* Clean, well-documented code
-* WordPress coding standards compliant
-* Laravel Mix build system
-* Source files included (src/js/, src/scss/)
-* Hooks and filters for customization
-* GitHub repository available
-* Build commands: `npm run dev`, `npm run prod`, `npm run watch`
 
 == External Services ==
 
@@ -313,18 +257,11 @@ Check the **Documentation** tab in the plugin for detailed guides. For issues, v
 
 Absolutely! This is open-source software. Developers are welcome to contribute via our GitHub repository.
 
-== Screenshots ==
-
-1. Modern Review Slider - Beautiful responsive design with 3 reviews per view on desktop
-2. Admin Configuration Panel - Simple setup wizard with visual guides
-3. Category Management - Organize reviews by service type or topic
-4. Full Customization Panel - Change colors, borders, and styles without coding
-5. Shortcode Generator - Visual tool to build your perfect shortcode
-6. Mobile Responsive - Perfect display on all devices and screen sizes
-7. Review Details Modal - Click "Read more" to see full reviews in beautiful popup
-8. Admin Reviews Manager - Manage, edit, and categorize all your reviews
-
 == Changelog ==
+
+= 1.0.2 - 2025-01-19 =
+
+* Updated: README short description to comply with 150 character limit
 
 = 1.0.1 - 2025-01-19 =
 
@@ -398,6 +335,9 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 * Fixed review card width in slider mode
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+README update: Short description adjusted to meet WordPress.org 150 character limit. No functional changes.
 
 = 1.0.1 =
 Important bug fixes: Resolves slider layout issues with 1-2 reviews, fixes missing JavaScript enqueue, and corrects shortcode generator. Default limit increased to 100 reviews. Update recommended.
