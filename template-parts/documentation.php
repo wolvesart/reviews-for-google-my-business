@@ -160,7 +160,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         <p><?php esc_html_e('Once you receive approval, you need to enable the API:', 'reviews-for-google-my-business'); ?></p>
 
         <ol>
-            <li><?php echo wp_kses_post(__('Go back to <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>.', 'reviews-for-google-my-business')); ?></li>
+            <li><?php
+                printf(
+                    /* translators: %s: Google Cloud Console link */
+                    esc_html__('Go back to %s.', 'reviews-for-google-my-business'),
+                    '<a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>'
+                );
+            ?></li>
             <li><?php esc_html_e('Make sure your project is selected in the top navigation bar.', 'reviews-for-google-my-business'); ?></li>
             <li><?php echo wp_kses_post(__('In the search bar at the top, type <strong>"Google Business Profile API"</strong>.', 'reviews-for-google-my-business')); ?></li>
             <li><?php echo wp_kses_post(__('Click on <strong>"Google Business Profile API"</strong> in the results.', 'reviews-for-google-my-business')); ?></li>

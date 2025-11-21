@@ -1,0 +1,1482 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Reviews for Google My Business\n"
+"POT-Creation-Date: 2025-11-21 13:26+0100\n"
+"PO-Revision-Date: 2025-11-21 13:26+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: reviews-for-google-my-business.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: node_modules\n"
+
+#: includes/admin.php:18 includes/admin.php:19 includes/post-types.php:21
+#: includes/post-types.php:23
+msgid "Google Reviews"
+msgstr "Google Reviews"
+
+#: includes/admin.php:29 includes/admin.php:30 includes/post-types.php:79
+#: templates/admin-page.php:309
+msgid "Categories"
+msgstr "Catégories"
+
+#: includes/admin.php:38 includes/admin.php:39
+#: reviews-for-google-my-business.php:167 templates/admin-page.php:28
+msgid "Configuration"
+msgstr "Configuration"
+
+#: includes/admin.php:81
+msgid "Loading..."
+msgstr "Chargement..."
+
+#: includes/admin.php:82
+msgid "Error fetching locations:"
+msgstr "Erreur lors de la récupération des établissements :"
+
+#: includes/admin.php:83 includes/admin.php:116
+msgid "Unknown error"
+msgstr "Erreur inconnue"
+
+#: includes/admin.php:84 includes/admin.php:117
+msgid "Network error:"
+msgstr "Erreur réseau :"
+
+#: includes/admin.php:85
+msgid "Resetting..."
+msgstr "Réinitialisation..."
+
+#: includes/admin.php:86
+msgid "Reset successful!"
+msgstr "Réinitialisation réussie !"
+
+#: includes/admin.php:87
+msgid "Error resetting reviews"
+msgstr "Erreur lors de la réinitialisation des avis"
+
+#: includes/admin.php:88
+msgid "Connection successful!"
+msgstr "Connexion réussie !"
+
+#: includes/admin.php:89
+msgid "reviews fetched."
+msgstr "avis récupérés."
+
+#: includes/admin.php:90 includes/admin.php:115
+msgid "Error:"
+msgstr "Erreur :"
+
+#: includes/admin.php:91
+msgid "Are you sure you want to reset customization to default values?"
+msgstr ""
+"Êtes-vous sûr de vouloir réinitialiser la personnalisation aux valeurs par "
+"défaut ?"
+
+#: includes/admin.php:92
+msgid "Error resetting customization:"
+msgstr "Erreur lors de la réinitialisation de la personnalisation :"
+
+#: includes/admin.php:93
+msgid "Copied!"
+msgstr "Copié !"
+
+#: includes/admin.php:113
+msgid "Please enter a category name"
+msgstr "Veuillez entrer un nom de catégorie"
+
+#: includes/admin.php:114
+msgid "Creating..."
+msgstr "Création en cours…"
+
+#: includes/admin.php:118 templates/categories-page.php:43
+msgid "Create category"
+msgstr "Créer une catégorie"
+
+#: includes/admin.php:119
+msgid ""
+"Are you sure you want to delete this category? It will be removed from all "
+"reviews that use it."
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer cette catégorie ? Elle sera retirée de "
+"tous les avis qui l’utilisent."
+
+#: includes/admin.php:120
+msgid "Deleting..."
+msgstr "Suppression…"
+
+#: includes/admin.php:121 templates/categories-page.php:78
+msgid "Delete"
+msgstr "Supprimer"
+
+#: includes/admin.php:122
+msgid "Syncing..."
+msgstr "Synchronisation…"
+
+#: includes/admin.php:123
+msgid "✓ Synchronization complete"
+msgstr "✓ Synchronisation terminée"
+
+#: includes/admin.php:124
+msgid "Error syncing reviews"
+msgstr "Erreur lors de la synchronisation des avis"
+
+#: includes/admin.php:125
+msgid "Updated"
+msgstr "Mis à jour"
+
+#: includes/admin.php:140 includes/admin.php:155 includes/admin.php:200
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Vous n'avez pas les permissions suffisantes pour accéder à cette page."
+
+#: includes/admin.php:189
+msgid ""
+"API not authenticated. Please configure OAuth from the Configuration page."
+msgstr ""
+"API non authentifiée. Veuillez configurer OAuth depuis la page de "
+"configuration."
+
+#: includes/admin.php:214 includes/admin.php:234 includes/admin.php:278
+#: includes/admin.php:512 includes/admin.php:530 includes/admin.php:557
+#: includes/admin.php:622 includes/admin.php:679 includes/admin.php:730
+msgid "Insufficient permissions"
+msgstr "Autorisations insuffisantes"
+
+#: includes/admin.php:219 includes/admin.php:239 includes/admin.php:283
+#: includes/admin.php:535 includes/admin.php:562 includes/admin.php:628
+#: includes/admin.php:685 includes/admin.php:736
+msgid "Security check failed"
+msgstr "Le contrôle de sécurité a échoué"
+
+#. translators: %d: number of reviews deleted
+#: includes/admin.php:264
+#, php-format
+msgid "%d reviews deleted"
+msgstr "%d avis supprimés"
+
+#: includes/admin.php:315 includes/admin.php:368 includes/admin.php:416
+#: includes/admin.php:494
+msgid "You do not have sufficient permissions."
+msgstr "Vous n'avez pas les permissions suffisantes pour accéder à cette page."
+
+#: includes/admin.php:329
+msgid ""
+"HTTPS is required to save API credentials. Please enable SSL/TLS on your "
+"site."
+msgstr ""
+"HTTPS est nécessaire pour sauvegarder les identifiants de l’API. Veuillez "
+"activer SSL/TLS sur votre site."
+
+#: includes/admin.php:330 includes/api.php:599
+msgid "Security Error"
+msgstr "Erreur de sécurité"
+
+#: includes/admin.php:520
+msgid "Customization saved successfully"
+msgstr "Personnalisation sauvegardée avec succès"
+
+#. translators: %d: number of seconds to wait
+#: includes/admin.php:576
+#, php-format
+msgid "Please wait %d seconds before syncing again"
+msgstr "Veuillez attendre %d secondes avant de resynchroniser"
+
+#. translators: 1: Display numbers of reviews successfully synchronized
+#: includes/admin.php:607
+#, php-format
+msgid "%d reviews successfully synchronized"
+msgstr "%d avis synchronisés avec succès"
+
+#: includes/admin.php:634
+msgid "Category name is required"
+msgstr "Le nom de la catégorie est requis"
+
+#: includes/admin.php:643
+msgid "Category name cannot be empty"
+msgstr "Le nom de catégorie ne peut pas être vide"
+
+#. translators: %s: Category name
+#: includes/admin.php:664
+#, php-format
+msgid "Category \"%s\" created successfully"
+msgstr "Catégorie « %s » créée avec succès"
+
+#: includes/admin.php:691
+msgid "Category ID is required"
+msgstr "Un identifiant de catégorie est requis"
+
+#: includes/admin.php:700
+msgid "Invalid category ID"
+msgstr "ID de catégorie invalide"
+
+#: includes/admin.php:713
+msgid "Category not found"
+msgstr "Catégorie introuvable"
+
+#: includes/admin.php:718
+msgid "Category deleted successfully"
+msgstr "Catégorie supprimée avec succès"
+
+#: includes/admin.php:742
+msgid "Post ID is required"
+msgstr "L’ID de la publication est nécessaire"
+
+#: includes/admin.php:751
+msgid "Invalid post ID"
+msgstr "Identifiant de l'article non valable"
+
+#: includes/admin.php:780
+msgid "Review updated successfully"
+msgstr "Avis mis à jour avec succès"
+
+#: includes/api.php:555
+msgid ""
+"Google My Business API is not authenticated. Please configure OAuth from the "
+"GMB Reviews page in the admin."
+msgstr ""
+"API non authentifiée. Veuillez configurer OAuth depuis la page de "
+"configuration."
+
+#: includes/api.php:598
+msgid ""
+"Unauthorized access. You must be logged in as an administrator to complete "
+"OAuth authentication."
+msgstr ""
+"Accès non autorisé. Vous devez être connecté en tant qu’administrateur pour "
+"compléter l’authentification OAuth."
+
+#: includes/api.php:616
+msgid ""
+"Security validation failed. The OAuth state parameter is invalid. This may "
+"indicate a CSRF attack or an expired authorization attempt."
+msgstr ""
+"La validation de sécurité a échoué. Le paramètre d’état OAuth est invalide. "
+"Cela peut indiquer une attaque CSRF ou une tentative d’autorisation expirée."
+
+#: includes/api.php:617
+msgid "OAuth Security Error"
+msgstr "Erreur de sécurité OAuth"
+
+#: includes/api.php:719
+msgid "No reviews to synchronize"
+msgstr "Aucun avis à synchroniser"
+
+#: includes/api.php:772
+msgid "No valid review IDs found"
+msgstr "Aucun identifiant d’avis valide trouvé"
+
+#: includes/api.php:814 includes/helpers.php:31 includes/post-types.php:122
+msgid "Anonymous"
+msgstr "Anonyme"
+
+#. translators: %s: Reviewer name
+#: includes/api.php:837 includes/post-types.php:145
+#, php-format
+msgid "Review by %s"
+msgstr "Avis de %s"
+
+#. translators: 1: Site name, 2: Error context
+#: includes/helpers.php:513
+#, php-format
+msgid "[%1$s] GMB Reviews Error: %2$s"
+msgstr "[%1$s] Erreur des avis GMB : %2$s"
+
+#. translators: 1: Error context, 2: Error message, 3: Additional data
+#: includes/helpers.php:517
+#, php-format
+msgid ""
+"An error occurred in the Google My Business Reviews plugin.\n"
+"\n"
+"Context: %1$s\n"
+"Message: %2$s\n"
+"\n"
+"Additional data:\n"
+"%3$s\n"
+"\n"
+"Please check the plugin settings."
+msgstr ""
+"Une erreur est apparue dans le plugin Google My Business Reviews.\n"
+"\n"
+"Contexte : %1$s\n"
+"Message : %2$s\n"
+"\n"
+"Données supplémentaires :\n"
+"%3$s\n"
+"\n"
+"Veuillez vérifier les paramètres du plugin."
+
+#: includes/post-types.php:22 includes/post-types.php:24
+msgid "Google Review"
+msgstr "Avis Google"
+
+#: includes/post-types.php:25
+msgid "Add New"
+msgstr "Ajouter"
+
+#: includes/post-types.php:26
+msgid "Add New Review"
+msgstr "Ajouter un avis"
+
+#: includes/post-types.php:27
+msgid "New Review"
+msgstr "Nouvel avis"
+
+#: includes/post-types.php:28
+msgid "Edit Review"
+msgstr "Modifier un avis"
+
+#: includes/post-types.php:29
+msgid "View Review"
+msgstr "Voir l'avis"
+
+#: includes/post-types.php:30
+msgid "All Reviews"
+msgstr "Tous les avis"
+
+#: includes/post-types.php:31
+msgid "Search Reviews"
+msgstr "Rechercher des avis"
+
+#: includes/post-types.php:32 templates/manage-reviews-page.php:41
+msgid "No reviews found"
+msgstr "Aucun avis trouvé"
+
+#: includes/post-types.php:33
+msgid "No reviews found in Trash"
+msgstr "Aucun avis trouvé dans la corbeille"
+
+#: includes/post-types.php:66
+msgid "Review Categories"
+msgstr "Catégories des avis"
+
+#: includes/post-types.php:67
+msgid "Review Category"
+msgstr "Catégorie d'avis"
+
+#: includes/post-types.php:68
+msgid "Search Categories"
+msgstr "Rechercher des catégories"
+
+#: includes/post-types.php:69
+msgid "Popular Categories"
+msgstr "Catégories populaires"
+
+#: includes/post-types.php:70
+msgid "All Categories"
+msgstr "Toutes les catégories"
+
+#: includes/post-types.php:71
+msgid "Edit Category"
+msgstr "Modifier la catégorie"
+
+#: includes/post-types.php:72
+msgid "Update Category"
+msgstr "Mettre à jour la catégorie"
+
+#: includes/post-types.php:73
+msgid "Add New Category"
+msgstr "Ajouter une nouvelle catégorie"
+
+#: includes/post-types.php:74
+msgid "New Category Name"
+msgstr "Nom de la nouvelle catégorie"
+
+#: includes/post-types.php:75
+msgid "Separate categories with commas"
+msgstr "Séparez les catégories par des virgules"
+
+#: includes/post-types.php:76
+msgid "Add or remove categories"
+msgstr "Ajouter ou supprimer des catégories"
+
+#: includes/post-types.php:77
+msgid "Choose from most used categories"
+msgstr "Choisissez parmi les catégories les plus utilisées"
+
+#: includes/post-types.php:78
+msgid "No categories found"
+msgstr "Aucune catégorie trouvée"
+
+#: includes/post-types.php:114
+msgid "Review ID is missing"
+msgstr "L’identifiant de l’avis manque"
+
+#: includes/shortcode.php:143
+msgid "Google My Business API is not authenticated."
+msgstr "L’API Google My Business n’est pas authentifiée."
+
+#: includes/shortcode.php:144
+msgid "Please configure OAuth from the"
+msgstr "Veuillez configurer OAuth à partir de la"
+
+#: includes/shortcode.php:146
+msgid "GMB Reviews page in the admin"
+msgstr "Page des avis GMB dans l’administration"
+
+#: template-parts/documentation.php:5
+msgid "Google API Configuration Guide"
+msgstr "Guide de configuration de l’API Google"
+
+#: template-parts/documentation.php:6
+msgid ""
+"This process requires a Google Cloud Console account. The complete setup "
+"takes approximately 15 minutes. Step 4 requires validation from Google which "
+"can take 1-3 business days."
+msgstr ""
+"Ce processus nécessite un compte Google Cloud Console. L’installation "
+"complète prend environ 15 minutes. L’étape 4 nécessite une validation de "
+"Google, ce qui peut prendre de 1 à 3 jours ouvrés."
+
+#: template-parts/documentation.php:11
+msgid "1. Create a Google Cloud Console Account and Project"
+msgstr "1. Créer un compte et un projet Google Cloud Console"
+
+#: template-parts/documentation.php:13
+msgid "Access Google Cloud Console"
+msgstr "Accédez à Google Cloud Console"
+
+#. translators: %s: URL to Google Cloud Console
+#: template-parts/documentation.php:18
+#, php-format
+msgid "Go to <a href=\"%s\" target=\"_blank\">Google Cloud Console</a>"
+msgstr "Allez sur <a href=\"%s\" target=\"_blank\">Google Cloud Console</a>"
+
+#: template-parts/documentation.php:19
+msgid "Sign in with your Google account (Gmail)."
+msgstr "Connectez-vous avec votre compte Google (Gmail)."
+
+#: template-parts/documentation.php:22
+msgid "Create a New Project"
+msgstr "Créer un nouveau projet"
+
+#: template-parts/documentation.php:24
+msgid ""
+"In the top navigation bar, click on the project dropdown (it may say "
+"\"Select a project\" if you're new)."
+msgstr ""
+"Dans la barre de navigation du haut, cliquez sur le menu déroulant du projet "
+"(cela peut être « Sélectionner un projet » si vous êtes nouveau)."
+
+#: template-parts/documentation.php:25
+msgid ""
+"Click on <strong>\"New Project\"</strong> in the top right corner of the "
+"modal."
+msgstr ""
+"Cliquez sur <strong>« Nouveau projet »</strong> en haut à droite du modal."
+
+#: template-parts/documentation.php:26
+msgid ""
+"Enter a project name (example: \"My Business Reviews\" or \"WordPress GMB "
+"API\"). You can leave the organization field empty if you don't have one."
+msgstr ""
+"Saisissez un nom de projet (exemple : « Avis Google » ou « WordPress GMB "
+"API »). Vous pouvez laisser le champ d’organisation vide si vous n’en avez "
+"pas."
+
+#: template-parts/documentation.php:27
+msgid "Click <strong>\"Create\"</strong>."
+msgstr "<strong>Cliquez sur « Créer</strong> »."
+
+#: template-parts/documentation.php:28
+msgid ""
+"Wait a few seconds for the project to be created, then select it from the "
+"project dropdown."
+msgstr ""
+"Attendez quelques secondes que le projet soit créé, puis sélectionnez le "
+"dans le menu déroulant du projet."
+
+#: template-parts/documentation.php:33
+msgid "Note:"
+msgstr "Note :"
+
+#: template-parts/documentation.php:33
+msgid ""
+"Make sure you have the correct project selected in the top navigation bar "
+"before proceeding to the next steps."
+msgstr ""
+"Assurez-vous d’avoir sélectionné le bon projet dans la barre de navigation "
+"en haut avant de passer aux étapes suivantes."
+
+#: template-parts/documentation.php:40
+msgid "2. Configure OAuth Consent Screen"
+msgstr "2. Configurez l’écran de consentement OAuth"
+
+#: template-parts/documentation.php:41
+msgid ""
+"Before creating credentials, you must configure the OAuth consent screen. "
+"This is what users will see when authorizing your application to access "
+"their Google My Business data."
+msgstr ""
+"Avant de créer les identifiants, vous devez configurer l’écran de "
+"consentement OAuth. C’est ce que les utilisateurs verront lorsqu’ils "
+"autorisent votre application à accéder à leurs données Google My Business."
+
+#: template-parts/documentation.php:43
+msgid "Initial Configuration"
+msgstr "Configuration initiale"
+
+#: template-parts/documentation.php:45
+msgid ""
+"In the left sidebar menu, go to <strong>\"APIs & Services → OAuth consent "
+"screen\"</strong>."
+msgstr ""
+"Dans le menu latéral de gauche, allez dans <strong>\"APIs & Services → écran "
+"de consentement OAuth \"</strong>."
+
+#: template-parts/documentation.php:46
+msgid ""
+"You have a screen with \"Google Auth Platform not configured yet\" and a "
+"button <strong>\"Get started\"</strong>. Click the button."
+msgstr ""
+"Vous avez un écran avec « Google Auth Platform non encore configuré » et un "
+"bouton <strong>« Commencer ».</strong> Cliquez sur le bouton."
+
+#: template-parts/documentation.php:48
+msgid "Fill the project configuration and click on <strong>\"Create\"</strong>"
+msgstr ""
+"Remplissez la configuration du projet et cliquez sur <strong>« Créer »</"
+"strong>"
+
+#: template-parts/documentation.php:52
+msgid "App information"
+msgstr "Informations sur l’application"
+
+#: template-parts/documentation.php:54
+msgid ""
+"App name : [Enter a name for your application (e.g., \"My website "
+"reviews\")]."
+msgstr ""
+"Nom de l'application : [Saisissez un nom pour votre application (par "
+"exemple, « Avis de mon site web »)]."
+
+#: template-parts/documentation.php:55
+msgid "Support email : [Select your email address from the dropdown.]"
+msgstr ""
+"Email de support : [Sélectionnez votre adresse e-mail dans le menu "
+"déroulant.]"
+
+#: template-parts/documentation.php:59
+msgid "Audience"
+msgstr "Audience"
+
+#: template-parts/documentation.php:61
+msgid ""
+"Choose : \"External\" (if you have a Google Workspace account choose "
+"\"Internal\")"
+msgstr ""
+"Choisissez : « Externe » (si vous avez un compte Google Workspace, "
+"choisissez « Interne »)"
+
+#: template-parts/documentation.php:69
+msgid "Add Test Users (If you have Google Workspace account, skip this step)"
+msgstr ""
+"Ajouter des utilisateurs de test (Si vous avez un compte Google Workspace, "
+"sauter cette étape)"
+
+#: template-parts/documentation.php:71
+msgid ""
+"In the left sidebar, go to <strong>\"Google Auth Platform → Audience\"</"
+"strong>."
+msgstr ""
+"Dans la barre latérale de gauche, allez dans <strong>\" Google Auth Platform "
+"→ Audience \"</strong>."
+
+#: template-parts/documentation.php:72
+msgid ""
+"In the <strong>\"Test users\"</strong> section, click <strong>\"+ Add test "
+"user\"</strong>."
+msgstr ""
+"Dans la <strong>section \" Tester les utilisateurs \",</strong> cliquez "
+"<strong>sur \" + Ajouter l’utilisateur de test \"</strong>."
+
+#: template-parts/documentation.php:73
+msgid "Add the Gmail address(es) that manage your Google My Business account."
+msgstr ""
+"Ajoutez l’adresse ou les adresses Gmail qui gèrent votre compte Google My "
+"Business."
+
+#: template-parts/documentation.php:74
+msgid "Click <strong>\"Save\"</strong>."
+msgstr "Cliquez <strong>sur « Enregistrer</strong> »."
+
+#: template-parts/documentation.php:80
+msgid "3. Create OAuth 2.0 Client ID and Configure Scopes"
+msgstr "3. Créer un identifiant client OAuth 2.0 et configurer les scopes"
+
+#: template-parts/documentation.php:81
+msgid ""
+"Now you'll create the Client ID and Client Secret that the plugin needs to "
+"connect to Google's APIs, and configure the necessary scopes."
+msgstr ""
+"Vous allez maintenant créer l’ID client et le secret client dont le plugin a "
+"besoin pour se connecter aux API de Google, et configurer les périmètres "
+"nécessaires."
+
+#: template-parts/documentation.php:83
+msgid "Start Creating OAuth Client"
+msgstr "Commencez à créer un client OAuth"
+
+#: template-parts/documentation.php:85
+msgid ""
+"<strong>Option 1:</strong> Click the <strong>\"Create OAuth client\"</"
+"strong> button from the OAuth Consent Screen page."
+msgstr ""
+"<strong>Option 1 :</strong> Cliquez sur le bouton <strong>« Créer un client "
+"OAuth »</strong> depuis la page de l’écran de consentement OAuth."
+
+#: template-parts/documentation.php:86
+msgid ""
+"<strong>Option 2:</strong> Go to <strong>\"APIs & Services\" → "
+"\"Credentials\"</strong>, then click <strong>\"+ CREATE CREDENTIALS\" → "
+"\"OAuth client ID\"</strong>."
+msgstr ""
+"<strong>Option 2 :</strong> Allez dans <strong>« APIs & Services » → "
+"« Identifiants »,</strong> puis cliquez <strong>sur « + CRÉER IDENTIFIANTS » "
+"→ « OAuth client ID »</strong>."
+
+#: template-parts/documentation.php:89
+msgid "Configure Client Details"
+msgstr "Configurez les détails du client"
+
+#: template-parts/documentation.php:91
+msgid ""
+"Fill the OAuth client ID configuration and click on <strong>\"Create\"</"
+"strong>"
+msgstr ""
+"Remplissez la configuration OAuth de l’ID client et cliquez sur <strong>« "
+"Créer »</strong>"
+
+#: template-parts/documentation.php:95
+msgid "Application type"
+msgstr "Type d'application"
+
+#: template-parts/documentation.php:97
+msgid "Select <strong>\"Web application\"</strong>"
+msgstr "Sélectionnez <strong>« Application Web »</strong>"
+
+#: template-parts/documentation.php:101 templates/categories-page.php:57
+#: templates/manage-reviews-page.php:79
+msgid "Name"
+msgstr "Nom"
+
+#: template-parts/documentation.php:103
+msgid "Give it a descriptive name (\"WordPress GMB Reviews Plugin\")"
+msgstr "Donnez-lui un nom descriptif (« WordPress GMB Reviews Plugin »)"
+
+#: template-parts/documentation.php:107
+msgid "Authorized redirect URIs"
+msgstr "URI de redirection autorisée"
+
+#: template-parts/documentation.php:109
+msgid "Click <strong>\"+ ADD URI\"</strong>"
+msgstr "Cliquez <strong>sur « + AJOUTER URI »</strong>"
+
+#: template-parts/documentation.php:110
+msgid "Copy and paste the Redirect URI :"
+msgstr "Copiez-collez l’URI de Redirection :"
+
+#: template-parts/documentation.php:117
+msgid ""
+"A modal will appear with your <strong>Client ID</strong> and <strong>Client "
+"Secret</strong>."
+msgstr ""
+"Un modal apparaîtra avec votre <strong>identifiant client</strong> et votre "
+"<strong>secret client</strong>."
+
+#: template-parts/documentation.php:118
+msgid ""
+"Copy your Client ID and client Secret and save in safe place, be careful you "
+"can copy Client Secret only once !"
+msgstr ""
+"Copiez votre identifiant client et votre secret client et enregistrez-les en "
+"lieu sûr, faites attention à ne pouvoir copier le secret client qu’une seule "
+"fois !"
+
+#: template-parts/documentation.php:119
+msgid ""
+"Go back to the plugin and go to the <strong>\"Configuration\"</strong> page "
+"and paste your client ID/Secret into the specific fields"
+msgstr ""
+"Retournez sur le plugin et allez sur la page <strong>« Configuration »</"
+"strong> et collez votre identifiant client/Secret dans les champs spécifiques"
+
+#: template-parts/documentation.php:124
+msgid ""
+"If you lose your customer secret code, you can create a new one on the \"Add "
+"a secret code\" configuration page. A new secret code will then be "
+"generated. If it is no longer in use, delete the old one."
+msgstr ""
+"Si vous perdez votre code secret client, vous pouvez en créer un nouveau sur "
+"la page de configuration « Ajouter un code secret ». Un nouveau code secret "
+"sera alors généré. Si elle n’est plus utilisée, supprimez l’ancienne."
+
+#: template-parts/documentation.php:133
+msgid "4. Request Access to Google My Business API"
+msgstr "4. Demander l’accès à Google My Business API"
+
+#: template-parts/documentation.php:137
+msgid "Important:"
+msgstr "Important :"
+
+#: template-parts/documentation.php:137
+msgid ""
+"The Google My Business API (also called Google Business Profile API) is "
+"restricted and requires explicit approval from Google. This is a mandatory "
+"step and can take 1-3 business days."
+msgstr ""
+"L’API Google My Business (également appelée Google Business Profile API) est "
+"restreinte et nécessite une approbation explicite de la part de Google. "
+"C’est une étape obligatoire qui peut prendre de 1 à 3 jours ouvrés."
+
+#: template-parts/documentation.php:141
+msgid "Why is this step necessary?"
+msgstr "Pourquoi cette étape est-elle nécessaire ?"
+
+#: template-parts/documentation.php:142
+msgid ""
+"Google has restricted access to the Business Profile APIs to prevent abuse. "
+"Even though you've created a project and credentials, you won't be able to "
+"access business reviews until Google approves your project."
+msgstr ""
+"Google a restreint l’accès aux API de profil professionnel pour prévenir les "
+"abus. Même si vous avez créé un projet et des identifiants, vous ne pourrez "
+"pas accéder aux avis professionnels tant que Google n’aura pas approuvé "
+"votre projet."
+
+#: template-parts/documentation.php:144
+msgid "Submit the Access Request Form"
+msgstr "Soumettez le formulaire de demande d’accès"
+
+#. translators: %s: URL to Google Business Profile API request form
+#: template-parts/documentation.php:148
+#, php-format
+msgid ""
+"Go to the <a href=\"%s\" target=\"_blank\">Google Business Profile API "
+"Access Request Form</a>."
+msgstr ""
+"Rendez-vous sur le <a href=\"%s\" target=\"_blank\">formulaire de demande "
+"d’accès à l’API du profil professionnel Google</a>."
+
+#: template-parts/documentation.php:149
+msgid ""
+"In the section \"How can we help you?\", select <strong>\"Request for basic "
+"access to API\"</strong>"
+msgstr ""
+"Dans la section « Comment pouvons-nous vous aider ? », sélectionnez "
+"<strong>« Demande d’accès de base à l’API »</strong>"
+
+#: template-parts/documentation.php:150
+msgid "Fill rest of the request form and click on <strong>\"Send\"</strong>"
+msgstr ""
+"Remplissez le reste du formulaire de demande et cliquez sur <strong>« "
+"Envoyer »</strong>"
+
+#: template-parts/documentation.php:151
+msgid ""
+"Sign in with the same Google account you used to create the Cloud Console "
+"project."
+msgstr ""
+"Connectez-vous avec le même compte Google que vous avez utilisé pour créer "
+"le projet Cloud Console."
+
+#: template-parts/documentation.php:152
+msgid "Fill out the form with the following information:"
+msgstr "Remplissez le formulaire avec les informations suivantes :"
+
+#: template-parts/documentation.php:153
+msgid "Submit the form."
+msgstr "Envoyer le formulaire."
+
+#: template-parts/documentation.php:156
+msgid "Wait for Google's Approval"
+msgstr "Attendez l’approbation de Google"
+
+#: template-parts/documentation.php:157
+msgid ""
+"Google will review your request. This typically takes 1-3 business days, but "
+"can sometimes take longer."
+msgstr ""
+"Google examinera votre demande. Cela prend généralement 1 à 3 jours ouvrés, "
+"mais peut parfois prendre plus longtemps."
+
+#: template-parts/documentation.php:159
+msgid "Enable the Google Business Profile API"
+msgstr "Activez l’API du profil professionnel Google"
+
+#: template-parts/documentation.php:160
+msgid "Once you receive approval, you need to enable the API:"
+msgstr "Une fois l’approbation reçue, vous devez activer l’API :"
+
+#. translators: %s: Google Cloud Console link
+#: template-parts/documentation.php:166
+#, php-format
+msgid "Go back to %s."
+msgstr "Retournez sur %s."
+
+#: template-parts/documentation.php:170
+msgid "Make sure your project is selected in the top navigation bar."
+msgstr ""
+"Assurez-vous que votre projet est sélectionné dans la barre de navigation en "
+"haut."
+
+#: template-parts/documentation.php:171
+msgid ""
+"In the search bar at the top, type <strong>\"Google Business Profile API\"</"
+"strong>."
+msgstr ""
+"Dans la barre de recherche en haut, tapez <strong>« Google Business Profile "
+"API »</strong>."
+
+#: template-parts/documentation.php:172
+msgid ""
+"Click on <strong>\"Google Business Profile API\"</strong> in the results."
+msgstr ""
+"Cliquez sur <strong>« Google Business Profile API »</strong> dans les "
+"résultats."
+
+#: template-parts/documentation.php:173
+msgid "Click the <strong>\"ENABLE\"</strong> button."
+msgstr "Cliquez sur le <strong>bouton « ACTIVER</strong> »."
+
+#: template-parts/documentation.php:174
+msgid "Optionally, also enable these related APIs (follow the same process):"
+msgstr ""
+"Optionnellement, activez également ces API associées (suivant le même "
+"processus) :"
+
+#: template-parts/documentation.php:184
+msgid "Success!"
+msgstr "Succès !"
+
+#: template-parts/documentation.php:184
+msgid ""
+"Once the APIs are enabled, you can return to this page and complete the "
+"authentication by clicking \"Connect to Google My Business\" above."
+msgstr ""
+"Une fois les API activées, vous pouvez revenir sur cette page et compléter "
+"l’authentification en cliquant sur « Connecter à Google My Business » ci-"
+"dessus."
+
+#: template-parts/documentation.php:191
+msgid "Troubleshooting"
+msgstr "Dépannage"
+
+#: template-parts/documentation.php:195
+msgid "Error: \"Access Not Configured\""
+msgstr "Erreur : « Accès non configuré »"
+
+#: template-parts/documentation.php:197
+msgid ""
+"This means you haven't been approved for the Google Business Profile API "
+"yet, or you haven't enabled it after approval. Complete Step 4 above."
+msgstr ""
+"Cela signifie que vous n’avez pas encore été approuvé pour l’API du profil "
+"professionnel Google, ou que vous ne l’avez pas activée après approbation. "
+"Terminez l’étape 4 ci-dessus."
+
+#: template-parts/documentation.php:202
+msgid "Error: \"Invalid OAuth Redirect URI\""
+msgstr "Erreur : « URI de redirection OAuth invalide »"
+
+#: template-parts/documentation.php:204
+msgid ""
+"Make sure the Redirect URI in your Google Cloud Console credentials EXACTLY "
+"matches the one shown in the gray box above. Check for trailing slashes and "
+"extra spaces."
+msgstr ""
+"Assurez-vous que l’URI de Redirection dans vos identifiants Google Cloud "
+"Console correspond EXACTEMENT à celui affiché dans la case grise ci-dessus. "
+"Vérifiez s’il y a des barres qui traînent et des espaces supplémentaires."
+
+#: template-parts/documentation.php:209
+msgid "Error: \"Access blocked: This app's request is invalid\""
+msgstr ""
+"Erreur : « Accès bloqué : La demande de cette application est invalide »"
+
+#: template-parts/documentation.php:211
+msgid ""
+"This usually means you haven't added the correct OAuth scopes in Step 2. Go "
+"back and verify both scopes are added."
+msgstr ""
+"Cela signifie généralement que vous n'avez pas ajouté les bons scopes OAuth "
+"à l'étape 2. Retournez vérifier que les deux scopes ont été ajoutés."
+
+#: template-parts/documentation.php:216
+msgid "Error: \"This app is blocked\""
+msgstr "Erreur : « Cette application est bloquée »"
+
+#: template-parts/documentation.php:218
+msgid ""
+"If your app is in Testing mode, make sure the Google account you're using is "
+"added as a Test User in Step 2."
+msgstr ""
+"Si votre application est en mode Test, assurez-vous que le compte Google que "
+"vous utilisez est ajouté comme Utilisateur Test à l’étape 2."
+
+#: template-parts/documentation.php:224
+msgid "Need more help?"
+msgstr "Besoin d'aide ?"
+
+#: template-parts/documentation.php:226
+msgid "Visit Google's Official Documentation"
+msgstr "Consultez la documentation officielle de Google"
+
+#. Plugin Name of the plugin/theme
+#: template-parts/header.php:13
+msgid "Reviews for Google My Business"
+msgstr "Reviews for Google My Business"
+
+#: template-parts/header.php:16 templates/admin-page.php:40
+msgid "Documentation"
+msgstr "Documentation"
+
+#: template-parts/notice-categories.php:4
+msgid "Assign to reviews"
+msgstr "Assigner aux avis"
+
+#: template-parts/notice-categories.php:5
+msgid ""
+"Go to Google Reviews and check the appropriate categories for each review."
+msgstr ""
+"Allez dans Google Reviews et cochez les catégories appropriées pour chaque "
+"avis."
+
+#: template-parts/notice-categories.php:6
+msgid "Use in shortcode"
+msgstr "Utiliser dans le shortcode"
+
+#: template-parts/notice-categories.php:7
+msgid "Filter reviews by category with:"
+msgstr "Filtrez les avis par catégorie avec :"
+
+#: template-parts/notice-categories.php:8
+msgid "Multiple categories"
+msgstr "Catégories multiple"
+
+#: template-parts/notice-categories.php:9
+msgid ""
+"A review can have multiple categories. For use this please separate slug "
+"with comma expl:"
+msgstr ""
+"Un avis peut comporter plusieurs catégories. Pour l’utiliser, veuillez "
+"séparer le slug de la virgule :"
+
+#: template-parts/notice-categories.php:12
+msgid "How to use categories"
+msgstr "Comment utiliser les catégories"
+
+#: template-parts/notice-configuration.php:5
+#: templates/manage-reviews-page.php:21
+msgid "Before start"
+msgstr "Avant de commencer"
+
+#: template-parts/notice-configuration.php:6
+msgid ""
+"To operate you will need to follow instructions on the tab "
+"\"Documentation\". There you'll find the steps to configure access to "
+"reviews for your business listing. You'll also need Google validation (which "
+"can take 1-3 business days) before you can use the API."
+msgstr ""
+"Pour fonctionner, vous devrez suivre les instructions de l’onglet "
+"« Documentation ». Vous y trouverez les étapes pour configurer l’accès aux "
+"avis pour votre annonce d’entreprise. Vous aurez aussi besoin d’une "
+"validation Google (qui peut prendre 1 à 3 jours ouvrables) avant de pouvoir "
+"utiliser l’API."
+
+#: template-parts/notice-utilisation.php:5
+msgid "How to use a shortcode in WordPress?"
+msgstr "Comment utiliser un shortcode dans WordPress ?"
+
+#: template-parts/notice-utilisation.php:6
+msgid ""
+"\n"
+"<p>A shortcode is a small piece of code in brackets that allows you to "
+"display specific content on your site.</p>\n"
+"<h4>Using it's very simple</h4>\n"
+"<ol>\n"
+"<li>Copy the shortcode</li>\n"
+"<li>Open the page or post where you want to display your reviews</li>\n"
+"<li>Paste the shortcode directly into the text editor</li>\n"
+"<li>Publish or update your page</li>\n"
+"</ol>\n"
+"<p>The shortcode will automatically transform into visible content on your "
+"site! You can place it anywhere: in a page, a post, or even in a widget area "
+"depending on your theme.</p>\n"
+msgstr ""
+"\n"
+"<p>Un shortcode est un petit morceau de code entre crochets qui vous permet "
+"d’afficher un contenu spécifique sur votre site.</p>\n"
+"<h4>L’utiliser est très simple</h4>\n"
+"<ol>\n"
+"<li>Copiez le code court</li>\n"
+"<li>Ouvrez la page ou postez là où vous souhaitez afficher vos avis</li>\n"
+"<li>Collez le code court directement dans l’éditeur de texte</li>\n"
+"<li>Publiez ou mettez à jour votre page</li>\n"
+"</ol>\n"
+"<p>Le shortcode se transformera automatiquement en contenu visible sur votre "
+"site ! Vous pouvez le placer n’importe où : dans une page, un article, ou "
+"même dans une zone widget selon votre thème.</p>\n"
+
+#: templates/admin-page.php:32
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: templates/admin-page.php:36
+msgid "Customization"
+msgstr "Personnalisation"
+
+#: templates/admin-page.php:53
+msgid "1. Google API Configuration"
+msgstr "1. Configuration de l’API Google"
+
+#: templates/admin-page.php:58
+msgid "HTTPS Required"
+msgstr "HTTPS Obligatoire"
+
+#: templates/admin-page.php:59
+msgid ""
+"For security reasons, HTTPS is required to save API credentials. Please "
+"enable SSL/TLS on your site."
+msgstr ""
+"Pour des raisons de sécurité, HTTPS est nécessaire pour sauvegarder les "
+"identifiants de l’API. Veuillez activer SSL/TLS sur votre site."
+
+#: templates/admin-page.php:67
+msgid "API credentials configured"
+msgstr "Identifiants API configurés"
+
+#: templates/admin-page.php:69
+msgid "Client secret is encrypted and secured"
+msgstr "Le secret client est chiffré et sécurisé"
+
+#: templates/admin-page.php:74
+msgid "API credentials not configured"
+msgstr "Identifiants API non configurés"
+
+#: templates/admin-page.php:75
+msgid ""
+"You must first configure your Google Cloud credentials to use this feature."
+msgstr ""
+"Vous devez d’abord configurer vos identifiants Google Cloud pour utiliser "
+"cette fonctionnalité."
+
+#: templates/admin-page.php:81
+msgid "Edit API credentials"
+msgstr "Modifier les identifiants de l’API"
+
+#: templates/admin-page.php:81
+msgid "Add API credentials"
+msgstr "Ajouter des identifiants API"
+
+#: templates/admin-page.php:103
+msgid "Your Google Cloud Client ID must end with"
+msgstr "Votre identifiant client Google Cloud doit se terminer par"
+
+#: templates/admin-page.php:118
+msgid "••••••••••••••••"
+msgstr "••••••••••••••••"
+
+#: templates/admin-page.php:118
+msgid "GOCSPX-xxxxxxxxxxxx"
+msgstr "GOCSPX-xxxxxxxxxxxx"
+
+#: templates/admin-page.php:123
+msgid "Leave blank to keep current secret, or enter new secret to update"
+msgstr ""
+"Laissez vide pour garder le secret actuel, ou entrez un nouveau secret pour "
+"mettre à jour"
+
+#: templates/admin-page.php:125
+msgid "Your Google Cloud Client Secret"
+msgstr "Votre secret client Google Cloud"
+
+#: templates/admin-page.php:144
+msgid "Default:"
+msgstr "Par défaut :"
+
+#: templates/admin-page.php:146
+msgid "This URI must match the one configured in Google Cloud"
+msgstr "Cette URI doit correspondre à celle configurée dans Google Cloud"
+
+#: templates/admin-page.php:153
+msgid "Save credentials"
+msgstr "Enregistrer les identifiants"
+
+#: templates/admin-page.php:161
+msgid "2. Google My Business OAuth Authentication"
+msgstr "2. Authentification OAuth de mon entreprise sur Google"
+
+#: templates/admin-page.php:165
+msgid "Please configure your API credentials above before authenticating."
+msgstr ""
+"Veuillez configurer vos identifiants API ci-dessus avant de vous "
+"authentifier."
+
+#: templates/admin-page.php:169
+msgid "Authenticated"
+msgstr "Authentifié"
+
+#: templates/admin-page.php:173
+msgid "Re-authenticate"
+msgstr "Réauthentifier"
+
+#: templates/admin-page.php:176
+msgid "Delete tokens?"
+msgstr "Supprimer les jetons ?"
+
+#: templates/admin-page.php:177
+msgid "Revoke access"
+msgstr "Révoquer l'accès"
+
+#: templates/admin-page.php:182
+msgid "Not authenticated"
+msgstr "Non authentifié"
+
+#: templates/admin-page.php:187
+msgid "Connect with Google"
+msgstr "Connectez-vous avec Google"
+
+#: templates/admin-page.php:194
+msgid "3. Select your location"
+msgstr "3. Sélectionnez votre emplacement"
+
+#: templates/admin-page.php:203
+msgid "Location Google My Business"
+msgstr "Localisation Google My Business"
+
+#: templates/admin-page.php:209
+msgid "-- Select a location --"
+msgstr "-- Sélectionner un lieu --"
+
+#: templates/admin-page.php:222
+msgid ""
+"Select the Google My Business location whose reviews you want to display."
+msgstr ""
+"Sélectionnez la fiche Google My Business dont vous souhaitez afficher les "
+"avis."
+
+#: templates/admin-page.php:230
+msgid "Save location"
+msgstr "Enregistrer l’emplacement"
+
+#: templates/admin-page.php:234
+msgid "Refresh list"
+msgstr "Actualiser la liste"
+
+#: templates/admin-page.php:239
+msgid ""
+"No locations were found. Click the button below to search for your Google My "
+"Business locations."
+msgstr ""
+"Aucun lieu n’a été trouvé. Cliquez sur le bouton ci-dessous pour rechercher "
+"vos emplacements Google My Business."
+
+#: templates/admin-page.php:242
+msgid "Search my locations"
+msgstr "Cherche mes emplacements"
+
+#: templates/admin-page.php:247
+msgid "You must first authenticate yourself"
+msgstr "Vous devez d’abord vous authentifier vous-même"
+
+#: templates/admin-page.php:248
+msgid "Go back to the second step to connect your Google account."
+msgstr "Retournez à la deuxième étape pour connecter votre compte Google."
+
+#: templates/admin-page.php:255
+msgid "4. Test connection"
+msgstr "4. Tester la connexion"
+
+#: templates/admin-page.php:258
+msgid "Test reviews retrieval"
+msgstr "Tester la récupération des avis"
+
+#: templates/admin-page.php:260
+msgid "This will delete the cache and ALL reviews. Are you sure?"
+msgstr "Cela supprimera le cache et TOUS les avis. Es-tu sûr?"
+
+#: templates/admin-page.php:261
+msgid "Reset"
+msgstr "Réinitialiser"
+
+#: templates/admin-page.php:276
+msgid "Shortcode usage"
+msgstr "Utilisation de code court"
+
+#: templates/admin-page.php:277
+msgid ""
+"To display Google My Business reviews on your site, use the following "
+"shortcode in your pages, posts or widgets:"
+msgstr ""
+"Pour afficher les avis Google My Business sur votre site, utilisez le code "
+"court suivant dans vos pages, articles ou widgets :"
+
+#: templates/admin-page.php:286
+msgid "Copy"
+msgstr "Copier"
+
+#: templates/admin-page.php:293
+msgid "Number of reviews"
+msgstr "Nombre d'avis"
+
+#: templates/admin-page.php:304
+msgid ""
+"Number of reviews to display. Leave blank if you want to display the maximum "
+"number of reviews"
+msgstr ""
+"Nombre d’avis à afficher. Laissez le blanc si vous souhaitez afficher le "
+"maximum d’avis"
+
+#: templates/admin-page.php:329 templates/manage-reviews-page.php:135
+msgid "No categories"
+msgstr "Aucune catégorie"
+
+#: templates/admin-page.php:332
+msgid "Select one or multiple categories to filter reviews"
+msgstr "Sélectionnez une ou plusieurs catégories pour filtrer les avis"
+
+#: templates/admin-page.php:337
+msgid "Show summary"
+msgstr "Afficher le résumé"
+
+#: templates/admin-page.php:347
+msgid "Display average rating and total reviews"
+msgstr "Afficher la note moyenne et le total des avis"
+
+#: templates/admin-page.php:353
+msgid "Available parameters"
+msgstr "Paramètres disponibles"
+
+#: templates/admin-page.php:357
+msgid "Number of reviews to display (maximum 100)"
+msgstr "Nombre d’avis à afficher (maximum 100)"
+
+#: templates/admin-page.php:361
+msgid "Filter by category (use the category slug)"
+msgstr "Filtrez par catégorie (utilisez le slug de catégorie)"
+
+#: templates/admin-page.php:365
+msgid ""
+"Display the average rating summary (default: true). Set to \"false\" to hide "
+"it."
+msgstr ""
+"Affichez le résumé moyen de la note (par défaut : vrai). Réglez sur « faux » "
+"pour le cacher."
+
+#: templates/admin-page.php:369
+msgid "Basic usage examples"
+msgstr "Exemples d’utilisation de base"
+
+#: templates/admin-page.php:374
+msgid "Display all reviews (maximum 100)"
+msgstr "Afficher tous les avis (maximum 100)"
+
+#: templates/admin-page.php:378
+msgid "Display 20 reviews"
+msgstr "Afficher 20 avis"
+
+#: templates/admin-page.php:382
+msgid "Display only reviews from the \"formation\" category"
+msgstr "Afficher uniquement les avis de la catégorie « formation »"
+
+#: templates/admin-page.php:386
+msgid "Display 10 reviews from \"formation\" OR \"coaching\""
+msgstr "Affichez 10 avis de « formation » OU « coaching »"
+
+#: templates/admin-page.php:404
+msgid "Review card"
+msgstr "Carte d'avis"
+
+#: templates/admin-page.php:408
+msgid "Text resume"
+msgstr "Texte du résumé"
+
+#: templates/admin-page.php:409
+msgid "Color of text and overall rating in summary"
+msgstr "Couleur du texte et note globale en résumé"
+
+#: templates/admin-page.php:433
+msgid "Background color"
+msgstr "Couleur de l'arrière-plan"
+
+#: templates/admin-page.php:457
+msgid "Border radius"
+msgstr "Rayon de la bordure"
+
+#: templates/admin-page.php:471
+msgid "Star color"
+msgstr "Couleur des étoiles"
+
+#: templates/admin-page.php:495
+msgid "Text color"
+msgstr "Couleur du texte"
+
+#: templates/admin-page.php:519
+msgid "Accent color"
+msgstr "Couleur d’accentuation"
+
+#: templates/admin-page.php:520
+msgid ""
+"Color of the slider arrows and pagination points. Color of the \"Read more\" "
+"button on hover."
+msgstr ""
+"Couleur des flèches cursantes et des points de pagination. Couleur du bouton "
+"« Lire plus » en survolant."
+
+#: templates/admin-page.php:546
+msgid "Save customization"
+msgstr "Enregistrer la personnalisation"
+
+#: templates/admin-page.php:549
+msgid "Reset to default values"
+msgstr "Réinitialiser les valeurs par défaut"
+
+#: templates/categories-page.php:32
+msgid "Create a new category"
+msgstr "Créer une nouvelle catégorie"
+
+#: templates/categories-page.php:33
+msgid ""
+"Categories allow you to organize your Google My Business reviews and filter "
+"them on your website."
+msgstr ""
+"Les catégories vous permettent d’organiser vos avis Google My Business et de "
+"les filtrer sur votre site web."
+
+#: templates/categories-page.php:38
+msgid "New category name (e.g: Training, Coaching, Design...)"
+msgstr ""
+"Nouveau nom de catégorie (par exemple : Formation, Coaching, Design...)"
+
+#. translators: %d: Number of categories
+#: templates/categories-page.php:51
+#, php-format
+msgid "Existing categories (%d)"
+msgstr "Catégories existantes (%d)"
+
+#: templates/categories-page.php:58
+msgid "Slug"
+msgstr "Identifiant"
+
+#: templates/categories-page.php:59 templates/manage-reviews-page.php:84
+msgid "Action"
+msgstr "Action"
+
+#: templates/categories-page.php:88
+msgid "No categories created yet."
+msgstr "Aucune catégorie n’a encore été créée."
+
+#: templates/categories-page.php:89
+msgid "Create your first category above to start organizing your reviews."
+msgstr ""
+"Créez votre première catégorie ci-dessus pour commencer à organiser vos avis."
+
+#: templates/manage-reviews-page.php:22
+msgid ""
+"Before start, go to the Configuration page to connect your account Google "
+"Cloud Console"
+msgstr ""
+"Avant de commencer, allez sur la page de configuration pour connecter votre "
+"compte Google Cloud Console"
+
+#: templates/manage-reviews-page.php:28
+msgid "Error details"
+msgstr "Détails de l'erreur"
+
+#: templates/manage-reviews-page.php:35
+msgid "Configure authentification"
+msgstr "Configurer l’authentification"
+
+#: templates/manage-reviews-page.php:42
+msgid ""
+"No reviews have been synchronized yet. Click the button below to fetch and "
+"sync reviews from Google My Business API."
+msgstr ""
+"Aucun avis n’a encore été synchronisé. Cliquez sur le bouton ci-dessous pour "
+"récupérer et synchroniser les avis depuis Google My Business API."
+
+#: templates/manage-reviews-page.php:45 templates/manage-reviews-page.php:68
+msgid "Sync Reviews from API"
+msgstr "Synchroniser les avis depuis l’API"
+
+#: templates/manage-reviews-page.php:49
+msgid "Check configuration"
+msgstr "Vérifier la configuration"
+
+#. translators: %s: Number of reviews
+#: templates/manage-reviews-page.php:61
+#, php-format
+msgid "Review found (%s)"
+msgid_plural "Reviews found (%s)"
+msgstr[0] "Avis trouvé (%s)"
+msgstr[1] "Avis trouvés (%s)"
+
+#: templates/manage-reviews-page.php:78
+msgid "Photo"
+msgstr "Photo"
+
+#: templates/manage-reviews-page.php:80
+msgid "Rating"
+msgstr "Note"
+
+#: templates/manage-reviews-page.php:81
+msgid "Date"
+msgstr "Date"
+
+#: templates/manage-reviews-page.php:82
+msgid "Job Title"
+msgstr "Titre du poste"
+
+#: templates/manage-reviews-page.php:83
+msgid "Category"
+msgstr "Catégorie"
+
+#: templates/manage-reviews-page.php:143
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: templates/manage-reviews-page.php:159
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/manage-reviews-page.php:160
+msgid "Next"
+msgstr "Suivant"
+
+#: templates/review-card.php:39
+msgid "Read more"
+msgstr "Lire la suite"
+
+#. Description of the plugin/theme
+msgid ""
+"Display your Google My Business reviews on your website for free. Improve "
+"your credibility and gain trust. Category system, full customization, and "
+"flexible shortcode."
+msgstr ""
+"Affichez gratuitement vos avis Google My Business sur votre site. Améliorez "
+"votre crédibilité et gagnez la confiance. Système de catégories, "
+"personnalisation complète et shortcode flexible."
+
+#. Author of the plugin/theme
+msgid "Wolvesart"
+msgstr "Wolvesart"
+
+#. Author URI of the plugin/theme
+msgid "https://wolvesart.fr"
+msgstr "https://wolvesart.fr"
+
+#~ msgid ""
+#~ "Go back to <a href=\"https://console.cloud.google.com/\" "
+#~ "target=\"_blank\">Google Cloud Console</a>."
+#~ msgstr ""
+#~ "Retournez sur <a href=\"https://console.cloud.google.com/\" "
+#~ "target=\"_blank\">Google Cloud Console</a>."

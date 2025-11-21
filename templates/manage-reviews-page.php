@@ -81,7 +81,7 @@ if (!defined('ABSPATH')) {
                     <th style="width: auto;"><?php esc_html_e('Date', 'reviews-for-google-my-business'); ?></th>
                     <th style="width: 25%;"><?php esc_html_e('Job Title', 'reviews-for-google-my-business'); ?></th>
                     <th style="width: 20%;"><?php esc_html_e('Category', 'reviews-for-google-my-business'); ?></th>
-                    <th style="width: auto;"><?php esc_html_e('Action', 'reviews-for-google-my-business'); ?></th>
+                    <th style="width: 110px;"><?php esc_html_e('Action', 'reviews-for-google-my-business'); ?></th>
                 </tr>
                 </thead>
                 <tbody>

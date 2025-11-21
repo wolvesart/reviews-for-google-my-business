@@ -40,6 +40,15 @@
       }
     }
   }
+
+  // Horizontal scroll on small screens
+  @media screen and (max-width: 1200px) {
+    .wp-list-table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
 }
 
 .config-table {

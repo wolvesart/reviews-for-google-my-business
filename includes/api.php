@@ -552,7 +552,7 @@ function wgmbr_fetch_reviews() {
     // If authentication is not configured
     return array(
         'error' => true,
-        'message' => 'Google My Business API is not authenticated. Please configure OAuth from the GMB Reviews page in the admin.'
+        'message' => esc_html__('Google My Business API is not authenticated. Please configure OAuth from the GMB Reviews page in the admin.', 'reviews-for-google-my-business')
     );
 }
 

@@ -265,9 +265,15 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 
 = 1.0.4 - 2025-11-21 =
 
+**New Features:**
+
+* Added: French translation (fr_FR)
+
 **Improvements:**
 
 * Improved: Slider now works correctly with only 2 reviews (displays 1 slide at a time with loop enabled)
+* Improved: Reviews table now has horizontal scroll on screens smaller than 1200px
+* Improved: Documentation code follows WordPress i18n best practices (URLs moved out of translatable strings)
 * Fixed: Navigation and grab functionality now work properly with 2 reviews on all devices
 
 = 1.0.3 - 2025-01-19 =
@@ -357,7 +363,7 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 == Upgrade Notice ==
 
 = 1.0.4 =
-Slider improvements: Fixed slider behavior with 2 reviews. Now displays 1 slide at a time with proper loop navigation on all devices.
+Added French translation, improved slider behavior with 2 reviews, and added horizontal scroll for tables on small screens.
 
 = 1.0.3 =
 Documentation improvements: More professional tone and better user expectations. Added setup prerequisites information. No functional changes.

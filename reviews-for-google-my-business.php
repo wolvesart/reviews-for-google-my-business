@@ -91,6 +91,9 @@ class reviews_for_google_my_business {
 
     // Initializes WordPress hooks
     private function init_hooks() {
+        // Load translations
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
+
         // Plugin activation
         register_activation_hook(__FILE__, array($this, 'activate'));
 
@@ -102,6 +105,15 @@ class reviews_for_google_my_business {
 
         // Clean up local profile photo when review is deleted
         add_action('before_delete_post', array($this, 'cleanup_review_photo'), 10, 2);
+    }
+
+    // Load plugin translations
+    public function load_textdomain() {
+        load_plugin_textdomain(
+            'reviews-for-google-my-business',
+            false,
+            dirname(WGMBR_PLUGIN_BASENAME) . '/languages'
+        );
     }
 
     /**
