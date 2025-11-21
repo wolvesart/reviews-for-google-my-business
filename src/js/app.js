@@ -11,10 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const slides = reviewsSwiper.querySelectorAll('.swiper-slide');
         const slideCount = slides.length;
 
-        // Don't initialize Swiper if less than 3 reviews
-        // Use pure CSS layout instead
-        if (slideCount < 3) {
-            // Add class to wrapper for CSS handling
+        // 1 slide: disable slider completely
+        if (slideCount === 1) {
             const wrapper = reviewsSwiper.closest('.gmb-reviews-swiper-wrapper');
             if (wrapper) {
                 wrapper.classList.add('gmb-static-layout');
@@ -27,12 +25,28 @@ document.addEventListener('DOMContentLoaded', function() {
             navButtons.forEach(btn => btn.style.display = 'none');
             if (pagination) pagination.style.display = 'none';
 
-            // Don't initialize Swiper
             return;
         }
 
-        // Only enable loop if there are enough slides
-        const shouldLoop = slideCount > 3;
+        // Add slide count attribute for CSS styling
+        const wrapper = reviewsSwiper.closest('.gmb-reviews-swiper-wrapper');
+        if (wrapper) {
+            wrapper.setAttribute('data-slide-count', slideCount);
+        }
+
+        // 2 slides: always show 1 at a time (for loop to work)
+        // 3+ slides: responsive (1 -> 2 -> 3)
+        const breakpointsConfig = slideCount === 2
+            ? {
+                640: { slidesPerView: 1, spaceBetween: 24, slidesPerGroup: 1 },
+                768: { slidesPerView: 1, spaceBetween: 24, slidesPerGroup: 1 },
+                1024: { slidesPerView: 1, spaceBetween: 32, slidesPerGroup: 1 }
+            }
+            : {
+                640: { slidesPerView: 1, spaceBetween: 24, slidesPerGroup: 1 },
+                768: { slidesPerView: 2, spaceBetween: 24, slidesPerGroup: 1 },
+                1024: { slidesPerView: 3, spaceBetween: 32, slidesPerGroup: 1 }
+            };
 
         new Swiper('.gmb-reviews-swiper', {
             modules: [Navigation, Pagination, Autoplay],
@@ -40,27 +54,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Slides per view
             slidesPerView: 1,
             spaceBetween: 24,
-            centeredSlides: false,
             slidesPerGroup: 1,
 
             // Responsive breakpoints
-            breakpoints: {
-                640: {
-                    slidesPerView: 1,
-                    spaceBetween: 24,
-                    slidesPerGroup: 1
-                },
-                768: {
-                    slidesPerView: 2,
-                    spaceBetween: 24,
-                    slidesPerGroup: 1
-                },
-                1024: {
-                    slidesPerView: 3,
-                    spaceBetween: 32,
-                    slidesPerGroup: 1
-                }
-            },
+            breakpoints: breakpointsConfig,
 
             // Navigation arrows
             navigation: {
@@ -76,18 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'bullets',
             },
 
-            // Autoplay
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-            },
-
-            // Loop (only if enough slides)
-            loop: shouldLoop,
-
-            // Prevent issues with pagination in loop mode
-            loopAdditionalSlides: shouldLoop ? 1 : 0,
+            // Loop for seamless cycling
+            loop: true,
         });
     }
 

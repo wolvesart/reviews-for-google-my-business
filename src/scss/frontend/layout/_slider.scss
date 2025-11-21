@@ -9,50 +9,20 @@
     padding: 0 32px;
   }
 
-  // Static layout when less than 3 reviews (no Swiper)
+  // Static layout (no Swiper)
   &.gmb-static-layout {
-    .gmb-reviews-swiper {
-      overflow: visible;
-    }
 
     .swiper-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      width: 100%;
-
-      @media (min-width: map-get($breakpoints, tablet)) {
-        flex-direction: row;
-        justify-content: center;
-        gap: 24px;
-      }
-
-      @media (min-width: map-get($breakpoints, desktop)) {
-        gap: 32px;
-      }
+      justify-content: center;
     }
 
     .swiper-slide {
       width: 100% !important;
       cursor: default;
+      margin: 0 !important;
 
       @media (min-width: map-get($breakpoints, tablet)) {
-        // For 2 slides, each takes ~50%
-        flex: 1 1 0;
-        max-width: 600px;
-      }
-    }
-
-    // Single review - limit max width for readability
-    &[data-slide-count="1"] {
-      .swiper-wrapper {
-        justify-content: center;
-      }
-
-      .swiper-slide {
-        @media (min-width: map-get($breakpoints, tablet)) {
-          max-width: 700px;
-        }
+        max-width: 1000px;
       }
     }
   }
@@ -78,6 +48,17 @@
     .gmb-review-card {
       width: 100%;
     }
+  }
+}
+
+// Force full width slides when showing 1 at a time (2 slides case)
+.gmb-reviews-swiper-wrapper[data-slide-count="2"] {
+  @media (min-width: map-get($breakpoints, tablet)) {
+    max-width: 1000px;
+  }
+
+  .gmb-reviews-swiper .swiper-slide {
+    width: 100% !important;
   }
 }
 

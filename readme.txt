@@ -3,7 +3,7 @@ Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -263,6 +263,13 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 
 == Changelog ==
 
+= 1.0.4 - 2025-11-21 =
+
+**Improvements:**
+
+* Improved: Slider now works correctly with only 2 reviews (displays 1 slide at a time with loop enabled)
+* Fixed: Navigation and grab functionality now work properly with 2 reviews on all devices
+
 = 1.0.3 - 2025-01-19 =
 
 **Documentation:**
@@ -348,6 +355,9 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 * Fixed review card width in slider mode
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+Slider improvements: Fixed slider behavior with 2 reviews. Now displays 1 slide at a time with proper loop navigation on all devices.
 
 = 1.0.3 =
 Documentation improvements: More professional tone and better user expectations. Added setup prerequisites information. No functional changes.
