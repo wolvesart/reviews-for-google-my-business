@@ -94,7 +94,7 @@ function wgmbr_enqueue_admin_assets($hook)
         )
     ));
 
-    // Script pour la gestion des avis et catégories
+    // Script for testimonials and categories management
     if (in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
         wp_enqueue_script(
             'gmb-manage-reviews-scripts',

@@ -824,8 +824,19 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         $rating = wgmbr_convert_star_rating($star_rating);
 
         $comment = isset($review['comment']) ? $review['comment'] : '';
+
+        // Extract original text from Google's translation format
+        // Google can use different formats:
+        // 1. "Translation\n\n(Original)\nOriginal text"
+        // 2. "Original text\n\n(Translated by Google)\nTranslation"
         if (strpos($comment, '(Original)') !== false) {
+            // Format 1: Extract text after "(Original)"
             if (preg_match('/\(Original\)\s*(.+)$/s', $comment, $matches)) {
+                $comment = trim($matches[1]);
+            }
+        } elseif (strpos($comment, '(Translated by Google)') !== false) {
+            // Format 2: Extract text before "(Translated by Google)"
+            if (preg_match('/^(.+?)\s*\(Translated by Google\)/s', $comment, $matches)) {
                 $comment = trim($matches[1]);
             }
         }

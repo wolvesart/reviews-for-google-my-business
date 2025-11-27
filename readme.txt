@@ -3,7 +3,7 @@ Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -262,6 +262,18 @@ Check the **Documentation** tab in the plugin for detailed guides. For issues, v
 Absolutely! This is open-source software. Developers are welcome to contribute via our GitHub repository.
 
 == Changelog ==
+
+= 1.0.5 - 2025-11-27 =
+
+**Bug Fixes:**
+
+* Fixed: Slider not displaying due to missing Swiper CSS import
+* Fixed: Improved original text extraction from Google translated reviews (now handles both translation formats)
+
+**Improvements:**
+
+* Improved: Disabled autoplay on slider for better user control
+* Improved: Added Swiper CSS to frontend styles for proper slider rendering
 
 = 1.0.4 - 2025-11-21 =
 

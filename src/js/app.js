@@ -1,6 +1,6 @@
 // Import Swiper and modules (using require for compatibility)
 const Swiper = require('swiper').default;
-const { Navigation, Pagination, Autoplay } = require('swiper/modules');
+const { Navigation, Pagination } = require('swiper/modules');
 
 // Initialize Swiper for GMB Reviews
 document.addEventListener('DOMContentLoaded', function() {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
         new Swiper('.gmb-reviews-swiper', {
-            modules: [Navigation, Pagination, Autoplay],
+            modules: [Navigation, Pagination],
 
             // Slides per view
             slidesPerView: 1,
@@ -75,6 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Loop for seamless cycling
             loop: true,
+
+            // Autoplay disabled
+            autoplay: false,
         });
     }
 
