@@ -2,8 +2,8 @@
 Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
-Tested up to: 6.8
-Stable tag: 1.0.5
+Tested up to: 6.9
+Stable tag: 1.0.6
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -263,6 +263,14 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 
 == Changelog ==
 
+= 1.0.6 - 2025-12-12 =
+
+**Improvements:**
+
+* Improved: Added CSS imports for Swiper Navigation and Pagination modules for proper dynamic bullets rendering
+* Improved: Configured dynamic bullets with maximum 5 visible bullets (`dynamicMainBullets: 5`)
+* Improved: Disabled loop and autoplay on slider for better user control
+
 = 1.0.5 - 2025-11-27 =
 
 **Bug Fixes:**
@@ -373,6 +381,9 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 * Fixed review card width in slider mode
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+Improved slider pagination with dynamic bullets (max 5 visible), proper CSS module imports, and disabled loop/autoplay for better user control.
 
 = 1.0.4 =
 Added French translation, improved slider behavior with 2 reviews, and added horizontal scroll for tables on small screens.

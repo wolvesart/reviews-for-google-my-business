@@ -149,7 +149,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             <li><?php echo wp_kses_post(__('In the section "How can we help you?", select <strong>"Request for basic access to API"</strong>', 'reviews-for-google-my-business')); ?>
             <li><?php echo wp_kses_post(__('Fill rest of the request form and click on <strong>"Send"</strong>', 'reviews-for-google-my-business')); ?></li>
             <li><?php esc_html_e('Sign in with the same Google account you used to create the Cloud Console project.', 'reviews-for-google-my-business'); ?></li>
-            <li><?php esc_html_e('Fill out the form with the following information:', 'reviews-for-google-my-business'); ?></li>
+            <li><?php echo wp_kses_post(__('Fill out the form and ask for <strong>Application For Basic API Access</strong>', 'reviews-for-google-my-business')); ?></li>
+
             <li><?php esc_html_e('Submit the form.', 'reviews-for-google-my-business'); ?></li>
         </ol>
 

@@ -69,12 +69,13 @@ document.addEventListener('DOMContentLoaded', function() {
             pagination: {
                 el: '.gmb-swiper-pagination',
                 clickable: true,
-                dynamicBullets: false,
+                dynamicBullets: true,
+                dynamicMainBullets: 5,
                 type: 'bullets',
             },
 
             // Loop for seamless cycling
-            loop: true,
+            loop: false,
 
             // Autoplay disabled
             autoplay: false,

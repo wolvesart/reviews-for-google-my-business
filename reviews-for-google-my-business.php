@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Reviews for Google My Business
  * Description: Display your Google My Business reviews on your website for free. Improve your credibility and gain trust. Category system, full customization, and flexible shortcode.
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: Wolvesart
  * Author URI: https://wolvesart.fr
  * License: GPL v2 or later
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 
 // Define plugin constants
 // Using WGMBR prefix (5+ characters) for WordPress.org compliance
-define('WGMBR_VERSION', '1.0.5');
+define('WGMBR_VERSION', '1.0.6');
 define('WGMBR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WGMBR_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WGMBR_PLUGIN_BASENAME', plugin_basename(__FILE__));
