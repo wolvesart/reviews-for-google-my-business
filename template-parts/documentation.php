@@ -187,6 +187,32 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         </div>
     </div>
 
+    <!-- Quota management -->
+    <div class="card">
+        <h3><?php esc_html_e('🔒 Google Quota Management', 'reviews-for-google-my-business'); ?></h3>
+            <p><?php echo wp_kses_post(__('This plugin uses a “lazy” caching system to minimize Google My Business API calls.<br>The result: you stay <strong>far below Google’s quotas</strong> (600 requests/minute).', 'reviews-for-google-my-business')); ?></p>
+
+        <h4><?php esc_html_e('How it works', 'reviews-for-google-my-business'); ?></h4>
+        <ol>
+            <li><?php esc_html_e('A visitor loads a page', 'reviews-for-google-my-business'); ?></li>
+            <li><?php esc_html_e('The plugin checks the cache (valid for 1 hour)', 'reviews-for-google-my-business'); ?></li>
+            <li><?php echo wp_kses_post(__('<strong>Valid cache → 0 Google requests</strong>', 'reviews-for-google-my-business')); ?></li>
+            <li><?php echo wp_kses_post(__('<strong>Expired cache → 1 single API request</strong>, then the data is cached again for 1 hour', 'reviews-for-google-my-business')); ?></li>
+        </ol>
+
+        <p><?php esc_html_e('Even with 1000 visitors: only 1 request within the hour.', 'reviews-for-google-my-business'); ?></p>
+
+        <h4><?php esc_html_e('Exemples', 'reviews-for-google-my-business'); ?></h4>
+
+        <p><?php esc_html_e('In real-world usage, a site with normal traffic triggers about one API call per hour, low-traffic sites may make only a few calls per day, and even during heavy traffic spikes all visitors simply read from the cache, resulting in no additional API calls.', 'reviews-for-google-my-business'); ?></p>
+
+        <div class="gmb-notice success">
+            <p>
+                <strong><?php esc_html_e('The plugin can never exceed 1 API request per hour per data type. Even if you use the same API key on multiple websites, each site makes very few calls — the total remains extremely low compared to Google’s generous limit of 36,000 requests/hour.', 'reviews-for-google-my-business'); ?>
+            </p>
+        </div>
+    </div>
+
     <!-- Troubleshooting Section -->
     <div class="card">
         <h3><?php esc_html_e('Troubleshooting', 'reviews-for-google-my-business'); ?></h3>

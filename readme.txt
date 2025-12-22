@@ -3,7 +3,7 @@ Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -257,19 +257,35 @@ Yes! The plugin is translation-ready. English and French are included. For other
 
 Check the **Documentation** tab in the plugin for detailed guides. For issues, visit our GitHub repository or WordPress.org support forum.
 
-= Can I contribute to the plugin? =
+= And regarding Google quota limits? =
 
-Absolutely! This is open-source software. Developers are welcome to contribute via our GitHub repository.
+This plugin uses a “lazy” caching system to minimize Google My Business API calls.The result: you stay far below Google’s quotas (600 requests/minute).
 
 == Changelog ==
+
+= 1.0.7 - 2025-12-22 =
+
+**Bug Fixes:**
+
+* Fixed: Job titles are now preserved when syncing reviews from API
+
+**Performance:**
+
+* Improved: Slider performance on mobile devices with many reviews
+* Added: Lazy loading for review images
+
+**Improvements:**
+
+* Improved: Modal scrollbar visibility and styling for better user experience
+* Improved: Modal close button positioning with sticky behavior
 
 = 1.0.6 - 2025-12-12 =
 
 **Improvements:**
 
-* Improved: Added CSS imports for Swiper Navigation and Pagination modules for proper dynamic bullets rendering
-* Improved: Configured dynamic bullets with maximum 5 visible bullets (`dynamicMainBullets: 5`)
-* Improved: Disabled loop and autoplay on slider for better user control
+* Improved: Improved bullets pagination to ensure correct rendering even with a large number of slides loaded.
+* Improved: Disabled loop on slider for better user control
+* Added : Information about Google Quotas usage in tab Documentation
 
 = 1.0.5 - 2025-11-27 =
 
@@ -382,8 +398,11 @@ Absolutely! This is open-source software. Developers are welcome to contribute v
 
 == Upgrade Notice ==
 
+= 1.0.7 =
+Major performance improvements for mobile devices with many reviews. Lazy loading now enabled, reducing memory usage. Job titles preserved when syncing.
+
 = 1.0.6 =
-Improved slider pagination with dynamic bullets (max 5 visible), proper CSS module imports, and disabled loop/autoplay for better user control.
+Improved bullets pagination to ensure correct rendering and disabled loop on slider for better user control. Added information about Google Quotas usage.
 
 = 1.0.4 =
 Added French translation, improved slider behavior with 2 reviews, and added horizontal scroll for tables on small screens.

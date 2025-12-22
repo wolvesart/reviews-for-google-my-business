@@ -150,6 +150,7 @@ function wgmbr_save_review_as_post($review_data) {
     );
 
     // If post exists, update it
+    $is_new_review = !$existing_post;
     if ($existing_post) {
         $post_data['ID'] = $existing_post->ID;
         $post_id = wp_update_post($post_data);
@@ -166,7 +167,11 @@ function wgmbr_save_review_as_post($review_data) {
     update_post_meta($post_id, '_wgmbr_reviewer_name', $reviewer_name);
     update_post_meta($post_id, '_wgmbr_reviewer_photo', $reviewer_photo);
     update_post_meta($post_id, '_wgmbr_rating', $rating);
-    update_post_meta($post_id, '_wgmbr_job', ''); // Will be filled manually in admin
+
+    // Only reset job title for new reviews, preserve existing job titles
+    if ($is_new_review) {
+        update_post_meta($post_id, '_wgmbr_job', ''); // Will be filled manually in admin
+    }
 
     return $post_id;
 }

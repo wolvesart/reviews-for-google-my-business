@@ -853,7 +853,8 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         );
 
         // Check if exists in our map
-        if (isset($existing_map[$review_id])) {
+        $is_new_review = !isset($existing_map[$review_id]);
+        if (!$is_new_review) {
             $post_data['ID'] = $existing_map[$review_id];
             $post_id = wp_update_post($post_data);
         } else {
@@ -870,7 +871,11 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         update_post_meta($post_id, '_wgmbr_reviewer_name', $reviewer_name);
         update_post_meta($post_id, '_wgmbr_reviewer_photo', $reviewer_photo);
         update_post_meta($post_id, '_wgmbr_rating', $rating);
-        update_post_meta($post_id, '_wgmbr_job', '');
+
+        // Only reset job title for new reviews, preserve existing job titles
+        if ($is_new_review) {
+            update_post_meta($post_id, '_wgmbr_job', '');
+        }
 
         $synced++;
     }

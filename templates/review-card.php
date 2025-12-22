@@ -46,7 +46,8 @@ $wgmbr_parsed_item = isset($wgmbr_parsed_item) ? $wgmbr_parsed_item : null;
         <?php if ($wgmbr_parsed_item->photo): ?>
             <img src="<?php echo esc_url($wgmbr_parsed_item->photo); ?>"
                  alt="<?php echo esc_attr($wgmbr_parsed_item->name); ?>"
-                 class="gmb-review-avatar">
+                 class="gmb-review-avatar"
+                 loading="lazy">
         <?php else: ?>
             <div class="gmb-review-avatar-placeholder">
                 <?php echo esc_html(substr($wgmbr_parsed_item->name, 0, 1)); ?>

@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 el: '.gmb-swiper-pagination',
                 clickable: true,
                 dynamicBullets: true,
-                dynamicMainBullets: 5,
                 type: 'bullets',
             },
 
@@ -79,6 +78,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Autoplay disabled
             autoplay: false,
+
+            // Improve touch performance on mobile
+            touchRatio: 1,
+            touchAngle: 45,
+            simulateTouch: true,
+            shortSwipes: true,
+            longSwipesRatio: 0.5,
+            longSwipesMs: 300,
+
+            // Hardware acceleration
+            speed: 300,
+            observer: true,
+            observeParents: true,
         });
     }
 

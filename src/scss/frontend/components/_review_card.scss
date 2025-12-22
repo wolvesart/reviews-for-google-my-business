@@ -82,6 +82,7 @@
   flex: 1 0 0;
   border-radius: var(--gmb-radius-card);
   background: var(--gmb-color-card-bg);
+
 }
 
 .gmb-review-header {
@@ -158,6 +159,8 @@
 .gmb-read-more-btn {
   margin-top: 0.6rem;
   color: var(--gmb-color-text-primary) !important;
+  background-color: transparent !important;
+  padding: 0;
   cursor: pointer;
   display: none;
   font-size: 0.85rem;
