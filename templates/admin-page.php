@@ -52,7 +52,7 @@ if (!defined('ABSPATH')) {
                         <div class="card">
                             <h2><?php esc_html_e('1. Google API Configuration', 'reviews-for-google-my-business'); ?></h2>
 
-                            <?php if (!is_ssl() && !defined('WP_DEBUG') && (!isset($_SERVER['REMOTE_ADDR']) || !in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'), true))): ?>
+                            <?php if (!is_ssl() && !(defined('WP_DEBUG') && WP_DEBUG) && (!isset($_SERVER['REMOTE_ADDR']) || !in_array(sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])), array('127.0.0.1', '::1'), true))): ?>
                                 <div class="gmb-notice error">
                                     <p>
                                         <strong>⚠️ <?php esc_html_e('HTTPS Required', 'reviews-for-google-my-business'); ?></strong><br>
@@ -334,6 +334,18 @@ if (!defined('ABSPATH')) {
                                     </tr>
                                     <tr>
                                         <th scope="row">
+                                            <label for="gmb-gen-order"><?php esc_html_e('Order', 'reviews-for-google-my-business'); ?></label>
+                                        </th>
+                                        <td>
+                                            <select id="gmb-gen-order" onchange="wgmbrGenerateShortcode()">
+                                                <option value="recent"><?php esc_html_e('Recent (newest first)', 'reviews-for-google-my-business'); ?></option>
+                                                <option value="random"><?php esc_html_e('Random', 'reviews-for-google-my-business'); ?></option>
+                                            </select>
+                                            <p class="description"><?php esc_html_e('Choose the display order of the reviews', 'reviews-for-google-my-business'); ?></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
                                             <label for="gmb-gen-summary"><?php esc_html_e('Show summary', 'reviews-for-google-my-business'); ?></label>
                                         </th>
                                         <td>
@@ -364,6 +376,10 @@ if (!defined('ABSPATH')) {
                                     <th><code>show_summary</code></th>
                                     <td><?php esc_html_e('Display the average rating summary (default: true). Set to "false" to hide it.', 'reviews-for-google-my-business'); ?></td>
                                 </tr>
+                                <tr>
+                                    <th><code>order</code></th>
+                                    <td><?php esc_html_e('Display order: "recent" (default, newest first) or "random" (shuffled on every page load)', 'reviews-for-google-my-business'); ?></td>
+                                </tr>
                             </table>
 
                             <h3><?php esc_html_e('Basic usage examples', 'reviews-for-google-my-business'); ?></h3>
@@ -385,6 +401,10 @@ if (!defined('ABSPATH')) {
                                     <code>[wgmbr_reviews category="formation,coaching" limit="10"]</code>
                                     <p><?php esc_html_e('Display 10 reviews from "formation" OR "coaching"', 'reviews-for-google-my-business'); ?></p>
                                 </li>
+                                <li>
+                                    <code>[wgmbr_reviews order="random"]</code>
+                                    <p><?php esc_html_e('Display reviews in random order', 'reviews-for-google-my-business'); ?></p>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -394,14 +414,57 @@ if (!defined('ABSPATH')) {
 
             <!-- Tab: Customization -->
             <div class="gmb-tab-content" data-tab-content="customization">
+                <?php $wgmbr_current_layout = wgmbr_get_layout(); ?>
                 <form method="post" id="gmb-customization-form"
+                      data-layout="<?php echo esc_attr($wgmbr_current_layout); ?>"
                       action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <?php wp_nonce_field('wgmbr_save_customization', 'wgmbr_customization_nonce'); ?>
                     <input type="hidden" name="action" value="wgmbr_save_customization">
-                    <div class="section row">
-                        <div class="card-list">
+                    <div class="gmb-customization-layout">
+                        <div class="gmb-customization-settings card-list">
                             <div class="card">
-                                <h3><?php esc_html_e('Review card', 'reviews-for-google-my-business'); ?></h3>
+                                <h2><?php esc_html_e('Layout', 'reviews-for-google-my-business'); ?></h2>
+                                <div class="gmb-layout-picker">
+                                    <label class="gmb-layout-option">
+                                        <input type="radio"
+                                               name="wgmbr_layout"
+                                               value="slider"
+                                               <?php checked($wgmbr_current_layout, 'slider'); ?>>
+                                        <span class="gmb-layout-thumb gmb-layout-thumb-slider" aria-hidden="true">
+                                            <span class="gmb-thumb-arrow prev"></span>
+                                            <span class="gmb-thumb-card"></span>
+                                            <span class="gmb-thumb-card"></span>
+                                            <span class="gmb-thumb-arrow next"></span>
+                                        </span>
+                                        <span class="gmb-layout-label"><?php esc_html_e('Slider', 'reviews-for-google-my-business'); ?></span>
+                                    </label>
+
+                                    <label class="gmb-layout-option">
+                                        <input type="radio"
+                                               name="wgmbr_layout"
+                                               value="masonry"
+                                               <?php checked($wgmbr_current_layout, 'masonry'); ?>>
+                                        <span class="gmb-layout-thumb gmb-layout-thumb-masonry" aria-hidden="true">
+                                            <span class="gmb-thumb-col">
+                                                <span class="gmb-thumb-card tall"></span>
+                                                <span class="gmb-thumb-card"></span>
+                                            </span>
+                                            <span class="gmb-thumb-col">
+                                                <span class="gmb-thumb-card"></span>
+                                                <span class="gmb-thumb-card tall"></span>
+                                            </span>
+                                            <span class="gmb-thumb-col">
+                                                <span class="gmb-thumb-card tall"></span>
+                                                <span class="gmb-thumb-card"></span>
+                                            </span>
+                                        </span>
+                                        <span class="gmb-layout-label"><?php esc_html_e('Masonry', 'reviews-for-google-my-business'); ?></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h2><?php esc_html_e('Style', 'reviews-for-google-my-business'); ?></h2>
                                 <table class="form-table">
                                     <tr>
                                         <th scope="row">
@@ -514,24 +577,24 @@ if (!defined('ABSPATH')) {
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr class="gmb-style-slider-only">
                                         <th scope="row">
-                                            <label for="wgmbr_color_accent"><?php esc_html_e('Accent color', 'reviews-for-google-my-business'); ?></label>
-                                            <p class="description"><?php esc_html_e('Color of the slider arrows and pagination points. Color of the "Read more" button on hover.', 'reviews-for-google-my-business'); ?></p>
+                                            <label for="wgmbr_color_accent"><?php esc_html_e('Navigation color', 'reviews-for-google-my-business'); ?></label>
+                                            <p class="description"><?php esc_html_e('Color of the slider arrows and pagination dots.', 'reviews-for-google-my-business'); ?></p>
                                         </th>
                                         <td>
                                             <div class="input-color">
                                                 <input type="color"
                                                        id="wgmbr_color_accent_picker"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_accent', '#0F68DD')); ?>"
-                                                       style="width: 50px; height: 35px; cursor: pointer;">
+                                                >
                                                 <input type="text"
                                                        id="wgmbr_color_accent_hex"
                                                        value="<?php echo esc_attr(get_option('wgmbr_color_accent', '#0F68DD')); ?>"
                                                        pattern="^#[0-9A-Fa-f]{6}$"
                                                        maxlength="7"
                                                        placeholder="#000000"
-                                                       style="width: 100px; font-family: monospace; text-transform: uppercase;">
+                                                >
                                                 <input type="hidden"
                                                        name="wgmbr_color_accent"
                                                        id="wgmbr_color_accent"
@@ -539,19 +602,38 @@ if (!defined('ABSPATH')) {
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr class="gmb-style-masonry-only">
+                                        <th scope="row">
+                                            <label for="wgmbr_color_show_more"><?php esc_html_e('"Show more" button color', 'reviews-for-google-my-business'); ?></label>
+                                            <p class="description"><?php esc_html_e('Border and text color. On hover, the button fills with the same color at 20% opacity.', 'reviews-for-google-my-business'); ?></p>
+                                        </th>
+                                        <td>
+                                            <div class="input-color">
+                                                <input type="color"
+                                                       id="wgmbr_color_show_more_picker"
+                                                       value="<?php echo esc_attr(get_option('wgmbr_color_show_more', '#0F68DD')); ?>"
+                                                >
+                                                <input type="text"
+                                                       id="wgmbr_color_show_more_hex"
+                                                       value="<?php echo esc_attr(get_option('wgmbr_color_show_more', '#0F68DD')); ?>"
+                                                       pattern="^#[0-9A-Fa-f]{6}$"
+                                                       maxlength="7"
+                                                       placeholder="#000000"
+                                                >
+                                                <input type="hidden"
+                                                       name="wgmbr_color_show_more"
+                                                       id="wgmbr_color_show_more"
+                                                       value="<?php echo esc_attr(get_option('wgmbr_color_show_more', '#0F68DD')); ?>">
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </table>
-
-                                <div class="button-wrapper">
-                                    <button type="submit" class="button button-primary">
-                                        <?php esc_html_e('Save customization', 'reviews-for-google-my-business'); ?>
-                                    </button>
-                                    <button type="button" class="button" onclick="resetGMBCustomization(this)">
-                                        <?php esc_html_e('Reset to default values', 'reviews-for-google-my-business'); ?>
-                                    </button>
-                                </div>
-
                             </div>
                         </div>
+
+                        <aside class="gmb-customization-preview">
+                            <?php require WGMBR_PLUGIN_DIR . 'template-parts/customization-preview.php'; ?>
+                        </aside>
                     </div>
                 </form>
             </div>

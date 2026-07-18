@@ -1296,3 +1296,38 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "https://wolvesart.fr"
 msgstr ""
+
+#. translators: %d: total number of reviews
+#: templates/reviews-display.php:31
+msgid "Based on %d reviews"
+msgstr ""
+
+#: templates/reviews-display.php:73
+msgid "Close"
+msgstr ""
+
+#: templates/admin-page.php:349
+msgid "Order"
+msgstr ""
+
+#: templates/admin-page.php:353
+msgid "Recent (newest first)"
+msgstr ""
+
+#: templates/admin-page.php:354
+msgid "Random"
+msgstr ""
+
+#: templates/admin-page.php:356
+msgid "Choose the display order of the reviews"
+msgstr ""
+
+#: templates/admin-page.php:392
+msgid ""
+"Display order: \"recent\" (default, newest first) or \"random\" (shuffled on "
+"every page load)"
+msgstr ""
+
+#: templates/admin-page.php:419
+msgid "Display reviews in random order"
+msgstr ""

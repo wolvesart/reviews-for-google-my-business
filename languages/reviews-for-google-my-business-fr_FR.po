@@ -1474,6 +1474,43 @@ msgstr "Wolvesart"
 msgid "https://wolvesart.fr"
 msgstr "https://wolvesart.fr"
 
+#. translators: %d: total number of reviews
+#: templates/reviews-display.php:31
+msgid "Based on %d reviews"
+msgstr "Basé sur %d avis"
+
+#: templates/reviews-display.php:73
+msgid "Close"
+msgstr "Fermer"
+
+#: templates/admin-page.php:349
+msgid "Order"
+msgstr "Ordre"
+
+#: templates/admin-page.php:353
+msgid "Recent (newest first)"
+msgstr "Récents (du plus récent au plus ancien)"
+
+#: templates/admin-page.php:354
+msgid "Random"
+msgstr "Aléatoire"
+
+#: templates/admin-page.php:356
+msgid "Choose the display order of the reviews"
+msgstr "Choisissez l'ordre d'affichage des avis"
+
+#: templates/admin-page.php:392
+msgid ""
+"Display order: \"recent\" (default, newest first) or \"random\" (shuffled on "
+"every page load)"
+msgstr ""
+"Ordre d'affichage : \"recent\" (par défaut, du plus récent au plus ancien) "
+"ou \"random\" (mélangé à chaque chargement de page)"
+
+#: templates/admin-page.php:419
+msgid "Display reviews in random order"
+msgstr "Afficher les avis dans un ordre aléatoire"
+
 #~ msgid ""
 #~ "Go back to <a href=\"https://console.cloud.google.com/\" "
 #~ "target=\"_blank\">Google Cloud Console</a>."

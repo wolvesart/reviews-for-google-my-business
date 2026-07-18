@@ -54,7 +54,7 @@ function wgmbr_enqueue_admin_assets($hook)
     }
 
     wp_enqueue_style(
-        'gmb-admin-styles',
+        'wgmbr-admin-styles',
         WGMBR_PLUGIN_URL . 'assets/css/admin.css',
         array(),
         WGMBR_VERSION
@@ -63,17 +63,27 @@ function wgmbr_enqueue_admin_assets($hook)
     // ESCAPE LATE: Properly escape URL for CSS output
     $pattern_url = esc_url(WGMBR_PLUGIN_URL . 'assets/images/gmb-pattern.png');
     $custom_css = '.gmb-header { background-image: url("' . $pattern_url . '") !important; }';
-    wp_add_inline_style('gmb-admin-styles', $custom_css);
+    wp_add_inline_style('wgmbr-admin-styles', $custom_css);
+
+    // Frontend card styles for the live preview on the Customization tab
+    if ($hook === WGMBR_SETTINGS_PAGE_HOOK) {
+        wp_enqueue_style(
+            'wgmbr-frontend-styles',
+            WGMBR_PLUGIN_URL . 'assets/css/frontend.css',
+            array(),
+            WGMBR_VERSION
+        );
+    }
 
     wp_enqueue_script(
-        'gmb-admin-scripts',
+        'wgmbr-admin-scripts',
         WGMBR_PLUGIN_URL . 'assets/js/admin.js',
         array(),
         WGMBR_VERSION,
         true
     );
 
-    wp_localize_script('gmb-admin-scripts', 'wgmbrAdmin', array(
+    wp_localize_script('wgmbr-admin-scripts', 'wgmbrAdmin', array(
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'settingsUrl' => admin_url('admin.php?page=wgmbr-settings'),
         'nonce' => wp_create_nonce('wgmbr_admin_actions'),
@@ -97,14 +107,14 @@ function wgmbr_enqueue_admin_assets($hook)
     // Script for testimonials and categories management
     if (in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
         wp_enqueue_script(
-            'gmb-manage-reviews-scripts',
+            'wgmbr-manage-reviews-scripts',
             WGMBR_PLUGIN_URL . 'assets/js/manage-reviews.js',
             array(),
             WGMBR_VERSION,
             true
         );
 
-        wp_localize_script('gmb-manage-reviews-scripts', 'wgmbrManage', array(
+        wp_localize_script('wgmbr-manage-reviews-scripts', 'wgmbrManage', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wgmbr_categories'),
             'syncNonce' => wp_create_nonce('wgmbr_admin_actions'),
@@ -318,13 +328,13 @@ function wgmbr_save_credentials()
     // Verify HTTPS for security (allow localhost without HTTPS)
     $is_localhost = (
         isset($_SERVER['REMOTE_ADDR']) &&
-        in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'), true)
+        in_array(sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])), array('127.0.0.1', '::1'), true)
     ) || (
         isset($_SERVER['HTTP_HOST']) &&
         (strpos(sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])), 'localhost') !== false || strpos(sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])), '127.0.0.1') !== false)
     );
 
-    if (!is_ssl() && !$is_localhost && !defined('WP_DEBUG')) {
+    if (!is_ssl() && !$is_localhost && !(defined('WP_DEBUG') && WP_DEBUG)) {
         wp_die(
             esc_html__('HTTPS is required to save API credentials. Please enable SSL/TLS on your site.', 'reviews-for-google-my-business'),
             esc_html__('Security Error', 'reviews-for-google-my-business'),
@@ -449,6 +459,7 @@ function wgmbr_process_customization_save()
         'wgmbr_color_text_primary',
         'wgmbr_color_accent',
         'wgmbr_color_text_resume',
+        'wgmbr_color_show_more',
     );
 
     // Process color options
@@ -466,6 +477,19 @@ function wgmbr_process_customization_save()
             if ($validated_color !== null) {
                 update_option($key, $validated_color);
             }
+        }
+    }
+
+    // Process layout option
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
+    if (isset($_POST['wgmbr_layout'])) {
+        // Step 1: SANITIZE - Unslash and sanitize as key
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by calling function
+        $layout = sanitize_key(wp_unslash($_POST['wgmbr_layout']));
+
+        // Step 2: VALIDATE - Safelist against allowed layouts (strict comparison)
+        if (in_array($layout, WGMBR_ALLOWED_LAYOUTS, true)) {
+            update_option('wgmbr_layout', $layout);
         }
     }
 
@@ -542,6 +566,8 @@ function wgmbr_reset_customization_ajax()
     delete_option('wgmbr_color_text_primary');
     delete_option('wgmbr_color_text_resume');
     delete_option('wgmbr_color_accent');
+    delete_option('wgmbr_color_show_more');
+    delete_option('wgmbr_layout');
 
     wp_send_json_success();
 }

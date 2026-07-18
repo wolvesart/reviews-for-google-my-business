@@ -1,0 +1,10 @@
+// Slider layout entry: Swiper CSS + slider layout styles
+// Loaded only when the "Slider" layout is active (see wgmbr_enqueue_frontend_styles)
+@import 'variables';
+
+// Import Swiper CSS
+@import '../../node_modules/swiper/swiper.min.css';
+@import '../../node_modules/swiper/modules/navigation.min.css';
+@import '../../node_modules/swiper/modules/pagination.min.css';
+
+@import 'frontend/layout/slider';

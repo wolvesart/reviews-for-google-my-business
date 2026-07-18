@@ -126,15 +126,8 @@ function wgmbr_save_review_as_post($review_data) {
     $star_rating = isset($review_data['starRating']) ? $review_data['starRating'] : 'STAR_RATING_UNSPECIFIED';
     $rating = wgmbr_convert_star_rating($star_rating);
 
-    // Comment
-    $comment = isset($review_data['comment']) ? $review_data['comment'] : '';
-
-    // Clean Google translation
-    if (strpos($comment, '(Original)') !== false) {
-        if (preg_match('/\(Original\)\s*(.+)$/s', $comment, $matches)) {
-            $comment = trim($matches[1]);
-        }
-    }
+    // Comment (cleaned of Google's translation wrapper)
+    $comment = wgmbr_clean_review_comment(isset($review_data['comment']) ? $review_data['comment'] : '');
 
     // Date
     $review_date = isset($review_data['createTime']) ? $review_data['createTime'] : current_time('mysql');

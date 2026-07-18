@@ -3,7 +3,7 @@ Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 6.9
-Stable tag: 1.0.7
+Stable tag: 1.1.0
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -36,6 +36,7 @@ To operate you will need to follow instructions on the tab "Documentation". Ther
 
 **Display & Layout:**
 
+* Two layouts: responsive slider or Masonry grid (pure CSS, with AJAX "Show more" button)
 * Modern responsive slider with 3 reviews per view on desktop
 * Beautiful card design with customizable colors
 * Author photos (automatically downloaded and stored locally)
@@ -217,6 +218,10 @@ Yes! Reviews are cached for 1 hour for performance. After that, the plugin autom
 
 Yes! You can create custom categories (e.g., "Training", "Coaching", "Design") and assign reviews to them. Then filter reviews in your shortcode: `[wgmbr_reviews category="training"]`
 
+= Can I display reviews in random order? =
+
+Yes! Add the `order` parameter to the shortcode: `[wgmbr_reviews order="random"]`. Reviews are shuffled on every page load. The default is `order="recent"` (newest first).
+
 = Can I customize the design? =
 
 Absolutely! Go to **Google Reviews → Configuration → Customization** to customize:
@@ -262,6 +267,33 @@ Check the **Documentation** tab in the plugin for detailed guides. For issues, v
 This plugin uses a “lazy” caching system to minimize Google My Business API calls.The result: you stay far below Google’s quotas (600 requests/minute).
 
 == Changelog ==
+
+= 1.1.0 - 2026-07-18 =
+
+**New Features:**
+
+* Added: Masonry grid layout as an alternative to the slider (selectable in Customization → Layout)
+* Added: "Show more" button in Masonry layout, loading the next reviews via AJAX (9 at a time) with a staggered entrance animation (respects prefers-reduced-motion)
+* Added: Live preview panel in the Customization tab (layout and style changes are previewed instantly)
+* Added: "Show more" button color option (Masonry layout) — on hover the button fills with the same color at 20% opacity
+* Added: Layout-specific style options — Navigation color (formerly Accent color) shows for the Slider layout, "Show more" button color for Masonry
+
+**Improvements:**
+
+* Improved: Color fields redesigned as compact picker pills (swatch + editable hex value)
+* Changed: "Read more" button no longer changes color on hover
+
+**Performance:**
+
+* Improved: Swiper (JS + CSS) now loads only when the Slider layout is active
+* Improved: Masonry grid is pure CSS (multi-column) — no JavaScript layout library
+* Improved: Masonry layout only fetches the first 9 reviews on page load, the rest on demand
+* Improved: The next Masonry batch is prefetched in the background, so "Show more" feels instant
+* Improved: Review parsing now reads the WordPress term cache instead of running one SQL query per review
+
+**Bug Fixes:**
+
+* Fixed: Saving a card border radius of 8px was ignored (default value mismatch)
 
 = 1.0.7 - 2025-12-22 =
 
@@ -397,6 +429,9 @@ This plugin uses a “lazy” caching system to minimize Google My Business API 
 * Fixed review card width in slider mode
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+New Masonry grid layout with AJAX "Show more" button, live preview in the Customization tab, and faster frontend: the slider library now loads only when the Slider layout is active.
 
 = 1.0.7 =
 Major performance improvements for mobile devices with many reviews. Lazy loading now enabled, reducing memory usage. Job titles preserved when syncing.

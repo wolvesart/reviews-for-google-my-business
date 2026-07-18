@@ -88,6 +88,19 @@
   @media (min-width: map-get($breakpoints, tablet)) {
     display: inline-block;
   }
+
+  // Swiper adds this class (watchOverflow) when all slides fit in the view:
+  // no carousel, so no arrows — !important to beat the media query above
+  &.swiper-button-lock {
+    display: none !important;
+  }
+
+  // Swiper adds this class on the first/last slide (loop disabled): the arrow
+  // can't scroll anything, so fade it out (transition declared above)
+  &.swiper-button-disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .gmb-swiper-button-prev {
@@ -100,16 +113,28 @@
 }
 
 // Pagination
+// Sizing is managed by Swiper itself: with dynamicBullets it sets an inline
+// width on the container (overflow: hidden) and shifts the bullets via left.
+// No width/flex overrides here — they clip the edge bullets in half.
 .gmb-swiper-pagination {
+  // Same lock behavior as the arrows when there is nothing to scroll
+  &.swiper-pagination-lock {
+    display: none !important;
+  }
+
   position: absolute !important;
   bottom: -32px !important;
   left: 50% !important;
   transform: translateX(-50%);
-  width: auto !important;
+  white-space: nowrap;
   z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+  // Static bullets only: shrink-wrap so the left: 50% centering works
+  // (Swiper's own CSS sets width: 100% with a more specific selector).
+  // In dynamic mode the JS sets an inline width that must be preserved.
+  &:not(.swiper-pagination-bullets-dynamic) {
+    width: auto !important;
+  }
 
   .swiper-pagination-bullet {
     width: 8px;

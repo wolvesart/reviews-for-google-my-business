@@ -271,7 +271,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'wgmbr_color_star',
         'wgmbr_color_text_primary',
         'wgmbr_color_accent',
-        'wgmbr_color_text_resume'
+        'wgmbr_color_text_resume',
+        'wgmbr_color_show_more'
     ];
 
     // Initialize sync for each color field
@@ -282,6 +283,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!colorPicker || !hexInput || !hiddenInput) return;
 
+        const pill = colorPicker.closest('.input-color');
+
+        // Clicking the pill (outside the hex input) opens the native picker
+        if (pill) {
+            pill.addEventListener('click', function(e) {
+                if (e.target === pill) {
+                    colorPicker.click();
+                }
+            });
+        }
+
         // Sync color picker → hex input
         colorPicker.addEventListener('input', function() {
             const color = this.value.toUpperCase();
@@ -290,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Sync hex input → color picker
+        // Invalid state is shown on the pill border (the hex input is borderless)
         hexInput.addEventListener('input', function() {
             let value = this.value.trim().toUpperCase();
 
@@ -303,9 +316,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (/^#[0-9A-F]{6}$/i.test(value)) {
                 colorPicker.value = value;
                 hiddenInput.value = value;
-                this.style.borderColor = '';
+                if (pill) pill.style.borderColor = '';
             } else if (value.length >= 7) {
-                this.style.borderColor = '#dc3232';
+                if (pill) pill.style.borderColor = '#dc3232';
             }
         });
 
@@ -313,9 +326,62 @@ document.addEventListener('DOMContentLoaded', function() {
         hexInput.addEventListener('blur', function() {
             if (!/^#[0-9A-F]{6}$/i.test(this.value)) {
                 this.value = colorPicker.value;
-                this.style.borderColor = '';
+                if (pill) pill.style.borderColor = '';
             }
         });
+    });
+});
+
+// ============================================================================
+// CUSTOMIZATION LIVE PREVIEW
+// ============================================================================
+// The preview stage is server-rendered with the real frontend markup; live
+// updates only rewrite scoped CSS custom properties (no AJAX, no re-render)
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('gmb-customization-form');
+    const stage = document.querySelector('.gmb-preview-stage');
+
+    if (!form || !stage) return;
+
+    // Map option field name -> CSS custom property
+    const cssVarMap = {
+        wgmbr_color_card_bg: '--gmb-color-card-bg',
+        wgmbr_color_star: '--gmb-color-star',
+        wgmbr_color_text_primary: '--gmb-color-text-primary',
+        wgmbr_color_text_resume: '--gmb-color-text-resume',
+        wgmbr_color_accent: '--gmb-color-accent',
+        wgmbr_color_show_more: '--gmb-color-show-more'
+    };
+
+    form.addEventListener('input', function(e) {
+        const target = e.target;
+
+        // Layout switch (radio buttons): update the preview and the
+        // layout-specific style fields visibility
+        if (target.name === 'wgmbr_layout') {
+            stage.dataset.layout = target.value;
+            form.dataset.layout = target.value;
+            return;
+        }
+
+        // Border radius
+        if (target.id === 'wgmbr_radius_card') {
+            const radius = parseInt(target.value, 10);
+            if (!isNaN(radius) && radius >= 0) {
+                stage.style.setProperty('--gmb-radius-card', radius + 'px');
+            }
+            return;
+        }
+
+        // Color fields: events come from the picker or the hex input,
+        // both ids are "<field>_picker" / "<field>_hex"
+        const fieldName = target.id.replace(/_(picker|hex)$/, '');
+        const cssVar = cssVarMap[fieldName];
+
+        if (cssVar && /^#[0-9A-F]{6}$/i.test(target.value)) {
+            stage.style.setProperty(cssVar, target.value);
+        }
     });
 });
 
@@ -360,6 +426,7 @@ window.wgmbrGenerateShortcode = function() {
     const limit = document.getElementById('gmb-gen-limit').value;
     const categoriesContainer = document.getElementById('gmb-gen-categories');
     const showSummary = document.getElementById('gmb-gen-summary').checked;
+    const orderSelect = document.getElementById('gmb-gen-order');
     const outputElement = document.getElementById('gmb-generated-shortcode');
 
     if (!outputElement) return;
@@ -384,6 +451,11 @@ window.wgmbrGenerateShortcode = function() {
     // Add show_summary only if false
     if (!showSummary) {
         shortcode += ' show_summary="false"';
+    }
+
+    // Add order only if different from default ("recent")
+    if (orderSelect && orderSelect.value === 'random') {
+        shortcode += ' order="random"';
     }
 
     shortcode += ']';

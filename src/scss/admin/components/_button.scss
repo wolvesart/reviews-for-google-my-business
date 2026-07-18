@@ -10,6 +10,10 @@
   transition: all 200ms ease-out;
   gap: 6px;
 
+  .dashicons {
+    color: var(--color-green-800) !important;
+  }
+
   &.button-primary {
     background: var(--color-green-200) !important;
 

@@ -2,7 +2,9 @@
 /**
  * Plugin Name: Reviews for Google My Business
  * Description: Display your Google My Business reviews on your website for free. Improve your credibility and gain trust. Category system, full customization, and flexible shortcode.
- * Version: 1.0.7
+ * Version: 1.1.0
+ * Requires at least: 6.8
+ * Requires PHP: 8.0
  * Author: Wolvesart
  * Author URI: https://wolvesart.fr
  * License: GPL v2 or later
@@ -17,7 +19,7 @@ if (!defined('ABSPATH')) {
 
 // Define plugin constants
 // Using WGMBR prefix (5+ characters) for WordPress.org compliance
-define('WGMBR_VERSION', '1.0.7');
+define('WGMBR_VERSION', '1.1.0');
 define('WGMBR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WGMBR_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WGMBR_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -42,6 +44,12 @@ define('WGMBR_API_TIMEOUT', 15);
 define('WGMBR_DEFAULT_REVIEW_LIMIT', 100);
 define('WGMBR_ADMIN_REVIEWS_PER_PAGE', 20);
 
+// Layouts
+define('WGMBR_DEFAULT_LAYOUT', 'slider');
+define('WGMBR_ALLOWED_LAYOUTS', array('slider', 'masonry'));
+define('WGMBR_MASONRY_INITIAL', 9);
+define('WGMBR_MASONRY_BATCH', 9);
+
 // Cache durations
 define('WGMBR_CACHE_DURATION', HOUR_IN_SECONDS);
 
@@ -50,15 +58,18 @@ define('WGMBR_DEFAULT_COLORS', array(
     'card_bg' => '#F3F5F7',
     'star' => '#FFC83E',
     'text_primary' => '#222222',
-    'accent' => '#0F68DD',
+    'accent' => '#0F68DD',      // Slider navigation (arrows + pagination dots)
     'text_resume' => '#222222',
+    'show_more' => '#0F68DD',   // Masonry "Show more" button
 ));
 
-// Default card radius
-define('WGMBR_DEFAULT_CARD_RADIUS', 8);
+// Default card radius (must match the --gmb-radius-card fallback in frontend CSS)
+define('WGMBR_DEFAULT_CARD_RADIUS', 16);
 
 
-class reviews_for_google_my_business {
+if (!class_exists('WGMBR_Plugin')) {
+
+class WGMBR_Plugin {
 
     // Single instance of the plugin (Singleton)
     private static $instance = null;
@@ -171,9 +182,11 @@ class reviews_for_google_my_business {
     }
 }
 
+} // end class_exists('WGMBR_Plugin')
+
 // Global plugin access function
 function wgmbr_google_reviews_init() {
-    return reviews_for_google_my_business::get_instance();
+    return WGMBR_Plugin::get_instance();
 }
 
 wgmbr_google_reviews_init();

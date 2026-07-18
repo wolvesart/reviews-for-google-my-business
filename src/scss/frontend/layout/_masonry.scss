@@ -1,0 +1,95 @@
+// Masonry grid layout — pure CSS (multi-column), no JS involved.
+// Single column on mobile (normal flow), 2 columns on tablet, 3 on desktop.
+.gmb-reviews-masonry-wrapper {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.gmb-reviews-masonry {
+  width: 100%;
+
+  @media (min-width: map-get($breakpoints, tablet)) {
+    columns: 2;
+    column-gap: 24px;
+  }
+
+  @media (min-width: map-get($breakpoints, desktop)) {
+    columns: 3;
+    column-gap: 32px;
+  }
+}
+
+.gmb-masonry-item {
+  // Keep each card in one piece inside the CSS columns:
+  // inline-block is required, Chrome can still split block items
+  // despite break-inside: avoid
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 24px;
+
+  @media (min-width: map-get($breakpoints, desktop)) {
+    margin-bottom: 32px;
+  }
+
+  .gmb-review-card {
+    width: 100%;
+  }
+}
+
+// Entrance animation for cards appended by the "Show more" button:
+// fade in + slight upward slide, staggered per card (delay set inline
+// by masonry.js). Opacity/transform only, GPU-friendly.
+@keyframes wgmbr-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.gmb-masonry-item.is-appearing {
+  animation: wgmbr-card-in 0.45s ease-out both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+// "Show more" button
+.gmb-show-more-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.gmb-show-more-btn {
+  padding: 12px 28px;
+  border: 1.5px solid var(--gmb-color-show-more);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--gmb-color-show-more);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  // Border and text keep their color, the button fills with the same
+  // color at 20% opacity
+  &:hover:not(:disabled),
+  &:focus:not(:disabled) {
+    background-color: color-mix(in srgb, var(--gmb-color-show-more) 20%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}

@@ -1,0 +1,5 @@
+// Masonry layout entry
+// Loaded only when the "Masonry" layout is active (see wgmbr_enqueue_frontend_styles)
+@import 'variables';
+
+@import 'frontend/layout/masonry';

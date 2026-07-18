@@ -11,11 +11,79 @@
     }
   }
 
-  // Input + color
+  // Input + color: GitBook-like picker button — [swatch] #HEX in a rounded
+  // bordered pill. Clicking the swatch (or the pill) opens the native browser
+  // color picker, the hex value stays editable inline (sync in admin.js)
   .input-color {
-    display: flex;
-    gap: 8px;
+    display: inline-flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 90px;
+    height: 40px;
+    padding: 0 12px;
+    background-color: #FFF;
+    border: 1px solid var(--color-grey-200);
+    border-radius: var(--radius-md);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--color-grey-500);
+    }
+
+    &:focus-within {
+      border-color: var(--color-green-200);
+      box-shadow: 0 0 0 1px var(--color-green-200);
+    }
+
+    input[type="color"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      padding: 0;
+      border: none;
+      border-radius: 6px;
+      background: none;
+      cursor: pointer;
+
+      &::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+
+      &::-webkit-color-swatch {
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 6px;
+      }
+
+      &::-moz-color-swatch {
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 6px;
+      }
+    }
+
+    input[type="text"] {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: auto;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+      background: transparent;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 13px;
+      text-transform: uppercase;
+      text-align: right;
+      color: var(--color-grey-800);
+
+      &:focus {
+        outline: none;
+        border: none;
+        box-shadow: none;
+      }
+    }
   }
 
   // Global changes

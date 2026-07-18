@@ -1,0 +1,319 @@
+/* Customization tab: settings column (scrolls) + sticky live preview */
+
+.gmb-customization-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.gmb-customization-settings {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.gmb-customization-preview {
+  flex: 1 1 0;
+  min-width: 0;
+  position: sticky;
+  top: 52px; // WP admin bar (32px) + breathing room
+  align-self: flex-start;
+}
+
+.gmb-preview-panel {
+  display: flex;
+  flex-direction: column;
+  background: #FFF;
+  border-radius: 12px;
+  padding: 0.7em 2em 2em;
+
+  .gmb-preview-panel-head {
+    .description {
+      margin-top: -4px;
+    }
+  }
+
+  .gmb-preview-actions {
+    margin-top: 24px;
+  }
+}
+
+/* Preview stage: renders the real frontend cards, scoped CSS variables
+   (--gmb-*) are set inline and updated live by admin.js */
+.gmb-preview-stage {
+  // WP admin has no global border-box reset (unlike frontend themes):
+  // without it the card padding overflows the masonry columns
+  &, * {
+    box-sizing: border-box;
+  }
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  margin-top: 16px;
+  padding: 32px 24px;
+  border: 1.5px dashed var(--color-grey-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  // Only one layout preview is visible at a time
+  &[data-layout="slider"] .gmb-preview-masonry,
+  &[data-layout="slider"] .gmb-preview-show-more {
+    display: none;
+  }
+
+  &[data-layout="masonry"] .gmb-preview-slider {
+    display: none;
+  }
+}
+
+// Static "Show more" button, mirrors .gmb-show-more-btn from the frontend
+// masonry.css (not loaded in admin) — decorative, but previews the hover state
+.gmb-preview-show-more {
+  display: flex;
+  justify-content: center;
+
+  .gmb-show-more-btn {
+    padding: 12px 28px;
+    border: 1.5px solid var(--gmb-color-show-more);
+    border-radius: 999px;
+    color: var(--gmb-color-show-more);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    cursor: default;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--gmb-color-show-more) 20%, transparent);
+    }
+  }
+}
+
+// Style fields shown only for the matching layout (data-layout is kept in
+// sync with the selected radio by admin.js)
+#gmb-customization-form[data-layout="slider"] .gmb-style-masonry-only,
+#gmb-customization-form[data-layout="masonry"] .gmb-style-slider-only {
+  display: none;
+}
+
+/* Static slider preview (no Swiper in admin) */
+.gmb-preview-slider {
+  position: relative;
+  width: 100%;
+  padding: 0 28px 24px;
+
+  .gmb-preview-slider-track {
+    display: flex;
+    gap: 20px;
+
+    .gmb-review-card {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  .gmb-preview-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    background-color: var(--gmb-color-accent);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='m7.44 19 7-7-7-7L8.5 3.94l7.53 7.53a.75.75 0 0 1 0 1.06L8.5 20.06 7.44 19Z' clip-rule='evenodd'/%3E%3C/svg%3E%0A") no-repeat center / contain;
+
+    &.prev {
+      left: 0;
+      transform: translateY(-50%) scaleX(-1);
+    }
+
+    &.next {
+      right: 0;
+    }
+  }
+
+  .gmb-preview-bullets {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+
+    span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--gmb-color-accent);
+      opacity: 0.3;
+
+      &.is-active {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+/* Masonry preview: same pure CSS technique as the frontend */
+.gmb-preview-masonry {
+  width: 100%;
+  columns: 2;
+  column-gap: 20px;
+
+  .gmb-preview-masonry-item {
+    // inline-block: Chrome can split block items despite break-inside: avoid
+    display: inline-block;
+    width: 100%;
+    vertical-align: top;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 20px;
+
+    .gmb-review-card {
+      width: 100%;
+    }
+  }
+}
+
+/* Layout picker (Disposition) */
+.gmb-layout-picker {
+  display: flex;
+  gap: 20px;
+  margin: 16px 0 8px;
+}
+
+.gmb-layout-option {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+
+  // Radio stays accessible (focus ring on the thumb) but visually hidden
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .gmb-layout-thumb {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 130px;
+    padding: 20px 16px;
+    background-color: var(--color-grey-100);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .gmb-layout-label {
+    font-weight: 500;
+    color: var(--color-green-800);
+  }
+
+  &:hover .gmb-layout-thumb {
+    border-color: var(--color-grey-200);
+  }
+
+  input[type="radio"]:focus-visible + .gmb-layout-thumb {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--color-green-100);
+  }
+
+  input[type="radio"]:checked + .gmb-layout-thumb {
+    border-color: var(--color-green-200);
+    background-color: var(--color-green-50);
+
+    // Check badge, top right
+    &::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--color-green-200);
+      mask: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23073034' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+}
+
+/* Mini skeleton cards inside the picker thumbs */
+.gmb-thumb-card {
+  display: block;
+  width: 100%;
+  height: 44px;
+  background-color: #FFF;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  // Stars + text lines drawn with gradients (no extra DOM)
+  background-image:
+    repeating-linear-gradient(to right, var(--color-grey-200) 0 5px, transparent 5px 8px),
+    linear-gradient(var(--color-grey-100), var(--color-grey-100)),
+    linear-gradient(var(--color-grey-100), var(--color-grey-100));
+  background-repeat: no-repeat;
+  background-size: 32px 5px, 70% 4px, 50% 4px;
+  background-position: 8px 8px, 8px 22px, 8px 32px;
+
+  &.tall {
+    height: 60px;
+    background-image:
+      repeating-linear-gradient(to right, var(--color-grey-200) 0 5px, transparent 5px 8px),
+      linear-gradient(var(--color-grey-100), var(--color-grey-100)),
+      linear-gradient(var(--color-grey-100), var(--color-grey-100)),
+      linear-gradient(var(--color-grey-100), var(--color-grey-100));
+    background-size: 32px 5px, 70% 4px, 60% 4px, 45% 4px;
+    background-position: 8px 8px, 8px 22px, 8px 32px, 8px 42px;
+  }
+}
+
+.gmb-layout-thumb-slider {
+  .gmb-thumb-card {
+    flex: 1 1 0;
+  }
+
+  .gmb-thumb-arrow {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    background-color: var(--color-grey-500);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='m7.44 19 7-7-7-7L8.5 3.94l7.53 7.53a.75.75 0 0 1 0 1.06L8.5 20.06 7.44 19Z' clip-rule='evenodd'/%3E%3C/svg%3E%0A") no-repeat center / contain;
+
+    &.prev {
+      transform: scaleX(-1);
+    }
+  }
+}
+
+.gmb-layout-thumb-masonry {
+  align-items: flex-start;
+
+  .gmb-thumb-col {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Responsive: stack preview under the settings on narrow screens */
+@media screen and (max-width: 1280px) {
+  .gmb-customization-layout {
+    flex-direction: column;
+  }
+
+  .gmb-customization-preview {
+    position: static;
+    width: 100%;
+  }
+}

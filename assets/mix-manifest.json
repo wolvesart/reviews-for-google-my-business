@@ -1,8 +1,12 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/slider.js": "/js/slider.js",
+    "/js/masonry.js": "/js/masonry.js",
     "/js/admin.js": "/js/admin.js",
     "/js/categories.js": "/js/categories.js",
     "/js/manage-reviews.js": "/js/manage-reviews.js",
+    "/css/slider.css": "/css/slider.css",
+    "/css/masonry.css": "/css/masonry.css",
     "/css/frontend.css": "/css/frontend.css",
     "/css/admin.css": "/css/admin.css"
 }

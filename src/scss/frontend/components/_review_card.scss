@@ -5,7 +5,8 @@
   --gmb-color-star: #FFC83E;
   --gmb-color-text-primary: #222222;
   --gmb-color-text-resume: #222222;
-  --gmb-color-accent: #0F68DD;
+  --gmb-color-accent: #0F68DD; // Slider navigation (arrows + pagination dots)
+  --gmb-color-show-more: #0F68DD; // Masonry "Show more" button
 }
 
 // Mixin for star styles (reusable)
@@ -74,6 +75,8 @@
 
 
 .gmb-review-card {
+  // Don't rely on the theme's global border-box reset
+  box-sizing: border-box;
   display: flex;
   padding: 2.125rem;
   flex-direction: column;
@@ -166,6 +169,7 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   transition: color 0.2s ease;
+  border: none;
 
   &.is-visible {
     display: flex;
@@ -187,14 +191,7 @@
     transition: background-color 0.2s ease;
   }
 
-  &:hover {
-    color: var(--gmb-color-accent) !important;
-
-    &:before {
-      background-color: var(--gmb-color-accent);
-    }
-  }
-
+  // No color change on hover: the button keeps the text color
   &:hover, &:focus {
     background-color: transparent;
   }

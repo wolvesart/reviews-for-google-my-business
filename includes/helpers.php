@@ -48,9 +48,10 @@ function wgmbr_parse_review_from_post($post)
     // Custom data (job)
     $parsed->job = get_post_meta($post->ID, '_wgmbr_job', true);
 
-    // Categories (taxonomy)
-    $terms = wp_get_post_terms($post->ID, 'wgmbr_category');
-    $parsed->categories = !is_wp_error($terms) ? $terms : array();
+    // Categories (taxonomy) — get_the_terms() reads the term cache primed by
+    // WP_Query, unlike wp_get_post_terms() which runs one SQL query per review
+    $terms = get_the_terms($post->ID, 'wgmbr_category');
+    $parsed->categories = is_array($terms) ? $terms : array();
     $parsed->category_ids = array_map(function ($term) {
         return $term->term_id;
     }, $parsed->categories);
@@ -143,43 +144,82 @@ function wgmbr_get_all_reviews_with_query($args = array())
 }
 
 /**
- * Get reviews filtered by category
+ * Get the active display layout, validated against the safelist
  *
- * @param string|array $category_slug Category slug (empty = reviews without category, array = multiple categories)
- * @param int $limit Number of reviews to retrieve
- * @return array Array of parsed objects
+ * @return string 'slider' or 'masonry'
  */
-function wgmbr_get_reviews_by_category($category_slug, $limit = 50)
+function wgmbr_get_layout()
 {
-    $args = array(
-        'post_type' => 'wgmbr_review',
-        'post_status' => 'publish',
-        'posts_per_page' => $limit,
-        'orderby' => 'date',
-        'order' => 'DESC',
-    );
+    $layout = get_option('wgmbr_layout', WGMBR_DEFAULT_LAYOUT);
 
+    return in_array($layout, WGMBR_ALLOWED_LAYOUTS, true) ? $layout : WGMBR_DEFAULT_LAYOUT;
+}
+
+/**
+ * Parse the shortcode category attribute into a WP_Query-friendly value
+ *
+ * @param string $raw Raw category attribute ('' = reviews without category, comma-separated = multiple)
+ * @return string|array Single slug string or array of slugs
+ */
+function wgmbr_parse_category_param($raw)
+{
+    if ($raw === '') {
+        return '';
+    }
+
+    $categories = array_map('trim', explode(',', $raw));
+
+    return (count($categories) === 1) ? $categories[0] : $categories;
+}
+
+/**
+ * Build the tax_query array for a category filter
+ *
+ * @param string|array $category_param '' = reviews without category, otherwise slug(s)
+ * @return array tax_query array
+ */
+function wgmbr_build_category_tax_query($category_param)
+{
     // If category is empty string, find reviews without category
-    if ($category_slug === '') {
-        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by taxonomy, standard WordPress method
-        $args['tax_query'] = array(
+    if ($category_param === '') {
+        return array(
             array(
                 'taxonomy' => 'wgmbr_category',
                 'operator' => 'NOT EXISTS',
             ),
         );
-    } else {
-        // Filter by category slug (supports string or array)
-        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by category, standard WordPress method
-        $args['tax_query'] = array(
-            array(
-                'taxonomy' => 'wgmbr_category',
-                'field' => 'slug',
-                'terms' => $category_slug, // WordPress accepts string or array
-                'operator' => 'IN', // IN = at least one of the categories
-            ),
-        );
     }
+
+    // Filter by category slug (supports string or array)
+    return array(
+        array(
+            'taxonomy' => 'wgmbr_category',
+            'field' => 'slug',
+            'terms' => $category_param, // WordPress accepts string or array
+            'operator' => 'IN', // IN = at least one of the categories
+        ),
+    );
+}
+
+/**
+ * Get reviews filtered by category
+ *
+ * @param string|array $category_slug Category slug (empty = reviews without category, array = multiple categories)
+ * @param int $limit Number of reviews to retrieve
+ * @param string $orderby WP_Query orderby ('date' or 'rand')
+ * @return array Array of parsed objects
+ */
+function wgmbr_get_reviews_by_category($category_slug, $limit = 50, $orderby = 'date')
+{
+    $args = array(
+        'post_type' => 'wgmbr_review',
+        'post_status' => 'publish',
+        'posts_per_page' => $limit,
+        'orderby' => $orderby,
+        'order' => 'DESC',
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary to filter reviews by taxonomy, standard WordPress method
+        'tax_query' => wgmbr_build_category_tax_query($category_slug),
+    );
 
     return wgmbr_get_all_reviews($args);
 }
@@ -304,7 +344,42 @@ function wgmbr_get_parsed_review_by_review_id($review_id)
 // Create PHP component
 function wgmbr_get_template_parts($path, $params = [])
 {
-    include WGMBR_PLUGIN_DIR . $path . '.php';
+    // Reject absolute paths and directory traversal (defense in depth:
+    // all current callers use literal paths)
+    if (validate_file($path) !== 0) {
+        return;
+    }
+
+    $file = WGMBR_PLUGIN_DIR . $path . '.php';
+
+    if (file_exists($file)) {
+        include $file;
+    }
+}
+
+/**
+ * Extract the original text from Google's translation wrapper formats:
+ * 1. "Translation\n\n(Original)\nOriginal text"
+ * 2. "Original text\n\n(Translated by Google)\nTranslation"
+ *
+ * @param string $comment Raw review comment from the API
+ * @return string Cleaned comment
+ */
+function wgmbr_clean_review_comment($comment)
+{
+    if (strpos($comment, '(Original)') !== false) {
+        // Format 1: extract text after "(Original)"
+        if (preg_match('/\(Original\)\s*(.+)$/s', $comment, $matches)) {
+            $comment = trim($matches[1]);
+        }
+    } elseif (strpos($comment, '(Translated by Google)') !== false) {
+        // Format 2: extract text before "(Translated by Google)"
+        if (preg_match('/^(.+?)\s*\(Translated by Google\)/s', $comment, $matches)) {
+            $comment = trim($matches[1]);
+        }
+    }
+
+    return $comment;
 }
 
 // ============================================================================
@@ -353,8 +428,9 @@ function wgmbr_encrypt($data) {
         return $data; // Fallback: return plain text
     }
 
-    // Combine IV and encrypted data, then base64 encode
-    return base64_encode($iv . $encrypted);
+    // Combine IV and encrypted data, base64 encode, and add an explicit marker
+    // so encrypted values can be detected deterministically (no base64 heuristic)
+    return 'wgmbr_enc:' . base64_encode($iv . $encrypted);
 }
 
 /**
@@ -384,6 +460,11 @@ function wgmbr_decrypt($encrypted_data) {
 
     $salt_combo = AUTH_KEY . SECURE_AUTH_KEY . LOGGED_IN_KEY . NONCE_KEY;
     $key = substr(hash('sha256', $salt_combo, true), 0, 32);
+
+    // Strip the explicit marker (values without it were encrypted by older versions)
+    if (strpos($encrypted_data, 'wgmbr_enc:') === 0) {
+        $encrypted_data = substr($encrypted_data, strlen('wgmbr_enc:'));
+    }
 
     // Decode base64
     $data = base64_decode($encrypted_data, true);
@@ -431,11 +512,90 @@ function wgmbr_is_encrypted($value) {
         return false;
     }
 
-    // Encrypted values are base64 encoded and have a minimum length
+    // Explicit marker: deterministic detection for values encrypted by current versions
+    if (strpos($value, 'wgmbr_enc:') === 0) {
+        return true;
+    }
+
+    // Legacy heuristic (values encrypted before the marker was introduced):
+    // encrypted values are base64 encoded and have a minimum length
     $decoded = base64_decode($value, true);
 
     // Check if it's valid base64 and has minimum length for IV + data
     return ($decoded !== false && strlen($decoded) > openssl_cipher_iv_length('aes-256-cbc'));
+}
+
+/**
+ * Store an OAuth token encrypted at rest
+ *
+ * @param string $option_name Option name (e.g. 'wgmbr_access_token')
+ * @param string $token Plain token value
+ */
+function wgmbr_store_token($option_name, $token) {
+    if (empty($token)) {
+        delete_option($option_name);
+        return;
+    }
+
+    update_option($option_name, wgmbr_encrypt($token));
+}
+
+/**
+ * Retrieve an OAuth token, decrypting it when stored encrypted
+ * Tokens written by versions <= 1.0.7 may still be stored in plain text;
+ * they are returned as-is and migrated by wgmbr_maybe_migrate_credentials()
+ *
+ * @param string $option_name Option name (e.g. 'wgmbr_refresh_token')
+ * @return string Plain token value, or empty string
+ */
+function wgmbr_get_token($option_name) {
+    $stored = get_option($option_name, '');
+
+    if (empty($stored)) {
+        return '';
+    }
+
+    // Only the explicit marker identifies an encrypted token: a plain Google
+    // token could pass the base64 heuristic and be corrupted by decryption
+    if (strpos($stored, 'wgmbr_enc:') === 0) {
+        return wgmbr_decrypt($stored);
+    }
+
+    return $stored;
+}
+
+/**
+ * One-time migration: encrypt credentials stored in plain text by older versions
+ * Hooked on admin_init (see config.php) so no DB write happens at plugin load time
+ */
+function wgmbr_maybe_migrate_credentials() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+
+    // Client secret: plain text (versions without encryption) or encrypted
+    // without the explicit marker (versions <= 1.0.7) — normalize to marked format
+    $secret = get_option('wgmbr_client_secret', '');
+    if (!empty($secret) && strpos($secret, 'wgmbr_enc:') !== 0) {
+        $plain = wgmbr_is_encrypted($secret) ? wgmbr_decrypt($secret) : $secret;
+        if (!empty($plain)) {
+            $encrypted = wgmbr_encrypt($plain);
+            if (wgmbr_is_encrypted($encrypted)) {
+                update_option('wgmbr_client_secret', $encrypted);
+            }
+        }
+    }
+
+    // OAuth tokens saved in plain text by versions <= 1.0.7
+    foreach (array('wgmbr_access_token', 'wgmbr_refresh_token') as $option_name) {
+        $token = get_option($option_name, '');
+        if (!empty($token) && strpos($token, 'wgmbr_enc:') !== 0) {
+            $encrypted = wgmbr_encrypt($token);
+            if (wgmbr_is_encrypted($encrypted)) {
+                update_option($option_name, $encrypted);
+            }
+        }
+    }
 }
 
 // ============================================================================

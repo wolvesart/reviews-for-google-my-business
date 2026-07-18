@@ -32,9 +32,13 @@ function wgmbr_download_profile_photo($photo_url, $review_id) {
     $gmb_dir = $upload_dir['basedir'] . '/gmb-reviews';
     $gmb_url = $upload_dir['baseurl'] . '/gmb-reviews';
 
-    // Create directory if it doesn't exist
+    // Create directory if it doesn't exist, with an index.php to prevent listing
     if (!file_exists($gmb_dir)) {
         wp_mkdir_p($gmb_dir);
+    }
+    if (!file_exists($gmb_dir . '/index.php')) {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- One-time write of a directory listing guard
+        file_put_contents($gmb_dir . '/index.php', "<?php\n// Silence is golden.\n");
     }
 
     // Generate filename based on review ID
@@ -71,6 +75,15 @@ function wgmbr_download_profile_photo($photo_url, $review_id) {
     // Get image content
     $image_data = wp_remote_retrieve_body($response);
     if (empty($image_data)) {
+        return '';
+    }
+
+    // VALIDATE: Ensure the downloaded content is a real image before writing
+    // it to disk (never trust remote content, even from the Google API)
+    $image_info = function_exists('getimagesizefromstring') ? getimagesizefromstring($image_data) : false;
+    $allowed_mimes = array('image/jpeg', 'image/png', 'image/gif', 'image/webp');
+    if ($image_info === false || !isset($image_info['mime']) || !in_array($image_info['mime'], $allowed_mimes, true)) {
+        wgmbr_log_error('photo_download', 'Downloaded content is not a valid image, skipping');
         return '';
     }
 
@@ -138,9 +151,11 @@ function wgmbr_exchange_code_for_token($code) {
     $body = json_decode(wp_remote_retrieve_body($response), true);
 
     if (isset($body['access_token'])) {
-        // Save tokens
-        update_option('wgmbr_access_token', $body['access_token']);
-        update_option('wgmbr_refresh_token', $body['refresh_token']);
+        // Save tokens (encrypted at rest)
+        wgmbr_store_token('wgmbr_access_token', $body['access_token']);
+        if (isset($body['refresh_token'])) {
+            wgmbr_store_token('wgmbr_refresh_token', $body['refresh_token']);
+        }
         update_option('wgmbr_token_expires', time() + $body['expires_in']);
 
         return true;
@@ -153,7 +168,7 @@ function wgmbr_exchange_code_for_token($code) {
  * Refreshes access token using refresh token
  */
 function wgmbr_refresh_access_token() {
-    $refresh_token = get_option('wgmbr_refresh_token');
+    $refresh_token = wgmbr_get_token('wgmbr_refresh_token');
 
     if (!$refresh_token) {
         wgmbr_log_error('token_refresh', 'No refresh token available');
@@ -182,7 +197,7 @@ function wgmbr_refresh_access_token() {
     $body = json_decode(wp_remote_retrieve_body($response), true);
 
     if (isset($body['access_token'])) {
-        update_option('wgmbr_access_token', $body['access_token']);
+        wgmbr_store_token('wgmbr_access_token', $body['access_token']);
         update_option('wgmbr_token_expires', time() + $body['expires_in']);
         delete_option('wgmbr_last_token_error'); // Clear previous error
         return true;
@@ -203,7 +218,7 @@ function wgmbr_refresh_access_token() {
  * Gets a valid access token (refreshes if necessary)
  */
 function wgmbr_get_valid_access_token() {
-    $access_token = get_option('wgmbr_access_token');
+    $access_token = wgmbr_get_token('wgmbr_access_token');
     $expires = get_option('wgmbr_token_expires', 0);
 
     // If token expires in less than 5 minutes, refresh it
@@ -211,7 +226,7 @@ function wgmbr_get_valid_access_token() {
         if (!wgmbr_refresh_access_token()) {
             return false;
         }
-        $access_token = get_option('wgmbr_access_token');
+        $access_token = wgmbr_get_token('wgmbr_access_token');
     }
 
     return $access_token;
@@ -377,6 +392,9 @@ function wgmbr_api_call_with_retry($callback, $args = array(), $max_retries = 2)
         if ($status_code === 429 && isset($result['retry_after'])) {
             $delay = max($delay, (int) $result['retry_after']);
         }
+
+        // Cap the delay: sleep() blocks the PHP worker (admin AJAX context)
+        $delay = min($delay, 10);
 
         wgmbr_log_error('api_retry', 'Retrying API call (attempt ' . ($retry_count + 1) . '/' . $max_retries . ') after ' . $delay . ' seconds', array(
             'callback' => is_array($callback) ? $callback[1] : (string) $callback,
@@ -653,7 +671,9 @@ function wgmbr_handle_oauth_callback() {
         exit;
     }
 }
-add_action('init', 'wgmbr_handle_oauth_callback', 5); // Priority 5: Run early but after WordPress init
+// admin_init only: the redirect URI targets admin.php, so the callback never
+// fires on front-end requests (the default init hook ran on every request)
+add_action('admin_init', 'wgmbr_handle_oauth_callback', 5);
 
 /**
  * Automatically fetches accounts and locations after OAuth
@@ -823,23 +843,7 @@ function wgmbr_sync_reviews_to_cpt_optimized($reviews) {
         $star_rating = isset($review['starRating']) ? $review['starRating'] : 'STAR_RATING_UNSPECIFIED';
         $rating = wgmbr_convert_star_rating($star_rating);
 
-        $comment = isset($review['comment']) ? $review['comment'] : '';
-
-        // Extract original text from Google's translation format
-        // Google can use different formats:
-        // 1. "Translation\n\n(Original)\nOriginal text"
-        // 2. "Original text\n\n(Translated by Google)\nTranslation"
-        if (strpos($comment, '(Original)') !== false) {
-            // Format 1: Extract text after "(Original)"
-            if (preg_match('/\(Original\)\s*(.+)$/s', $comment, $matches)) {
-                $comment = trim($matches[1]);
-            }
-        } elseif (strpos($comment, '(Translated by Google)') !== false) {
-            // Format 2: Extract text before "(Translated by Google)"
-            if (preg_match('/^(.+?)\s*\(Translated by Google\)/s', $comment, $matches)) {
-                $comment = trim($matches[1]);
-            }
-        }
+        $comment = wgmbr_clean_review_comment(isset($review['comment']) ? $review['comment'] : '');
 
         $review_date = isset($review['createTime']) ? $review['createTime'] : current_time('mysql');
 
