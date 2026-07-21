@@ -338,7 +338,7 @@ if (!defined('ABSPATH')) {
                                         </th>
                                         <td>
                                             <select id="gmb-gen-order" onchange="wgmbrGenerateShortcode()">
-                                                <option value="recent"><?php esc_html_e('Recent (newest first)', 'reviews-for-google-my-business'); ?></option>
+                                                <option value="recent"><?php esc_html_e('Date (newest first)', 'reviews-for-google-my-business'); ?></option>
                                                 <option value="random"><?php esc_html_e('Random', 'reviews-for-google-my-business'); ?></option>
                                             </select>
                                             <p class="description"><?php esc_html_e('Choose the display order of the reviews', 'reviews-for-google-my-business'); ?></p>

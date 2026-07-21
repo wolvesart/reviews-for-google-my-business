@@ -83,7 +83,7 @@ function wgmbr_enqueue_frontend_scripts() {
         wp_enqueue_script(
             'wgmbr-frontend-slider',
             WGMBR_PLUGIN_URL . 'assets/js/slider.js',
-            array(),
+            array('wgmbr-frontend-app'),
             WGMBR_VERSION,
             true
         );

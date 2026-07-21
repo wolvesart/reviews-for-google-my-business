@@ -8,6 +8,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check which reviews need "Read more" button
     checkTruncatedReviews();
+
+    // The first pass runs before the cards have their final width (Swiper sizes
+    // its slides after init) and before webfonts swap in: both change how many
+    // lines the text wraps onto, so re-measure once the layout has settled.
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(checkTruncatedReviews);
+    }
+    window.addEventListener('load', checkTruncatedReviews);
+
+    // Card width changes with the viewport (Swiper breakpoints, masonry columns)
+    let resizeTimer = null;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(checkTruncatedReviews, 150);
+    });
 });
 
 // Function to initialize review modal
@@ -80,12 +95,13 @@ function checkTruncatedReviews() {
         if (!paragraph || !button) return;
 
         // Check if text is truncated
-        // By comparing scroll height with visible height
-        const isTruncated = paragraph.scrollHeight > paragraph.clientHeight;
+        // By comparing scroll height with visible height (1px tolerance:
+        // sub-pixel line heights can make both differ without any clamping)
+        const isTruncated = paragraph.scrollHeight - paragraph.clientHeight > 1;
 
-        if (isTruncated) {
-            button.classList.add('is-visible');
-        }
+        // Toggle, not just add: a card truncated at one breakpoint may fit at
+        // another, and this function runs again on every resize
+        button.classList.toggle('is-visible', isTruncated);
     });
 }
 

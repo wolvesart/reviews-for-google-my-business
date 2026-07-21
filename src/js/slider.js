@@ -5,6 +5,17 @@
 const Swiper = require('swiper').default;
 const { Navigation, Pagination } = require('swiper/modules');
 
+// Ask app.js to re-evaluate which reviews need a "Read more" button.
+// Deferred to the next frame so the browser has applied Swiper's new slide
+// widths before we measure the clamped paragraphs.
+function recheckTruncation() {
+    if (typeof window.wgmbrCheckTruncatedReviews !== 'function') return;
+
+    requestAnimationFrame(function() {
+        window.wgmbrCheckTruncatedReviews();
+    });
+}
+
 // Initialize Swiper for GMB Reviews
 document.addEventListener('DOMContentLoaded', function() {
     const reviewsSwiper = document.querySelector('.gmb-reviews-swiper');
@@ -78,6 +89,14 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         on: {
+            // Swiper only gives the slides their real width once it has run:
+            // app.js measured the cards full-width, so a review clamped at
+            // 1/3 width was seen as untruncated and kept its button hidden.
+            // Re-measure whenever the slide width can have changed.
+            init: recheckTruncation,
+            resize: recheckTruncation,
+            breakpoint: recheckTruncation,
+
             // Swiper sizes the dynamic-bullets container for
             // dynamicMainBullets + 4 (= 5) bullets and slides the strip to
             // center the active one: with fewer bullets this leaves the
