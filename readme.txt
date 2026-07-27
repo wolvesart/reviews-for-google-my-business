@@ -3,7 +3,7 @@ Contributors: @fanny8p
 Tags: google reviews, testimonials, google my business, reviews, social proof
 Requires at least: 6.8
 Tested up to: 7.0
-Stable tag: 1.1.0
+Stable tag: 1.1.2
 Requires PHP: 8.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -270,6 +270,19 @@ This plugin uses a “lazy” caching system to minimize Google My Business API 
 
 == Changelog ==
 
+= 1.1.2 - 2026-07-27 =
+
+**Bug Fixes:**
+
+* Fixed: Admin styles and scripts not loading on the Configuration and Categories pages on translated (non-English) sites. The page hook suffixes are now captured from WordPress instead of being hardcoded from the translated parent menu title.
+
+= 1.1.1 - 2026-07-21 =
+
+**Bug Fixes:**
+
+* Fixed: "Read more" button missing on truncated reviews in the Slider layout (reviews were measured before the slider sized its slides)
+* Fixed: "Read more" button now appears and disappears correctly when resizing the window or switching breakpoints
+
 = 1.1.0 - 2026-07-18 =
 
 **New Features:**
@@ -430,6 +443,12 @@ This plugin uses a “lazy” caching system to minimize Google My Business API 
 * Fixed review card width in slider mode
 
 == Upgrade Notice ==
+
+= 1.1.2 =
+Fixes broken admin styling on the Configuration and Categories pages for sites running WordPress in a language other than English.
+
+= 1.1.1 =
+Fixes the "Read more" button not showing on truncated reviews in the Slider layout.
 
 = 1.1.0 =
 New Masonry grid layout with AJAX "Show more" button, live preview in the Customization tab, and faster frontend: the slider library now loads only when the Slider layout is active.

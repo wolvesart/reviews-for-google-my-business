@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Reviews for Google My Business
  * Description: Display your Google My Business reviews on your website for free. Improve your credibility and gain trust. Category system, full customization, and flexible shortcode.
- * Version: 1.1.0
+ * Version: 1.1.2
  * Requires at least: 6.8
  * Requires PHP: 8.0
  * Author: Wolvesart
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 
 // Define plugin constants
 // Using WGMBR prefix (5+ characters) for WordPress.org compliance
-define('WGMBR_VERSION', '1.1.0');
+define('WGMBR_VERSION', '1.1.2');
 define('WGMBR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WGMBR_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WGMBR_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -29,10 +29,9 @@ define('WGMBR_MANAGE_PAGE_SLUG', 'wgmbr-manage-reviews');
 define('WGMBR_SETTINGS_PAGE_SLUG', 'wgmbr-settings');
 define('WGMBR_CATEGORIES_PAGE_SLUG', 'wgmbr-categories');
 
-// Admin page hooks (for enqueue scripts)
-define('WGMBR_MANAGE_PAGE_HOOK', 'toplevel_page_wgmbr-manage-reviews');
-define('WGMBR_SETTINGS_PAGE_HOOK', 'google-reviews_page_wgmbr-settings');
-define('WGMBR_CATEGORIES_PAGE_HOOK', 'google-reviews_page_wgmbr-categories');
+// Note: les hooks des pages admin sont capturés dynamiquement depuis les valeurs
+// de retour de add_menu_page()/add_submenu_page() (voir wgmbr_admin_page_hooks()),
+// car WordPress les construit à partir du titre *traduit* du menu parent.
 
 // API Configuration
 define('WGMBR_API_PAGE_SIZE', 100);

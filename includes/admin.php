@@ -11,10 +11,32 @@ if (!defined('ABSPATH')) {
 // MENU ADMIN
 // ============================================================================
 
+/**
+ * Store and retrieve the real admin page hook suffixes.
+ *
+ * WordPress builds the hook suffix of a submenu page from the *sanitized title*
+ * of the parent menu, which is translated. Hardcoding the hooks therefore breaks
+ * asset loading on translated (non-English) sites. We capture the actual return
+ * values of add_menu_page()/add_submenu_page() instead.
+ *
+ * @param array|null $hooks Optional. Hooks to store.
+ * @return array Stored hook suffixes.
+ */
+function wgmbr_admin_page_hooks($hooks = null)
+{
+    static $stored = array();
+
+    if (is_array($hooks)) {
+        $stored = $hooks;
+    }
+
+    return $stored;
+}
+
 function wgmbr_add_admin_menu()
 {
 
-    add_menu_page(
+    $manage_hook = add_menu_page(
         esc_html__('Google Reviews', 'reviews-for-google-my-business'),
         esc_html__('Google Reviews', 'reviews-for-google-my-business'),
         'manage_options',
@@ -24,7 +46,7 @@ function wgmbr_add_admin_menu()
         30
     );
 
-    add_submenu_page(
+    $categories_hook = add_submenu_page(
         'wgmbr-manage-reviews',
         esc_html__('Categories', 'reviews-for-google-my-business'),
         esc_html__('Categories', 'reviews-for-google-my-business'),
@@ -33,7 +55,7 @@ function wgmbr_add_admin_menu()
         'wgmbr_categories_page'
     );
 
-    add_submenu_page(
+    $settings_hook = add_submenu_page(
         'wgmbr-manage-reviews',
         esc_html__('Configuration', 'reviews-for-google-my-business'),
         esc_html__('Configuration', 'reviews-for-google-my-business'),
@@ -41,6 +63,12 @@ function wgmbr_add_admin_menu()
         'wgmbr-settings',
         'wgmbr_settings_page'
     );
+
+    wgmbr_admin_page_hooks(array(
+        'manage'     => $manage_hook,
+        'categories' => $categories_hook,
+        'settings'   => $settings_hook,
+    ));
 }
 
 add_action('admin_menu', 'wgmbr_add_admin_menu');
@@ -49,7 +77,12 @@ add_action('admin_menu', 'wgmbr_add_admin_menu');
 // Save styles and admin scripts
 function wgmbr_enqueue_admin_assets($hook)
 {
-    if (!in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_SETTINGS_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
+    $hooks = wgmbr_admin_page_hooks();
+    $manage_hook     = isset($hooks['manage']) ? $hooks['manage'] : '';
+    $settings_hook   = isset($hooks['settings']) ? $hooks['settings'] : '';
+    $categories_hook = isset($hooks['categories']) ? $hooks['categories'] : '';
+
+    if (!in_array($hook, array($manage_hook, $settings_hook, $categories_hook), true)) {
         return;
     }
 
@@ -66,7 +99,7 @@ function wgmbr_enqueue_admin_assets($hook)
     wp_add_inline_style('wgmbr-admin-styles', $custom_css);
 
     // Frontend card styles for the live preview on the Customization tab
-    if ($hook === WGMBR_SETTINGS_PAGE_HOOK) {
+    if ($hook === $settings_hook) {
         wp_enqueue_style(
             'wgmbr-frontend-styles',
             WGMBR_PLUGIN_URL . 'assets/css/frontend.css',
@@ -105,7 +138,7 @@ function wgmbr_enqueue_admin_assets($hook)
     ));
 
     // Script for testimonials and categories management
-    if (in_array($hook, array(WGMBR_MANAGE_PAGE_HOOK, WGMBR_CATEGORIES_PAGE_HOOK), true)) {
+    if (in_array($hook, array($manage_hook, $categories_hook), true)) {
         wp_enqueue_script(
             'wgmbr-manage-reviews-scripts',
             WGMBR_PLUGIN_URL . 'assets/js/manage-reviews.js',
